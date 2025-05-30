@@ -1,0 +1,17 @@
+Projekt: STM32G031G8 Sensortaster
+- 12 RGB-LEDs (SK6812), gesteuert über DMA+PWM über TIM3_CH2 (PA7)
+- Piezo-Buzzer (PA4), 4kHz PWM-Signal via TIM14
+- Logik über CY8CMBR3108 (I2C) → INT an PA1
+- Konfigurationsbutton an PA3
+
+Globale Variablen:
+- current_effect (uint8_t)
+- effect_params (struct: hue, brightness, speed, duration)
+- button_state, config_mode, output_state[]
+
+Module:
+- led_effect_*.c/h → jeder Effekt in separater Datei
+- logic_*.c/h → verschiedene Logiken als modular auswählbar
+- sound_*.c/h → Piezo-Ton pro Ereignis
+
+Ziel: LED-Effekte runtime ändern (z.B. nach Tastendruck), Piezo-Sound abspielen und IO schalten.
