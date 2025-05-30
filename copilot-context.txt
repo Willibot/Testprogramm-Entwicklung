@@ -15,3 +15,25 @@ Module:
 - sound_*.c/h → Piezo-Ton pro Ereignis
 
 Ziel: LED-Effekte runtime ändern (z.B. nach Tastendruck), Piezo-Sound abspielen und IO schalten.
+
+---
+
+Strategie & Verbesserungsplan:
+
+1. SK6812-Treiber isoliert testen (DMA/PWM Timing sicherstellen, einfache LED-Tests).
+2. LED-Effekt-Engine kapseln: Effekte als Module mit einheitlicher API (start, update, stop), zentrales Effekt-Management, Beispiel-Effekte.
+3. Sound-Engine modularisieren: analoge API, Beispiel-Soundeffekte.
+4. Synchronisation & Timing: Parallele Ausführung von LED- und Soundeffekten testen, Timer/DMA-Konflikte vermeiden.
+5. Logik-Engine und Event-Handling: Logik kapseln, Effekte triggern, verschiedene Logikpfade testen.
+6. Erweiterbarkeit & Clean Code: Effekt-API dokumentieren, Beispielcode für neue Effekte.
+
+Empfohlene Reihenfolge:
+1. SK6812-Treiber (kritisch)
+2. LED-Effekt-Engine
+3. Sound-Engine
+4. Synchronisation/Timing
+5. Logik-Engine
+6. Dokumentation & Clean Code
+
+Fazit:  
+Mit dieser Strategie wird die Basis stabil und die Modularität verbessert. Neue Effekte und Funktionen können einfach hinzugefügt werden. Der kritischste Baustein (SK6812-Treiber) steht am Anfang, um spätere Fehler zu vermeiden.
