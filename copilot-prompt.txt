@@ -1,0 +1,89 @@
+// Projekt: Modularer Sensortaster mit LED-Ring, Sound, Konfiguration und Logiksteuerung
+// Dieses Projekt verwendet STM32G031G8U6, DMA/PWM für SK6812, Piezo, SPI, I2C
+// Kontextdatei für GitHub Copilot: globale Variablen, Designrichtlinien und Struktur
+
+// ───────────────────────────────────────────────────────────────
+// Globale Variablen – systemweite Steuerung
+
+extern uint8_t current_effect;             // Aktiver LED-Effekt (ID)
+extern effect_params_t effect_params;      // Effekt-Parameter: Farbe, Helligkeit, etc.
+extern uint8_t current_logic_mode;         // Aktive Steuerlogik
+extern uint8_t sound_flag;                 // Gewünschter Soundeffekt
+extern uint8_t button_state;               // Tastenzustand (z.B. gedrückt, kurz, lang)
+extern bool config_mode;                   // Konfigurationsmodus aktiv?
+extern RGB_t led_state[12];                // LED-Zustände (12 LEDs)
+extern uint32_t timer_tick;                // Zeitbasis für Effekte, Logik, Sound
+extern bool output_state[3];               // Zustand der Open-Collector-Ausgänge
+extern bool drv8904_selected;              // SPI: DRV8904 ausgewählt?
+
+// ───────────────────────────────────────────────────────────────
+// Effekt-Schnittstelle (einheitlich für alle Effekte)
+
+void led_effect_<name>_start(effect_params_t *);
+void led_effect_<name>_update(uint32_t now);
+void led_effect_<name>_stop(void);
+
+// Beispielhafte Effekte:
+void led_effect_solid_start(effect_params_t *);
+void led_effect_blink_start(effect_params_t *);
+void led_effect_breathe_start(effect_params_t *);
+void led_effect_chase_left_start(effect_params_t *);
+// etc.
+
+// ───────────────────────────────────────────────────────────────
+// Soundinterface
+
+void sound_engine_play(uint8_t sound_flag);
+
+// Beispielhafte Sounds:
+#define SOUND_BEEP       1
+#define SOUND_DOUBLE     2
+#define SOUND_CONFIG     3
+
+// ───────────────────────────────────────────────────────────────
+// Steuerlogik (dispatcherbasiert)
+
+void logic_engine_update(uint32_t now);
+void logic_engine_set_mode(uint8_t mode);
+
+// ───────────────────────────────────────────────────────────────
+// Designvorgaben:
+
+// ✱ Effekte modular halten – je Effekt eigene Datei in /effects/
+// ✱ Keine hardcodierten Farben: effect_params.hue, .brightness verwenden
+// ✱ Konfiguration & LED-Rückmeldung über config_mode
+// ✱ Ton & LED gemeinsam nutzbar bei Ereignissen (z. B. langes Drücken)
+
+// ───────────────────────────────────────────────────────────────
+// Ziel beim Einsatz von Copilot:
+// - Neue Effekte generieren lassen
+// - Bestehende Logik erweitern
+// - GPIO/Timer/Interrupt sicher steuern
+// ───────────────────────────────────────────────────────────────
+// ─ Pins & Peripherie
+// PA1: Interrupt vom CY8CMBR3108
+// PA3: Programmiertaster
+// PA4: PWM-Ausgang Piezo (TIM14_CH1)
+// PA7: SK6812 LED-Daten (TIM3_CH2 via DMA1_Channel1)
+// PB0: NSCS (SPI Chip Select DRV8904)
+// PB3: SPI1_SCK – DRV8904
+// PB4: SPI1_MISO – DRV8904
+// PB5: SPI1_MOSI – DRV8904
+// PB6: NSLEEP – DRV8904 aktivieren
+// PB7/B8: I2C → CY8CMBR3108
+// ───────────────────────────────────────────────────────────────
+// DMA: TIM3_CH2 nutzt DMA1_Channel1 → wird für LED-Daten (SK6812) verwendet
+// ───────────────────────────────────────────────────────────────
+// LED-Effekte werden über led_effect_engine.c aufgerufen
+// Jeder Effekt besteht aus: start(), update(now), stop()
+// LEDs über globales Array: RGB_t led_state[12]
+// Farbdaten werden via led_driver.c per DMA an SK6812 gesendet
+// ───────────────────────────────────────────────────────────────
+// TIM3: LED-Ansteuerung via PWM + DMA
+// TIM14: PWM-Ausgang für Piezo (konfiguriert als 4kHz)
+// EXTI1: Tastereingang über PA1 (Interrupt vom Sensor-IC)
+// CubeMX generiert Systemclock auf 64 MHz
+// ───────────────────────────────────────────────────────────────
+
+
+
