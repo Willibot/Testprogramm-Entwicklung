@@ -21,7 +21,13 @@
 #include "tim.h"
 
 /* USER CODE BEGIN 0 */
-
+// Copilot/Entwickler-Hinweis:
+// - Diese Datei wird von STM32CubeMX generiert und enthält die Initialisierung aller Timer-Instanzen.
+// - Für LED-Effekte: TIM3_CH2 (PA7) wird für die PWM-Ausgabe an den LED-Ring (SK6812/WS2812) genutzt, DMA ist auf Channel 1 konfiguriert.
+// - Für Sound: TIM14_CH1 (PA4) wird für den Piezo-Buzzer (PWM) verwendet.
+// - Änderungen an der Timer-Konfiguration sollten bevorzugt in CubeMX erfolgen, damit sie nicht überschrieben werden.
+// - Eigene Anpassungen (z.B. spezielle PWM-Frequenzen, Interrupts) können in den USER CODE-Bereichen ergänzt werden.
+// - Prüfe Perioden-/Prescaler-Werte für exakte PWM-Frequenzen (z.B. 800kHz für LEDs, 4kHz für Piezo).
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim3;
@@ -164,5 +170,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
+// Eigene Timer-Initialisierungen, spezielle PWM-Frequenzen oder Interrupt-Handler können hier ergänzt werden.
+// Beispiel: Anpassung von TIM14 für Piezo-Buzzer in separater Funktion.
 /* USER CODE END 1 */

@@ -1,3 +1,23 @@
+// -----------------------------------------------------------------------------
+// led_effect_flash_alt.c
+// Zweck: Implementiert einen alternierenden Flash-Effekt für den LED-Ring.
+// Die LEDs wechseln zyklisch zwischen zwei kontrastierenden Farben (180° Farbkreis).
+// Geschwindigkeit und Grundfarbe sind über effect_params steuerbar.
+//
+// API:
+//   - led_effect_flash_alt_start(): Initialisiert den Effekt (setzt Startwerte, Timer-Reset)
+//   - led_effect_flash_alt_update(uint32_t tick): Wird zyklisch aufgerufen, steuert das Umschalten
+//
+// Hinweise für Entwickler & Copilot:
+//   - Nutzt hsv_to_rgb() für die Farbumrechnung (keine hardcodierten Farben!)
+//   - Geschwindigkeit ist über effect_params.speed steuerbar (höher = schneller)
+//   - led_driver_update() nach jeder Änderung am LED-Buffer aufrufen
+//   - Keine blockierenden Wartezeiten verwenden! Nur Timer-Vergleich (tick)
+//   - State-Variablen sind statisch, damit mehrere Effekte unabhängig laufen können
+//
+// TODO: Optional: Verschiedene Kontrastfarben, Fade statt hartem Umschalten
+// -----------------------------------------------------------------------------
+
 #include "led_effect_flash_alt.h"
 #include "led_driver.h"
 #include "config.h"
@@ -28,5 +48,10 @@ void led_effect_flash_alt_update(uint32_t tick) {
         led_state[i] = color;
     }
 
-    led_driver_update(led_state);
+    led_driver_update();
 }
+
+// Copilot:
+// - Nutze dieses Muster für weitere alternierende oder blinkende Effekte.
+// - Für weichere Übergänge: Fade-Logik zwischen den Farben einbauen.
+// - Keine blockierenden Delays, keine globale Abhängigkeit außer effect_params und timer_tick!

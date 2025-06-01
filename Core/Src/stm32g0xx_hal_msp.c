@@ -55,7 +55,11 @@
 /* USER CODE END ExternalFunctions */
 
 /* USER CODE BEGIN 0 */
-
+// Copilot/Entwickler-Hinweis:
+// - Diese Datei wird von STM32CubeMX generiert und enthält die Initialisierung und De-Initialisierung der Low-Level-Peripherie (MSP).
+// - Hier werden z.B. Clock-Enable, NVIC-Interrupts und spezielle Hardware-Initialisierungen vorgenommen.
+// - Eigene Anpassungen (z.B. spezielle Interrupt-Prioritäten, zusätzliche Peripherie) können in den USER CODE-Bereichen ergänzt werden.
+// - Änderungen außerhalb der USER CODE-Bereiche werden beim nächsten CubeMX-Export überschrieben!
 /* USER CODE END 0 */
 /**
   * Initializes the Global MSP.
@@ -73,10 +77,11 @@ void HAL_MspInit(void)
   /* System interrupt init*/
 
   /* USER CODE BEGIN MspInit 1 */
-
+  // Eigene globale Initialisierungen, z.B. NVIC-Prioritäten, können hier ergänzt werden.
   /* USER CODE END MspInit 1 */
 }
 
 /* USER CODE BEGIN 1 */
-
+// Eigene MSP-Initialisierungen für spezielle Peripherie können hier ergänzt werden.
+// Beispiel: Anpassung von Interrupt-Prioritäten für DMA, Timer, etc.
 /* USER CODE END 1 */

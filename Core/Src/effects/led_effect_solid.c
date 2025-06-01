@@ -1,6 +1,26 @@
+// -----------------------------------------------------------------------------
+// led_effect_solid.c
+// Zweck: Statischer Farbeffekt – alle LEDs leuchten dauerhaft in einer festen Farbe.
+// Farbe und Helligkeit sind über effect_params steuerbar.
+//
+// API:
+//   - led_effect_solid_start(): Initialisiert den Effekt (erzwingt Update beim ersten Tick)
+//   - led_effect_solid_update(uint32_t tick): Setzt die Farbe, wenn Parameter sich ändern
+//   - led_effect_solid_stop(): Schaltet alle LEDs aus
+//
+// Hinweise für Entwickler & Copilot:
+//   - Nutzt hsv_to_rgb() für die Farbumrechnung (keine hardcodierten Farben!)
+//   - led_driver_update() nur bei Änderung der Parameter aufrufen
+//   - Keine blockierenden Wartezeiten verwenden!
+//   - State-Variablen sind statisch, damit mehrere Effekte unabhängig laufen können
+//
+// TODO: Optional: Sanftes Überblenden bei Farbwechsel
+// -----------------------------------------------------------------------------
+
 #include "led_effect_solid.h"
 #include "led_driver.h"
 #include "config.h"
+#include "color_utils.h"
 
 extern RGB_t led_state[12];
 extern effect_params_t effect_params;
@@ -33,3 +53,8 @@ void led_effect_solid_stop(void) {
     }
     led_driver_update();
 }
+
+// Copilot:
+// - Nutze dieses Muster für weitere statische Effekte oder Statusanzeigen.
+// - Für sanfte Übergänge: Werte schrittweise anpassen statt Sprung.
+// - Keine blockierenden Delays, keine globale Abhängigkeit außer effect_params!

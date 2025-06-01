@@ -1,3 +1,24 @@
+// color_utils.c
+// Zweck: Stellt Hilfsfunktionen für Farboperationen bereit, die von allen
+// LED-Effekten genutzt werden können. Insbesondere:
+//  - Umwandlung von HSV-Farbwerten (Farbton, Sättigung, Helligkeit) in RGB,
+//    damit Effekte einfach mit Farbverläufen arbeiten können.
+//  - Skalierung der Helligkeit eines RGB-Farbwerts, z.B. für sanfte Überblendungen.
+//
+// Verwendung:
+//  - In jedem LED-Effekt, der Farben berechnet oder animiert, kannst du
+//    hsv_to_rgb() nutzen, um aus einem Farbton (h), Sättigung (s) und
+//    Helligkeit (v) einen RGB-Wert zu erzeugen.
+//  - Mit scale_brightness() kannst du einen RGB-Farbwert auf eine gewünschte
+//    Helligkeit skalieren (z.B. für Fade-In/Fade-Out).
+//
+// Beispiel:
+//    RGB_t c = hsv_to_rgb(128, 255, 128); // ergibt ein mittleres Grün
+//    c = scale_brightness(c, 64);         // macht das Grün dunkler
+//
+// Diese Datei sollte von allen Effekten eingebunden werden, die Farboperationen benötigen.
+// -----------------------------------------------------------------------------
+
 #include "color_utils.h"
 
 RGB_t hsv_to_rgb(uint8_t h, uint8_t s, uint8_t v) {

@@ -15,37 +15,14 @@
 
 /* USER CODE BEGIN Includes */
 #include "config.h"
-#include "led_effect_engine.h"
-#include "sound_engine.h"
-#include "logic_engine.h"
-#include "piezo_driver.h"
+#include "led_effect_engine.h"   // Effekt-Engine für LED-Effekte
+//#include "sound_engine.h"      // Noch nicht benötigt für ersten Test
+//#include "logic_engine.h"      // Noch nicht benötigt für ersten Test
+//#include "piezo_driver.h"      // Noch nicht benötigt für ersten Test
 /* USER CODE END Includes */
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN PTD */
-
-/* USER CODE END PTD */
-
-/* Private define ------------------------------------------------------------*/
-/* USER CODE BEGIN PD */
-
-/* USER CODE END PD */
-
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
-
-/* USER CODE END PM */
-
-/* Private variables ---------------------------------------------------------*/
-/* USER CODE BEGIN PV */
-
-/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-/* USER CODE BEGIN PFP */
-
-/* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
 
@@ -58,36 +35,42 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  // Ziel: Nur den ersten LED-Effekt (solid) testen, um DMA, Timer und LED-Treiber zu prüfen.
   /* USER CODE END 1 */
 
-  HAL_Init();                // Reset all peripherals
+  HAL_Init();                // Reset aller Peripherie, Flash-Interface und Systick
 
   /* USER CODE BEGIN Init */
   /* USER CODE END Init */
 
-  SystemClock_Config();      // Takt konfigurieren
+  SystemClock_Config();      // Systemtakt konfigurieren (CubeMX-Standard)
 
   /* USER CODE BEGIN SysInit */
   /* USER CODE END SysInit */
 
-  MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_TIM3_Init();            // Für SK6812 PWM-Ausgabe
+  MX_GPIO_Init();            // GPIOs initialisieren
+  MX_DMA_Init();             // DMA initialisieren (wichtig für SK6812)
+  MX_TIM3_Init();            // Timer 3 für PWM (SK6812) initialisieren
 
   /* USER CODE BEGIN 2 */
-  led_init();                // Initialisiert LED DMA/PWM-Treiber
-  sound_init();              // Startet PWM für Piezo
-  logic_init();              // Bereitet Logikstatus vor
+  led_effect_engine_init();  // Initialisiert die Effekt-Engine und ggf. den LED-Treiber
+
+  // Starte den ersten Effekt (z.B. solid)
+  led_effect_engine_set(LED_EFFECT_SOLID);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    logic_update();          // Tasterstatus & Logik prüfen
-    led_effect_update();     // Aktuellen Effekt ausführen
-    sound_update();          // Töne ausgeben
+    // Effekt-Update aufrufen (führt den aktuellen Effekt aus)
+    led_effect_engine_update();
+
+    // Optional: kleine Pause, damit die CPU nicht 100% läuft
+    HAL_Delay(1);
+
+    // Noch keine Logik, Sound oder weitere Features – Fokus: LED-Test!
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -140,7 +123,7 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
-    // Fehleranzeige z.B. per LED oder Piezo
+    // Fehleranzeige z.B. per LED oder Piezo (hier Endlosschleife)
   }
 }
 
@@ -150,3 +133,11 @@ void assert_failed(uint8_t *file, uint32_t line)
   // Optional: Fehlerprotokollierung
 }
 #endif
+
+/*
+ * Hinweise:
+ * - Diese main.c ist für den allerersten LED-Effekt-Test ausgelegt.
+ * - Es werden nur die für den LED-Test nötigen Initialisierungen und Funktionen aufgerufen.
+ * - Wenn der Effekt funktioniert, können Sound, Logik und weitere Features schrittweise ergänzt werden.
+ * - Die Effekt-Engine muss so implementiert sein, dass sie mit led_effect_engine_set(LED_EFFECT_SOLID) den gewünschten Effekt startet.
+ */

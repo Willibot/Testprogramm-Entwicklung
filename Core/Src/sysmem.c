@@ -25,6 +25,14 @@
 #include <stdint.h>
 
 /**
+ * Erklärung:
+ * Diese Datei stellt die Speicherverwaltungsfunktion _sbrk() bereit,
+ * die von der Standardbibliothek (newlib) für malloc/free benötigt wird.
+ * Sie sorgt dafür, dass dynamisch Speicher (Heap) im RAM reserviert wird,
+ * ohne in den Stack-Bereich zu laufen.
+ */
+
+/**
  * Pointer to the current high watermark of the heap usage
  */
 static uint8_t *__sbrk_heap_end = NULL;
@@ -59,6 +67,12 @@ void *_sbrk(ptrdiff_t incr)
   const uint8_t *max_heap = (uint8_t *)stack_limit;
   uint8_t *prev_heap_end;
 
+  /* Erklärung:
+   * Beim ersten Aufruf wird der Heap-Zeiger auf das Ende der .bss/.data-Segmente gesetzt.
+   * Danach wird bei jedem Aufruf der Heap um 'incr' Bytes vergrößert.
+   * Es wird geprüft, dass der Heap nicht in den reservierten Stack-Bereich wächst.
+   */
+
   /* Initialize heap end at first call */
   if (NULL == __sbrk_heap_end)
   {
@@ -77,3 +91,11 @@ void *_sbrk(ptrdiff_t incr)
 
   return (void *)prev_heap_end;
 }
+
+/*
+ * Zusammenfassung:
+ * - _sbrk() ist notwendig für malloc/free auf Embedded-Systemen.
+ * - Der Heap wächst von .bss/.data Richtung Stack, aber nie in den Stack-Bereich.
+ * - Die Grenzen werden durch Linker-Symbole (_end, _estack, _Min_Stack_Size) festgelegt.
+ * - Bei zu wenig RAM gibt _sbrk() einen Fehler zurück.
+ */

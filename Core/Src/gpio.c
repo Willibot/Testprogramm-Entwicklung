@@ -22,7 +22,19 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-
+// Copilot/Entwickler-Hinweis:
+// - Diese Datei wird von STM32CubeMX generiert und enthält die Initialisierung aller GPIO-Pins.
+// - Die Pinbelegung ist zentral für das gesamte Projekt und sollte bei Änderungen in CubeMX gepflegt werden.
+// - Wichtige Pins für dieses Projekt:
+//     PA1: INT von CY8CMBR3108 (Touch-Controller, Interrupt)
+//     PA3: Konfigurationsbutton (Input)
+//     PA4: Piezo PWM (TIM14_CH1, Alternate Function)
+//     PA7: SK6812 LED-Daten (TIM3_CH2, PWM, nicht direkt hier konfiguriert!)
+//     PB3/4/5: SPI1 für DRV8904 (Motor-Treiber)
+//     PB6: NSLEEP für DRV8904 (Enable-Pin, Output)
+//     PB7/B8: I2C1 für CY8CMBR3108 (Touch-Controller)
+// - Für neue Hardwarefunktionen: Hier und in CubeMX anpassen!
+// - Eigene Initialisierungen können in den USER CODE-Bereichen ergänzt werden.
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -135,5 +147,6 @@ void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 2 */
-
+// Eigene GPIO-Initialisierungen oder spezielle Pin-Setups können hier ergänzt werden.
+// Beispiel: HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET); // DRV8904 aktivieren
 /* USER CODE END 2 */

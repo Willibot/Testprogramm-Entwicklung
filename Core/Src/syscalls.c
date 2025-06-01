@@ -30,26 +30,35 @@
 #include <sys/time.h>
 #include <sys/times.h>
 
+/* Erklärung:
+ * Diese Datei stellt die minimalen Systemfunktionen (Syscalls) bereit,
+ * die von der Standardbibliothek (newlib) benötigt werden, damit z.B.
+ * printf, scanf, malloc usw. auch auf einem Mikrocontroller funktionieren.
+ * Viele Funktionen sind nur Platzhalter (Stubs), da ein Embedded-System
+ * kein echtes Betriebssystem hat.
+ */
 
 /* Variables */
 extern int __io_putchar(int ch) __attribute__((weak));
 extern int __io_getchar(void) __attribute__((weak));
 
-
 char *__env[1] = { 0 };
 char **environ = __env;
 
-
 /* Functions */
+
+// Initialisiert ggf. Debug-Monitor-Handles (hier leer)
 void initialise_monitor_handles()
 {
 }
 
+// Gibt immer 1 zurück, da es nur einen "Prozess" gibt
 int _getpid(void)
 {
   return 1;
 }
 
+// Beendet einen Prozess (hier nicht unterstützt)
 int _kill(int pid, int sig)
 {
   (void)pid;
@@ -58,12 +67,14 @@ int _kill(int pid, int sig)
   return -1;
 }
 
+// Beendet das Programm (hängt in Endlosschleife)
 void _exit (int status)
 {
   _kill(status, -1);
   while (1) {}    /* Make sure we hang here */
 }
 
+// Liest Zeichen (z.B. von UART) für scanf/getchar
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
   (void)file;
@@ -77,6 +88,7 @@ __attribute__((weak)) int _read(int file, char *ptr, int len)
   return len;
 }
 
+// Schreibt Zeichen (z.B. auf UART) für printf/putchar
 __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
   (void)file;
@@ -89,13 +101,14 @@ __attribute__((weak)) int _write(int file, char *ptr, int len)
   return len;
 }
 
+// Schließt eine Datei (nicht unterstützt)
 int _close(int file)
 {
   (void)file;
   return -1;
 }
 
-
+// Gibt Dateityp zurück (immer Character Device)
 int _fstat(int file, struct stat *st)
 {
   (void)file;
@@ -103,12 +116,14 @@ int _fstat(int file, struct stat *st)
   return 0;
 }
 
+// Prüft, ob Terminal (immer wahr)
 int _isatty(int file)
 {
   (void)file;
   return 1;
 }
 
+// Setzt Dateizeiger (nicht unterstützt)
 int _lseek(int file, int ptr, int dir)
 {
   (void)file;
@@ -117,6 +132,7 @@ int _lseek(int file, int ptr, int dir)
   return 0;
 }
 
+// Öffnet eine Datei (immer Fehler)
 int _open(char *path, int flags, ...)
 {
   (void)path;
@@ -125,6 +141,7 @@ int _open(char *path, int flags, ...)
   return -1;
 }
 
+// Wartet auf Kindprozess (nicht unterstützt)
 int _wait(int *status)
 {
   (void)status;
@@ -132,6 +149,7 @@ int _wait(int *status)
   return -1;
 }
 
+// Löscht eine Datei (immer Fehler)
 int _unlink(char *name)
 {
   (void)name;
@@ -139,12 +157,14 @@ int _unlink(char *name)
   return -1;
 }
 
+// Gibt Prozesszeiten zurück (nicht unterstützt)
 int _times(struct tms *buf)
 {
   (void)buf;
   return -1;
 }
 
+// Gibt Dateistatus zurück (immer Character Device)
 int _stat(char *file, struct stat *st)
 {
   (void)file;
@@ -152,6 +172,7 @@ int _stat(char *file, struct stat *st)
   return 0;
 }
 
+// Erstellt einen Link (immer Fehler)
 int _link(char *old, char *new)
 {
   (void)old;
@@ -160,12 +181,14 @@ int _link(char *old, char *new)
   return -1;
 }
 
+// Forkt einen Prozess (nicht unterstützt)
 int _fork(void)
 {
   errno = EAGAIN;
   return -1;
 }
 
+// Führt ein Programm aus (nicht unterstützt)
 int _execve(char *name, char **argv, char **env)
 {
   (void)name;
@@ -174,3 +197,10 @@ int _execve(char *name, char **argv, char **env)
   errno = ENOMEM;
   return -1;
 }
+
+/* Erklärung:
+ * Die meisten dieser Funktionen sind für Embedded-Systeme nicht relevant,
+ * werden aber von der Standardbibliothek benötigt, damit z.B. printf/scanf
+ * nicht zu Linker-Fehlern führen. Nur _read und _write sind für UART-IO
+ * wirklich wichtig.
+ */

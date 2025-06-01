@@ -1,25 +1,26 @@
 // Projekt: Modularer Sensortaster mit LED-Ring, Sound, Konfiguration und Logiksteuerung
-// Dieses Projekt verwendet STM32G031G8U6, DMA/PWM für SK6812, Piezo, SPI, I2C
-// Kontextdatei für GitHub Copilot: globale Variablen, Designrichtlinien und Struktur
+// Ziel: Flexible, modular erweiterbare Firmware für kapazitive Taster mit RGB-LEDs und Soundausgabe
+// MCU: STM32G031G8U6, DMA/PWM für SK6812, Piezo, SPI, I2C
+// Diese Datei dient als Kontext für GitHub Copilot und Entwickler (API, Design, Hardware-Mapping).
 
 // ───────────────────────────────────────────────────────────────
 // Globale Variablen – systemweite Steuerung
 
 extern uint8_t current_effect;             // Aktiver LED-Effekt (ID)
-extern effect_params_t effect_params;      // Effekt-Parameter: Farbe, Helligkeit, etc.
-extern uint8_t current_logic_mode;         // Aktive Steuerlogik
-extern uint8_t sound_flag;                 // Gewünschter Soundeffekt
+extern effect_params_t effect_params;      // Effekt-Parameter: Farbe, Helligkeit, Geschwindigkeit, Dauer
+extern uint8_t current_logic_mode;         // Aktive Steuerlogik (z.B. Toggle, Timer, Tür)
+extern uint8_t sound_flag;                 // Gewünschter Soundeffekt (siehe Defines unten)
 extern uint8_t button_state;               // Tastenzustand (z.B. gedrückt, kurz, lang)
 extern bool config_mode;                   // Konfigurationsmodus aktiv?
-extern RGB_t led_state[12];                // LED-Zustände (12 LEDs)
-extern uint32_t timer_tick;                // Zeitbasis für Effekte, Logik, Sound
+extern RGB_t led_state[12];                // LED-Zustände (12 RGB-LEDs)
+extern uint32_t timer_tick;                // Zeitbasis für Effekte, Logik, Sound (ms)
 extern bool output_state[3];               // Zustand der Open-Collector-Ausgänge
 extern bool drv8904_selected;              // SPI: DRV8904 ausgewählt?
 
 // ───────────────────────────────────────────────────────────────
 // Effekt-Schnittstelle (einheitlich für alle Effekte)
 
-void led_effect_<name>_start(effect_params_t *);
+void led_effect_<name>_start(effect_params_t *params);
 void led_effect_<name>_update(uint32_t now);
 void led_effect_<name>_stop(void);
 
@@ -28,40 +29,49 @@ void led_effect_solid_start(effect_params_t *);
 void led_effect_blink_start(effect_params_t *);
 void led_effect_breathe_start(effect_params_t *);
 void led_effect_chase_left_start(effect_params_t *);
-// etc.
+void led_effect_chase_right_start(effect_params_t *);
+void led_effect_flash_alt_start(effect_params_t *);
+void led_effect_config_mode_start(effect_params_t *);
+void led_effect_single_led_start(effect_params_t *);
 
 // ───────────────────────────────────────────────────────────────
 // Soundinterface
 
 void sound_engine_play(uint8_t sound_flag);
 
-// Beispielhafte Sounds:
+// Sound-Defines:
 #define SOUND_BEEP       1
 #define SOUND_DOUBLE     2
 #define SOUND_CONFIG     3
+#define SOUND_CONFIRM    4
 
 // ───────────────────────────────────────────────────────────────
-// Steuerlogik (dispatcherbasiert)
+// Steuerlogik (dispatcher-basiert)
 
 void logic_engine_update(uint32_t now);
 void logic_engine_set_mode(uint8_t mode);
 
+// Beispielhafte Logik-Modi:
+#define LOGIC_MODE_TOGGLE        0
+#define LOGIC_MODE_DOOR_CONTROL  1
+#define LOGIC_MODE_TIMER_SWITCH  2
+#define LOGIC_MODE_CONFIG        3
+
 // ───────────────────────────────────────────────────────────────
-// Designvorgaben:
+// Designvorgaben & Architekturhinweise:
 
 // ✱ Effekte modular halten – je Effekt eigene Datei in /effects/
 // ✱ Keine hardcodierten Farben: effect_params.hue, .brightness verwenden
 // ✱ Konfiguration & LED-Rückmeldung über config_mode
 // ✱ Ton & LED gemeinsam nutzbar bei Ereignissen (z. B. langes Drücken)
+// ✱ Zentrale Parameter in config.h pflegen
+// ✱ USER CODE Bereiche für eigene Anpassungen nutzen
+// ✱ Dokumentation aktuell halten
 
 // ───────────────────────────────────────────────────────────────
-// Ziel beim Einsatz von Copilot:
-// - Neue Effekte generieren lassen
-// - Bestehende Logik erweitern
-// - GPIO/Timer/Interrupt sicher steuern
-// ───────────────────────────────────────────────────────────────
-// ─ Pins & Peripherie
-// PA1: Interrupt vom CY8CMBR3108
+// Hardwarezuordnung (Pins, Peripherie):
+
+// PA1: Interrupt vom CY8CMBR3108 (Touch-Sensor)
 // PA3: Programmiertaster
 // PA4: PWM-Ausgang Piezo (TIM14_CH1)
 // PA7: SK6812 LED-Daten (TIM3_CH2 via DMA1_Channel1)
@@ -71,19 +81,50 @@ void logic_engine_set_mode(uint8_t mode);
 // PB5: SPI1_MOSI – DRV8904
 // PB6: NSLEEP – DRV8904 aktivieren
 // PB7/B8: I2C → CY8CMBR3108
+
 // ───────────────────────────────────────────────────────────────
-// DMA: TIM3_CH2 nutzt DMA1_Channel1 → wird für LED-Daten (SK6812) verwendet
+// Peripherie & System:
+
+// TIM3: LED-Ansteuerung via PWM + DMA (SK6812)
+// TIM14: PWM-Ausgang für Piezo (4kHz)
+// DMA1_Channel1: Überträgt LED-Daten an SK6812
+// EXTI1: Tastereingang über PA1 (Interrupt vom Sensor-IC)
+// CubeMX generiert Systemclock auf 64 MHz
+
 // ───────────────────────────────────────────────────────────────
 // LED-Effekte werden über led_effect_engine.c aufgerufen
 // Jeder Effekt besteht aus: start(), update(now), stop()
 // LEDs über globales Array: RGB_t led_state[12]
 // Farbdaten werden via led_driver.c per DMA an SK6812 gesendet
+
 // ───────────────────────────────────────────────────────────────
-// TIM3: LED-Ansteuerung via PWM + DMA
-// TIM14: PWM-Ausgang für Piezo (konfiguriert als 4kHz)
-// EXTI1: Tastereingang über PA1 (Interrupt vom Sensor-IC)
-// CubeMX generiert Systemclock auf 64 MHz
+// Ziel beim Einsatz von Copilot:
+// - Neue Effekte generieren lassen (eigene Datei, API einhalten)
+// - Bestehende Logik erweitern (z.B. neue Logik-Modi, Event-Handling)
+// - GPIO/Timer/Interrupt sicher steuern (CubeMX-Konfiguration beachten)
+// - Code modular und wartbar halten
+
 // ───────────────────────────────────────────────────────────────
+// Hinweise für Entwickler & Copilot:
+// - Immer die API-Konventionen für Effekte und Logik einhalten
+// - Zentrale Parameter in config.h pflegen
+// - USER CODE Bereiche für eigene Anpassungen nutzen
+// - Dokumentation aktuell halten
+// - Bei Hardwareänderungen CubeMX-Projekt synchronisieren
+
+// ───────────────────────────────────────────────────────────────
+// Entwicklungsstrategie (Empfehlung für Copilot & Entwickler):
+// 1. **Erster Test:** Zuerst nur den einfachsten LED-Effekt (z.B. led_effect_solid) testen.
+//    - Ziel: Sicherstellen, dass DMA, Timer und LED-Treiber korrekt arbeiten.
+//    - Nur diesen Effekt im Mainloop starten und beobachten, ob alle LEDs wie erwartet leuchten.
+//    - Erst wenn das funktioniert, weitere Effekte und Logik ergänzen.
+// 2. Schrittweise Erweiterung:
+//    - Nach erfolgreichem LED-Test weitere Effekte modular ergänzen und testen.
+//    - Danach Sound-Engine und Piezo-Tonausgabe testen.
+//    - Anschließend Logik-Module und Event-Handling einbauen.
+//    - Zuletzt Kommunikation mit SPI (DRV8904) und I2C (Sensorchip) integrieren.
+//
+// Diese Reihenfolge minimiert Fehlerquellen und sorgt für eine stabile Basis.
 
 
 

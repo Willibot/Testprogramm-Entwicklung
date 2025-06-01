@@ -1,3 +1,23 @@
+// -----------------------------------------------------------------------------
+// led_effect_config_mode.c
+// Zweck: Visualisierung des Konfigurationsmodus am LED-Ring.
+// Eine LED läuft im Kreis und blinkt, um den aktiven Konfigurationsschritt anzuzeigen.
+// Farbe und Geschwindigkeit sind über effect_params steuerbar.
+//
+// API:
+//   - led_effect_config_mode_start(): Initialisiert den Effekt (setzt Startposition, Timer-Reset)
+//   - led_effect_config_mode_update(uint32_t tick): Wird zyklisch aufgerufen, steuert das Blinken/Laufen.
+//
+// Hinweise für Entwickler & Copilot:
+//   - Nutzt hsv_to_rgb() für die Farbumrechnung (keine hardcodierten Farben!)
+//   - Geschwindigkeit ist über effect_params.speed steuerbar (höher = schneller)
+//   - led_driver_update() nach jeder Änderung am LED-Buffer aufrufen
+//   - Keine blockierenden Wartezeiten verwenden! Nur Timer-Vergleich (tick)
+//   - State-Variablen sind statisch, damit mehrere Effekte unabhängig laufen können
+//
+// TODO: Optional: Verschiedene Muster für verschiedene Konfigurationsmodi
+// -----------------------------------------------------------------------------
+
 #include "led_effect_config_mode.h"
 #include "led_driver.h"
 #include "config.h"
@@ -34,5 +54,10 @@ void led_effect_config_mode_update(uint32_t tick) {
 
     active_led = (active_led + 1) % 12;
 
-    led_driver_update(led_state);
+    led_driver_update();
 }
+
+// Copilot:
+// - Nutze dieses Muster für weitere Konfigurations- oder Diagnoseeffekte.
+// - Für andere Modi: Passe die Logik für active_led oder das Blinkmuster an.
+// - Keine blockierenden Delays, keine globale Abhängigkeit außer effect_params und timer_tick!

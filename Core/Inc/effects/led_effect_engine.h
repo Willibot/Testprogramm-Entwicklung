@@ -28,10 +28,19 @@ typedef enum {
     LED_EFFECT_COUNT
 } led_effect_id_t;
 
+// Aktuell aktiver Effekt und globale Effekt-Parameter
 extern led_effect_id_t current_effect;
 extern effect_params_t effect_params;
 
+// Setzt den aktuellen Effekt (Initialisierung und Umschaltung)
 void led_effect_engine_set(led_effect_id_t effect);
+
+// Ruft zyklisch das Update des aktiven Effekts auf (z.B. im Mainloop)
 void led_effect_engine_update(void);
+
+// Copilot/Entwickler-Hinweis:
+// - Neue Effekte: Enum und Switch-Case in led_effect_engine.c ergänzen, Header einbinden.
+// - Effekt-Parameter werden zentral über effect_params verwaltet.
+// - Keine blockierenden Delays, nur State-Maschinen/Timer in den Effekten!
 
 #endif // LED_EFFECT_ENGINE_H

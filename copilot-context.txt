@@ -1,31 +1,41 @@
+// ──────────────
+// Projektüberblick & Architektur (für Entwickler & Copilot)
+// ──────────────
+
 Projekt: STM32G031G8 Sensortaster
-- 12 RGB-LEDs (SK6812), gesteuert über DMA+PWM über TIM3_CH2 (PA7)
+- 12 RGB-LEDs (SK6812), gesteuert über DMA+PWM (TIM3_CH2, PA7)
 - Piezo-Buzzer (PA4), 4kHz PWM-Signal via TIM14
 - Logik über CY8CMBR3108 (I2C) → INT an PA1
 - Konfigurationsbutton an PA3
+
+Module:
+- led_effect_*.c/h → Jeder Effekt in separater Datei, einheitliche API (start, update, stop)
+- logic_*.c/h      → Verschiedene Logiken als modular auswählbar
+- sound_*.c/h      → Piezo-Ton pro Ereignis
 
 Globale Variablen:
 - current_effect (uint8_t)
 - effect_params (struct: hue, brightness, speed, duration)
 - button_state, config_mode, output_state[]
 
-Module:
-- led_effect_*.c/h → jeder Effekt in separater Datei
-- logic_*.c/h → verschiedene Logiken als modular auswählbar
-- sound_*.c/h → Piezo-Ton pro Ereignis
+Ziel:  
+LED-Effekte und Sound zur Laufzeit ändern (z.B. nach Tastendruck), Piezo-Sound abspielen und IO schalten.
 
-Ziel: LED-Effekte runtime ändern (z.B. nach Tastendruck), Piezo-Sound abspielen und IO schalten.
+Designvorgaben:
+- Effekte modular halten, keine hardcodierten Farben, Parameter nutzen
+- Konfiguration & LED-Rückmeldung über config_mode
+- Ton & LED gemeinsam nutzbar bei Ereignissen
 
----
+// ──────────────
+// Strategie & Verbesserungsplan (für Entwickler)
+// ──────────────
 
-Strategie & Verbesserungsplan:
-
-1. SK6812-Treiber isoliert testen (DMA/PWM Timing sicherstellen, einfache LED-Tests).
-2. LED-Effekt-Engine kapseln: Effekte als Module mit einheitlicher API (start, update, stop), zentrales Effekt-Management, Beispiel-Effekte.
-3. Sound-Engine modularisieren: analoge API, Beispiel-Soundeffekte.
-4. Synchronisation & Timing: Parallele Ausführung von LED- und Soundeffekten testen, Timer/DMA-Konflikte vermeiden.
-5. Logik-Engine und Event-Handling: Logik kapseln, Effekte triggern, verschiedene Logikpfade testen.
-6. Erweiterbarkeit & Clean Code: Effekt-API dokumentieren, Beispielcode für neue Effekte.
+1. SK6812-Treiber isoliert testen (DMA/PWM-Timing sicherstellen, einfache LED-Tests)
+2. LED-Effekt-Engine kapseln: Effekte als Module mit einheitlicher API (start, update, stop), zentrales Effekt-Management, Beispiel-Effekte
+3. Sound-Engine modularisieren: analoge API, Beispiel-Soundeffekte
+4. Synchronisation & Timing: Parallele Ausführung von LED- und Soundeffekten testen, Timer/DMA-Konflikte vermeiden
+5. Logik-Engine und Event-Handling: Logik kapseln, Effekte triggern, verschiedene Logikpfade testen
+6. Erweiterbarkeit & Clean Code: Effekt-API dokumentieren, Beispielcode für neue Effekte
 
 Empfohlene Reihenfolge:
 1. SK6812-Treiber (kritisch)
@@ -37,3 +47,11 @@ Empfohlene Reihenfolge:
 
 Fazit:  
 Mit dieser Strategie wird die Basis stabil und die Modularität verbessert. Neue Effekte und Funktionen können einfach hinzugefügt werden. Der kritischste Baustein (SK6812-Treiber) steht am Anfang, um spätere Fehler zu vermeiden.
+
+// ──────────────
+// Hinweise für Copilot & Entwickler
+// ──────────────
+// - Immer die API-Konventionen für Effekte und Logik einhalten
+// - Zentrale Parameter in config.h pflegen
+// - USER CODE Bereiche für eigene Anpassungen nutzen
+// - Dokumentation aktuell halten

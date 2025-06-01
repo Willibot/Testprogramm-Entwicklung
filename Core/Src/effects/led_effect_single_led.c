@@ -1,3 +1,22 @@
+// -----------------------------------------------------------------------------
+// led_effect_single_led.c
+// Zweck: Einfacher Effekt, bei dem nur eine einzelne LED (LED 0) blinkt.
+// Farbe und Geschwindigkeit sind über effect_params steuerbar.
+//
+// API:
+//   - led_effect_single_led_start(): Initialisiert den Effekt (setzt Startwerte, Timer-Reset)
+//   - led_effect_single_led_update(uint32_t tick): Wird zyklisch aufgerufen, steuert das Blinken
+//
+// Hinweise für Entwickler & Copilot:
+//   - Nutzt hsv_to_rgb() für die Farbumrechnung (keine hardcodierten Farben!)
+//   - Geschwindigkeit ist über effect_params.speed steuerbar (höher = schneller)
+//   - led_driver_update() nach jeder Änderung am LED-Buffer aufrufen
+//   - Keine blockierenden Wartezeiten verwenden! Nur Timer-Vergleich (tick)
+//   - State-Variablen sind statisch, damit mehrere Effekte unabhängig laufen können
+//
+// TODO: Optional: Andere LED auswählbar machen, Fade-In/Fade-Out statt hartem Blinken
+// -----------------------------------------------------------------------------
+
 #include "led_effect_single_led.h"
 #include "led_driver.h"
 #include "config.h"
@@ -29,5 +48,10 @@ void led_effect_single_led_update(uint32_t tick) {
         }
     }
 
-    led_driver_update(led_state);
+    led_driver_update();
 }
+
+// Copilot:
+// - Nutze dieses Muster für weitere Einzel-LED-Effekte oder Statusanzeigen.
+// - Für andere LEDs: Index dynamisch machen (z.B. über Parameter).
+// - Keine blockierenden Delays, keine globale Abhängigkeit außer effect_params und timer_tick!

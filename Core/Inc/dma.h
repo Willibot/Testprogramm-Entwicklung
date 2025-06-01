@@ -31,7 +31,10 @@ extern "C" {
 /* DMA memory to memory transfer handles -------------------------------------*/
 
 /* USER CODE BEGIN Includes */
-
+// Copilot/Entwickler-Hinweis:
+// - Diese Header-Datei wird von STM32CubeMX generiert und enthält die Prototypen für die DMA-Initialisierung.
+// - Eigene DMA-Callback-Prototypen oder spezielle Handler können in den USER CODE-Bereichen ergänzt werden.
+// - Für LED-Effekte: DMA1_Channel1 wird für die Übertragung der PWM-Daten an den LED-Ring genutzt.
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
@@ -41,7 +44,8 @@ extern "C" {
 void MX_DMA_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+// Eigene DMA-Callback-Prototypen oder spezielle Handler können hier ergänzt werden.
+// Beispiel: void DMA1_Channel1_IRQHandler(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

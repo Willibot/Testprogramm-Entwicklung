@@ -22,6 +22,11 @@
 #include "stm32g0xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+// Copilot/Entwickler-Hinweis:
+// - Diese Datei wird von STM32CubeMX generiert und enthält alle Interrupt-Handler.
+// - Für LED-Effekte: DMA1_Channel1_IRQHandler ist für die LED-Datenübertragung relevant.
+// - Für Sound/Timer: Eigene Timer- oder GPIO-Interrupts können in den USER CODE-Bereichen ergänzt werden.
+// - Eigene Handler (z.B. für Touch-INT, Button, etc.) bitte in den USER CODE-Bereichen ergänzen.
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -155,5 +160,12 @@ void DMA1_Channel1_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+// Beispiel für eigenen Interrupt-Handler:
+// void EXTI0_1_IRQHandler(void) {
+//     if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET) {
+//         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+//         // Touch-Interrupt-Logik hier einfügen
+//     }
+// }
+// Weitere Handler für eigene Peripherie können hier ergänzt werden.
 /* USER CODE END 1 */

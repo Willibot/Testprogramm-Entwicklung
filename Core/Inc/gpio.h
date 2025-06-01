@@ -29,7 +29,10 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+// Copilot/Entwickler-Hinweis:
+// - Diese Header-Datei wird von STM32CubeMX generiert und enthält die Prototypen für die GPIO-Initialisierung.
+// - Eigene GPIO-Callback-Prototypen oder spezielle Handler können in den USER CODE-Bereichen ergänzt werden.
+// - Für neue Hardwarefunktionen: Hier und in CubeMX anpassen!
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
@@ -39,7 +42,8 @@ extern "C" {
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+// Eigene GPIO-Callback-Prototypen oder spezielle Handler können hier ergänzt werden.
+// Beispiel: void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

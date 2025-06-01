@@ -1,6 +1,27 @@
+// -----------------------------------------------------------------------------
+// led_effect_breathe.c
+// Zweck: Implementiert einen "Breathe"-Effekt (sanftes Ein- und Ausblenden) für den LED-Ring.
+// Die LEDs leuchten in der gewünschten Farbe und "atmen" durch zyklisches Helligkeits-Pulsieren.
+// Geschwindigkeit und Farbe sind über effect_params steuerbar.
+//
+// API:
+//   - led_effect_breathe_start(): Initialisiert den Effekt (setzt Startwerte, Timer-Reset)
+//   - led_effect_breathe_update(uint32_t tick): Wird zyklisch aufgerufen, steuert das Pulsieren
+//
+// Hinweise für Entwickler & Copilot:
+//   - Nutzt hsv_to_rgb() für die Farbumrechnung (keine hardcodierten Farben!)
+//   - Geschwindigkeit ist über effect_params.speed steuerbar (höher = schneller)
+//   - led_driver_update() nach jeder Änderung am LED-Buffer aufrufen
+//   - Keine blockierenden Wartezeiten verwenden! Nur Timer-Vergleich (tick)
+//   - State-Variablen sind statisch, damit mehrere Effekte unabhängig laufen können
+//
+// TODO: Optional: S-Kurve für sanftere Übergänge, Parameter für Min/Max-Helligkeit
+// -----------------------------------------------------------------------------
+
 #include "led_effect_breathe.h"
 #include "led_driver.h"
 #include "config.h"
+#include "color_utils.h"
 
 extern effect_params_t effect_params;
 extern RGB_t led_state[12];
@@ -16,7 +37,10 @@ void led_effect_breathe_start(void) {
 }
 
 void led_effect_breathe_update(uint32_t tick) {
-    if (tick - last_update < (50 - effect_params.speed)) return;
+    // Geschwindigkeit: Je höher effect_params.speed, desto schneller das Atmen
+    uint32_t interval = 50 - effect_params.speed; // Wertebereich ggf. anpassen
+
+    if (tick - last_update < interval) return;
     last_update = tick;
 
     // Richtung umkehren bei Max/Min
@@ -31,5 +55,10 @@ void led_effect_breathe_update(uint32_t tick) {
         led_state[i] = color;
     }
 
-    led_driver_update(led_state);
+    led_driver_update();
 }
+
+// Copilot:
+// - Dieser Effekt zeigt, wie man sanfte Animationen mit Timer und State-Variablen realisiert.
+// - Für andere Effekte: Nutze ebenfalls Timer-Vergleiche und effect_params.
+// - Keine blockierenden Delays, keine globale Abhängigkeit außer effect_params und timer_tick!

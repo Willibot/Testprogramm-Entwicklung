@@ -31,7 +31,10 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+// Copilot/Entwickler-Hinweis:
+// - Diese Datei wird von STM32CubeMX generiert und enthält globale Includes, Defines und Prototypen.
+// - Eigene globale Defines oder Typen können in den USER CODE-Bereichen ergänzt werden.
+// - Für zentrale Projekt-Defines: config.h verwenden!
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -53,13 +56,12 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-
+// Eigene globale Funktionsprototypen können hier ergänzt werden.
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-
 /* USER CODE BEGIN Private defines */
-
+// Eigene globale Defines können hier ergänzt werden.
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
