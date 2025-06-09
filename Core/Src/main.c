@@ -59,13 +59,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         sound_engine_play(SOUND_BEEP); // Kurzer Piezo-Beep
     }
 }
-
-// Optional: SysTick-Handler, falls nicht schon vorhanden
-void SysTick_Handler(void)
-{
-    HAL_IncTick();
-    timer_tick++; // <-- timer_tick inkrementieren
-}
 /* USER CODE END 0 */
 
 /**
@@ -111,11 +104,11 @@ int main(void)
   while (1)
   {
         led_effect_engine_update(HAL_GetTick());
-        sound_engine_tick();
+        sound_engine_tick(); // <-- Sound-Engine regelmäßig aufrufen!
 
         HAL_Delay(1);
-    }
-    /* USER CODE END 3 */
+  }
+  /* USER CODE END 3 */
 }
 
 /**

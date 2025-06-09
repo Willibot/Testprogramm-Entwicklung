@@ -65,6 +65,9 @@ extern DMA_HandleTypeDef hdma_tim3_ch2;
 
 /* USER CODE END EV */
 
+// Ergänzung: timer_tick für globale Zeitbasis
+extern uint32_t timer_tick;
+
 /******************************************************************************/
 /*           Cortex-M0+ Processor Interruption and Exception Handlers          */
 /******************************************************************************/
@@ -133,6 +136,7 @@ void SysTick_Handler(void)
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
+  timer_tick++; // Ergänzung: eigene Zeitbasis inkrementieren
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
