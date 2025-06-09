@@ -32,6 +32,9 @@
 // KORREKTUR: static entfernen, damit die Definition zur extern-Deklaration im Header passt
 led_effect_id_t current_effect = LED_EFFECT_NONE;
 
+// KORREKTUR: Globale Definition von effect_params_t effect_params hinzufügen
+effect_params_t effect_params;
+
 void led_effect_engine_init(void) {
     current_effect = LED_EFFECT_NONE;
 }
