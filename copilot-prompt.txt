@@ -79,7 +79,8 @@ void logic_engine_set_mode(uint8_t mode);
 // PB3: SPI1_SCK – DRV8904
 // PB4: SPI1_MISO – DRV8904
 // PB5: SPI1_MOSI – DRV8904
-// PB6: NSLEEP – DRV8904 aktivieren
+// PB6: NSLEEP – DRV8904 aktivieren  
+  **Muss als GPIO Output, Push-Pull, ohne Pull konfiguriert werden!**
 // PB7/B8: I2C → CY8CMBR3108
 
 // ───────────────────────────────────────────────────────────────

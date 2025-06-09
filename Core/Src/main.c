@@ -16,16 +16,23 @@
 /* USER CODE BEGIN Includes */
 #include "config.h"
 #include "led_effect_engine.h"   // Effekt-Engine für LED-Effekte
-//#include "sound_engine.h"      // Noch nicht benötigt für ersten Test
+#include "sound_engine.h"      // Noch nicht benötigt für ersten Test
 //#include "logic_engine.h"      // Noch nicht benötigt für ersten Test
-//#include "piezo_driver.h"      // Noch nicht benötigt für ersten Test
+#include "piezo_driver.h"      // Noch nicht benötigt für ersten Test
 /* USER CODE END Includes */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 
 /* USER CODE BEGIN 0 */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    // PA1 = GPIO_PIN_1 = EXTI1: Interrupt vom CY8CMBR3108 (Touch-Sensor)
+    if(GPIO_Pin == GPIO_PIN_1)
+    {
+        sound_engine_play(SOUND_BEEP); // Kurzer Piezo-Beep
+    }
+}
 /* USER CODE END 0 */
 
 /**
