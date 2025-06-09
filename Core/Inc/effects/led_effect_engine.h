@@ -36,7 +36,7 @@ extern effect_params_t effect_params;
 void led_effect_engine_set(led_effect_id_t effect);
 
 // Ruft zyklisch das Update des aktiven Effekts auf (z.B. im Mainloop)
-void led_effect_engine_update(void);
+void led_effect_engine_update(uint32_t tick);
 
 void led_effect_start(uint8_t effect_id);
 void led_effect_stop(void);

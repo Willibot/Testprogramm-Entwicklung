@@ -29,45 +29,41 @@
 #include "led_effect_config_mode.h"
 #include "led_effect_single_led.h"
 
-static led_effect_t current_effect = LED_EFFECT_NONE;
-static led_effect_params_t current_params;
+static led_effect_id_t current_effect = LED_EFFECT_NONE;
 
 void led_effect_engine_init(void) {
     current_effect = LED_EFFECT_NONE;
 }
 
-void led_effect_engine_set(led_effect_t effect, led_effect_params_t *params) {
+void led_effect_engine_set(led_effect_id_t effect) {
     current_effect = effect;
-    if (params) {
-        current_params = *params;
-    }
 }
 
-void led_effect_engine_update(void) {
+void led_effect_engine_update(uint32_t tick) {
     switch (current_effect) {
         case LED_EFFECT_SOLID:
-            led_effect_solid_update(&current_params);
+            led_effect_solid_update(tick);
             break;
         case LED_EFFECT_BLINK:
-            led_effect_blink_update(&current_params);
+            led_effect_blink_update(tick);
             break;
         case LED_EFFECT_BREATHE:
-            led_effect_breathe_update(&current_params);
+            led_effect_breathe_update(tick);
             break;
         case LED_EFFECT_FLASH_ALT:
-            led_effect_flash_alt_update(&current_params);
+            led_effect_flash_alt_update(tick);
             break;
         case LED_EFFECT_CHASE_LEFT:
-            led_effect_chase_left_update(&current_params);
+            led_effect_chase_left_update(tick);
             break;
         case LED_EFFECT_CHASE_RIGHT:
-            led_effect_chase_right_update(&current_params);
+            led_effect_chase_right_update(tick);
             break;
         case LED_EFFECT_CONFIG_MODE:
-            led_effect_config_mode_update(&current_params);
+            led_effect_config_mode_update(tick);
             break;
         case LED_EFFECT_SINGLE_LED:
-            led_effect_single_led_update(&current_params);
+            led_effect_single_led_update(tick);
             break;
         default:
             break;
