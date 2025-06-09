@@ -1,7 +1,7 @@
 #include "logic_engine.h"
 #include "logic_toggle.h"
 #include "logic_door_control.h"
-#include "logic_timer_switch.h"
+#include "logic_timer_switch.h" // Enthält logic_timer_switch_handle
 #include "logic_config.h"
 
 extern logic_mode_t current_logic_mode;

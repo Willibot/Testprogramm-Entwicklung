@@ -25,6 +25,8 @@
 #include "main.h" // für timer_tick
 #include "led_effect_engine.h"
 
+extern uint32_t timer_tick;
+
 static bool state = false;
 static uint32_t last_toggle = 0;
 
@@ -43,7 +45,8 @@ void led_effect_blink_update(uint32_t tick) {
         state = !state;
 
         if (state) {
-            RGB_t color = hsv2rgb(effect_params.hue, 255, effect_params.brightness);
+            // KORREKTUR: Funktionsname hsv2rgb → hsv_to_rgb
+            RGB_t color = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
             for (int i = 0; i < LED_COUNT; i++) {
                 led_state[i] = color;
             }
