@@ -38,9 +38,14 @@ void led_effect_engine_set(led_effect_id_t effect);
 // Ruft zyklisch das Update des aktiven Effekts auf (z.B. im Mainloop)
 void led_effect_engine_update(void);
 
+void led_effect_start(uint8_t effect_id);
+void led_effect_stop(void);
+
 // Copilot/Entwickler-Hinweis:
 // - Neue Effekte: Enum und Switch-Case in led_effect_engine.c ergänzen, Header einbinden.
 // - Effekt-Parameter werden zentral über effect_params verwaltet.
 // - Keine blockierenden Delays, nur State-Maschinen/Timer in den Effekten!
+
+#define EFFECT_CONFIG_MODE LED_EFFECT_CONFIG_MODE
 
 #endif // LED_EFFECT_ENGINE_H

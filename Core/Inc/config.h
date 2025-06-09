@@ -1,6 +1,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <stdbool.h>
+extern bool output_state[3];
+
+#define BUTTON_EVENT_SHORT 1
+
 // === Systemkonfiguration ===
 #define NUM_LEDS             12
 #define NUM_OUTPUTS          3
@@ -52,5 +57,7 @@ typedef struct {
 // - Diese Datei enthält zentrale Projektparameter und Schalter für alle Module.
 // - Für neue Features: Hier zentral konfigurieren und in den Modulen verwenden.
 // - Keine Magic Numbers im Code – immer Defines aus config.h nutzen!
+
+#define EFFECT_CONFIG_MODE LED_EFFECT_CONFIG_MODE
 
 #endif // CONFIG_H
