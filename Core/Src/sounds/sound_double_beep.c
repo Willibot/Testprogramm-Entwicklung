@@ -19,6 +19,7 @@
 
 #include "sound_double_beep.h"
 #include "piezo_driver.h"
+extern uint32_t timer_tick;
 
 static enum {
     DBEEP_IDLE,
@@ -28,34 +29,45 @@ static enum {
 } state = DBEEP_IDLE;
 
 static uint32_t timestamp = 0;
+static uint16_t freq1 = 4000;
+static uint16_t len1 = 80;
+static uint16_t pause = 50;
+static uint16_t freq2 = 4000;
+static uint16_t len2 = 80;
 
 void sound_double_beep_start(uint16_t freq, uint16_t len_ms, uint16_t pause_ms) {
-    piezo_on(freq);
+    freq1 = freq;
+    len1 = len_ms;
+    pause = pause_ms;
+    freq2 = freq;   // Optional: zweiten Ton parametrierbar machen
+    len2 = len_ms;  // Optional: zweite Länge parametrierbar machen
+
+    piezo_beep(freq1, len1);
     state = DBEEP_FIRST_BEEP;
-    timestamp = timer_tick + len_ms;
+    timestamp = timer_tick + len1;
 }
 
 void sound_double_beep_update(void) {
     switch (state) {
         case DBEEP_FIRST_BEEP:
             if (timer_tick >= timestamp) {
-                piezo_off();
+                piezo_stop();
                 state = DBEEP_GAP;
-                timestamp = timer_tick + 50;  // Kurze Pause (optional: pause_ms)
+                timestamp = timer_tick + pause;
             }
             break;
 
         case DBEEP_GAP:
             if (timer_tick >= timestamp) {
-                piezo_on(4000); // zweite Beep-Frequenz (z.B. fix oder parametrierbar)
+                piezo_beep(freq2, len2);
                 state = DBEEP_SECOND_BEEP;
-                timestamp = timer_tick + 80;
+                timestamp = timer_tick + len2;
             }
             break;
 
         case DBEEP_SECOND_BEEP:
             if (timer_tick >= timestamp) {
-                piezo_off();
+                piezo_stop();
                 state = DBEEP_IDLE;
             }
             break;

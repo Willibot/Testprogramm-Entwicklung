@@ -18,6 +18,7 @@
 
 #include "sound_config_mode.h"
 #include "piezo_driver.h"
+extern uint32_t timer_tick;
 
 static enum {
     CONFIG_IDLE,
@@ -26,34 +27,34 @@ static enum {
     CONFIG_BEEP2
 } config_state = CONFIG_IDLE;
 
-static uint32_t config_timer = 0;
+static uint32_t timestamp = 0;
 
 void sound_config_mode_start(void) {
     config_state = CONFIG_BEEP1;
-    config_timer = 0;
-    piezo_start(4000);  // Hz
+    piezo_beep(4000, 100); // 100 ms, 4 kHz
+    timestamp = timer_tick + 100;
 }
 
 void sound_config_mode_update(void) {
     switch (config_state) {
         case CONFIG_BEEP1:
-            if (++config_timer >= 100) {  // 100 ms
+            if (timer_tick >= timestamp) {
                 piezo_stop();
-                config_timer = 0;
                 config_state = CONFIG_PAUSE;
+                timestamp = timer_tick + 50; // 50 ms Pause
             }
             break;
 
         case CONFIG_PAUSE:
-            if (++config_timer >= 50) {  // 50 ms Pause
-                piezo_start(6000);       // zweiter Ton höher
-                config_timer = 0;
+            if (timer_tick >= timestamp) {
+                piezo_beep(6000, 150); // 150 ms, 6 kHz
                 config_state = CONFIG_BEEP2;
+                timestamp = timer_tick + 150;
             }
             break;
 
         case CONFIG_BEEP2:
-            if (++config_timer >= 150) { // 150 ms
+            if (timer_tick >= timestamp) {
                 piezo_stop();
                 config_state = CONFIG_IDLE;
             }
