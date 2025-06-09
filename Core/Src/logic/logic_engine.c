@@ -5,6 +5,7 @@
 #include "logic_config.h"
 
 extern logic_mode_t current_logic_mode;
+extern uint32_t timer_tick;
 
 void logic_engine_init(void) {
     // Init all logic modules
@@ -23,10 +24,10 @@ void logic_engine_update(void) {
             logic_door_control_update();
             break;
         case LOGIC_MODE_TIMER_SWITCH:
-            logic_timer_switch_update();
+            logic_timer_switch_update(timer_tick);
             break;
         case LOGIC_MODE_CONFIG:
-            logic_config_update();
+            logic_config_update(timer_tick);
             break;
     }
 }

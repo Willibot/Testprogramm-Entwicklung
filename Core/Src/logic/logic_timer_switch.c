@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "logic_timer_switch.h"
 #include "config.h"
 

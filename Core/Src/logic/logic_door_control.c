@@ -1,5 +1,6 @@
 #include "logic_door_control.h"
 #include "config.h"
+#include <stdbool.h>   // <-- hinzufügen
 
 extern bool output_state[3];
 static uint8_t door_state = 0; // 0 = geschlossen, 1 = halb, 2 = offen

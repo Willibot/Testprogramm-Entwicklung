@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "logic_config.h"
 #include "config.h"
 #include "led_effect_engine.h"

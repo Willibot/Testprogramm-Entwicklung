@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "logic_toggle.h"
 #include "config.h"
 

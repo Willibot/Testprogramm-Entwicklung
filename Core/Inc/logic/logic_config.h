@@ -13,6 +13,9 @@ void logic_config_update(uint32_t tick_ms);
 // Verarbeitet ein Button-Event (event_type = z.B. PRESS, RELEASE, LONGPRESS)
 void logic_config_button_event(uint8_t event_type);
 
+// Verarbeitet ein Event im Konfigurationsmodus (event_type = z.B. TIMEOUT, ERROR, etc.)
+void logic_config_handle(uint8_t event_type);
+
 // Copilot/Entwickler-Hinweis:
 // - Dieses Modul kapselt die gesamte Logik für den Konfigurationsmodus.
 // - Für neue Konfigurationsschritte: Logik in .c-Datei erweitern, ggf. eigene States/Parameter ergänzen.
