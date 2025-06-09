@@ -29,7 +29,8 @@
 #include "led_effect_config_mode.h"
 #include "led_effect_single_led.h"
 
-static led_effect_id_t current_effect = LED_EFFECT_NONE;
+// KORREKTUR: static entfernen, damit die Definition zur extern-Deklaration im Header passt
+led_effect_id_t current_effect = LED_EFFECT_NONE;
 
 void led_effect_engine_init(void) {
     current_effect = LED_EFFECT_NONE;
