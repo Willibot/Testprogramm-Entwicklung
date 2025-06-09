@@ -104,6 +104,7 @@ int main(void)
   {
     // Effekt-Update aufrufen (führt den aktuellen Effekt aus)
     led_effect_engine_update(HAL_GetTick()); // tick-Parameter übergeben
+    sound_engine_tick(); // <-- Sound-Engine regelmäßig aufrufen!
 
     HAL_Delay(1);
 

@@ -32,6 +32,10 @@ void sound_engine_set(sound_id_t sound_id, uint8_t repeat) {
     sound_repeat_counter = repeat;
 }
 
+void sound_engine_play(sound_id_t sound) {
+    sound_engine_set(sound, 1);
+}
+
 void sound_engine_tick(void) {
     if (current_sound == SOUND_NONE) return;
 
