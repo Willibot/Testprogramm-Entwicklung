@@ -27,6 +27,7 @@
 #include "led_driver.h"
 #include "tim.h"         // CubeMX generierte Timer-Konfiguration
 #include "dma.h"         // DMA Handle
+#include "color_utils.h"
 #include <string.h>
 
 #define WS2812_BITS_PER_LED 24

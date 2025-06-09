@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "config.h"     // Für LED_COUNT und RGB_t
+#include "color_utils.h"
 
 // Initialisiert den LED-Treiber und startet die PWM-Ausgabe
 void led_driver_init(void);
