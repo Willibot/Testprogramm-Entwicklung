@@ -60,6 +60,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+
 /* USER CODE BEGIN Private defines */
 // Eigene globale Defines können hier ergänzt werden.
 /* USER CODE END Private defines */

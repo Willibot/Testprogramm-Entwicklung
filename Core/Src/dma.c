@@ -52,7 +52,6 @@ void MX_DMA_Init(void)
   HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 
-  // USER CODE: Weitere DMA-Kanäle oder spezielle Einstellungen hier ergänzen, falls benötigt.
 }
 
 /* USER CODE BEGIN 2 */
