@@ -40,6 +40,7 @@
 
 /* USER CODE BEGIN PV */
 bool output_state[3] = {0};
+uint32_t timer_tick = 0; // <-- Globale Definition für timer_tick
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -57,6 +58,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     {
         sound_engine_play(SOUND_BEEP); // Kurzer Piezo-Beep
     }
+}
+
+// Optional: SysTick-Handler, falls nicht schon vorhanden
+void SysTick_Handler(void)
+{
+    HAL_IncTick();
+    timer_tick++; // <-- timer_tick inkrementieren
 }
 /* USER CODE END 0 */
 
@@ -102,18 +110,12 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // Effekt-Update aufrufen (führt den aktuellen Effekt aus)
-    led_effect_engine_update(HAL_GetTick()); // tick-Parameter übergeben
-    sound_engine_tick(); // <-- Sound-Engine regelmäßig aufrufen!
+        led_effect_engine_update(HAL_GetTick());
+        sound_engine_tick();
 
-    HAL_Delay(1);
-
-    // Noch keine Logik, Sound oder weitere Features – Fokus: LED-Test!
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-  /* USER CODE END 3 */
+        HAL_Delay(1);
+    }
+    /* USER CODE END 3 */
 }
 
 /**
