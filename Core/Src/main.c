@@ -15,10 +15,10 @@
 
 /* USER CODE BEGIN Includes */
 #include "config.h"
-#include "led_effect_engine.h"   // Effekt-Engine für LED-Effekte
-#include "sound_engine.h"      // Noch nicht benötigt für ersten Test
-//#include "logic_engine.h"      // Noch nicht benötigt für ersten Test
-#include "piezo_driver.h"      // Noch nicht benötigt für ersten Test
+#include "effects/led_effect_engine.h"
+#include "sounds/sound_engine.h"
+//#include "logic/logic_engine.h"
+#include "sounds/piezo_driver.h"
 /* USER CODE END Includes */
 
 /* Private function prototypes -----------------------------------------------*/
