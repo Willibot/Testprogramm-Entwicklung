@@ -32,6 +32,9 @@ typedef enum {
 extern led_effect_id_t current_effect;
 extern effect_params_t effect_params;
 
+// Initialisiert die Effekt-Engine (Status zurücksetzen)
+void led_effect_engine_init(void);
+
 // Setzt den aktuellen Effekt (Initialisierung und Umschaltung)
 void led_effect_engine_set(led_effect_id_t effect);
 
