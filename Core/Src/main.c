@@ -103,9 +103,8 @@ int main(void)
   while (1)
   {
     // Effekt-Update aufrufen (führt den aktuellen Effekt aus)
-    led_effect_engine_update(HAL_GetTick()); // <-- KORREKTUR: tick-Parameter übergeben
+    led_effect_engine_update(HAL_GetTick()); // tick-Parameter übergeben
 
-    // Optional: kleine Pause, damit die CPU nicht 100% läuft
     HAL_Delay(1);
 
     // Noch keine Logik, Sound oder weitere Features – Fokus: LED-Test!
