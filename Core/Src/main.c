@@ -59,6 +59,12 @@ int main(void)
   MX_DMA_Init();             // DMA initialisieren (wichtig für SK6812)
   MX_TIM3_Init();            // Timer 3 für PWM (SK6812) initialisieren
 
+  // --- Flanke für EXTI1 (PA1) auf "Falling Edge" setzen ---
+  HAL_NVIC_DisableIRQ(EXTI0_1_IRQn); // Sicherheitshalber Interrupt kurz deaktivieren
+  EXTI->FTSR1 |= EXTI_FTSR1_FT1;     // Falling Trigger für Line 1 aktivieren
+  EXTI->RTSR1 &= ~EXTI_RTSR1_RT1;    // Rising Trigger für Line 1 deaktivieren
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);  // Interrupt wieder aktivieren
+
   /* USER CODE BEGIN 2 */
   led_effect_engine_init();  // Initialisiert die Effekt-Engine und ggf. den LED-Treiber
 
