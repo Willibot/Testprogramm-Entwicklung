@@ -103,7 +103,6 @@ void MX_TIM14_Init(void)
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
 
-  // 64 MHz / (1599+1) = 40 kHz; 40 kHz / (9+1) = 4 kHz
   htim14.Init.Prescaler = 1599;
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim14.Init.Period = 9;
@@ -113,7 +112,7 @@ void MX_TIM14_Init(void)
   if (HAL_TIM_Base_Init(&htim14) != HAL_OK) { Error_Handler(); }
   if (HAL_TIM_PWM_Init(&htim14) != HAL_OK) { Error_Handler(); }
 
-  TIM_OC_InitTypeDef sConfigOC = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0}; // <-- Nur einmal deklarieren!
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
   sConfigOC.Pulse = 5; // 50% Dutycycle (bei Period 9)
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
