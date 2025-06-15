@@ -95,9 +95,7 @@ void MX_TIM14_Init(void)
   /* USER CODE BEGIN TIM14_Init 0 */
 
   /* USER CODE END TIM14_Init 0 */
-
-  TIM_OC_InitTypeDef sConfigOC = {0};
-
+ 
   /* USER CODE BEGIN TIM14_Init 1 */
 
   /* USER CODE END TIM14_Init 1 */
