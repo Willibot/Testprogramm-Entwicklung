@@ -40,6 +40,7 @@ extern "C" {
 /* USER CODE END Private defines */
 
 void MX_GPIO_Init(void);
+void MX_NVIC_Init(void);   // <--- Diese Zeile ergänzen!
 
 /* USER CODE BEGIN Prototypes */
 // Eigene GPIO-Callback-Prototypen oder spezielle Handler können hier ergänzt werden.
