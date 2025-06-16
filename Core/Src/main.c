@@ -51,16 +51,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    if(GPIO_Pin == GPIO_PIN_1)
-    {
-        HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
-        __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 5); // 50% Dutycycle
-        HAL_Delay(200); // Piept für 200 ms
-        HAL_TIM_PWM_Stop(&htim14, TIM_CHANNEL_1);
-    }
-}
+
 /* USER CODE END 0 */
 
 /**
