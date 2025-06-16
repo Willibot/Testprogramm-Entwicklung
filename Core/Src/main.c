@@ -90,9 +90,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_TIM3_Init();
-  MX_TIM14_Init();
+  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
   led_effect_engine_init();  // Initialisiert die Effekt-Engine und ggf. den LED-Treiber
   led_effect_engine_set(LED_EFFECT_SOLID);

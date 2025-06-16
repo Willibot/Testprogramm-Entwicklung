@@ -141,3 +141,41 @@ void MX_GPIO_Init(void)
 // Eigene GPIO-Initialisierungen oder spezielle Pin-Setups können hier ergänzt werden.
 // Beispiel: HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET); // DRV8904 aktivieren
 /* USER CODE END 2 */
+
+void EXTI0_1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI0_1_IRQn 0 */
+
+  /* USER CODE END EXTI0_1_IRQn 0 */
+
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+
+  /* USER CODE BEGIN EXTI0_1_IRQn 1 */
+
+  /* USER CODE END EXTI0_1_IRQn 1 */
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  /* USER CODE BEGIN HAL_GPIO_EXTI_Callback 0 */
+
+  /* USER CODE END HAL_GPIO_EXTI_Callback 0 */
+
+  if (GPIO_Pin == GPIO_PIN_1)
+  {
+    /* USER CODE BEGIN EXTI1_IRQn 1 */
+
+    /* USER CODE END EXTI1_IRQn 1 */
+  }
+
+  /* USER CODE BEGIN HAL_GPIO_EXTI_Callback 1 */
+
+  /* USER CODE END HAL_GPIO_EXTI_Callback 1 */
+}
+
+void MX_NVIC_Init(void)
+{
+  /* Configure EXTI line 0-1 interrupt */
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+}
