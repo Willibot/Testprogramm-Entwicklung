@@ -1,0 +1,3 @@
+../Core/Src/effects/led_effect_engine.c:38:6:led_effect_engine_init	1
+../Core/Src/effects/led_effect_engine.c:42:6:led_effect_engine_set	1
+../Core/Src/effects/led_effect_engine.c:46:6:led_effect_engine_update	10

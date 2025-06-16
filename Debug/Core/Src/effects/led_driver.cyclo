@@ -1,0 +1,7 @@
+../Core/Src/effects/led_driver.c:50:13:encode_leds_to_pwm	6
+../Core/Src/effects/led_driver.c:72:6:led_driver_init	1
+../Core/Src/effects/led_driver.c:83:6:led_driver_update	1
+../Core/Src/effects/led_driver.c:91:6:led_driver_set_led	2
+../Core/Src/effects/led_driver.c:101:6:led_driver_set_all	2
+../Core/Src/effects/led_driver.c:111:6:led_driver_clear	1
+../Core/Src/effects/led_driver.c:120:6:led_driver_refresh	1

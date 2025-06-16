@@ -1,0 +1,3 @@
+../Core/Src/logic/logic_engine.c:10:6:logic_engine_init	1
+../Core/Src/logic/logic_engine.c:18:6:logic_engine_update	7
+../Core/Src/logic/logic_engine.c:35:6:logic_engine_handle_button_event	7

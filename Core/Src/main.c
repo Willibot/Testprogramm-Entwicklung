@@ -108,9 +108,9 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-        led_effect_engine_update(HAL_GetTick());
-        sound_engine_tick(); // Sound-Engine regelmäßig aufrufen!
-        HAL_Delay(1);
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }

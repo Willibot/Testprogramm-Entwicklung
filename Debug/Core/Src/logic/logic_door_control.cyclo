@@ -1,0 +1,3 @@
+../Core/Src/logic/logic_door_control.c:8:6:logic_door_control_init	1
+../Core/Src/logic/logic_door_control.c:15:6:logic_door_control_update	1
+../Core/Src/logic/logic_door_control.c:19:6:logic_door_control_handle	2

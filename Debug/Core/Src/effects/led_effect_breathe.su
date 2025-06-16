@@ -1,0 +1,2 @@
+../Core/Src/effects/led_effect_breathe.c:33:6:led_effect_breathe_start	8	static
+../Core/Src/effects/led_effect_breathe.c:39:6:led_effect_breathe_update	32	static

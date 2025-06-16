@@ -1,0 +1,4 @@
+../Core/Src/sounds/piezo_driver.c:28:6:piezo_init	8	static
+../Core/Src/sounds/piezo_driver.c:33:6:piezo_beep	32	static
+../Core/Src/sounds/piezo_driver.c:45:6:piezo_stop	8	static
+../Core/Src/sounds/piezo_driver.c:49:6:piezo_update	8	static

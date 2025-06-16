@@ -1,0 +1,3 @@
+../Core/Src/sounds/sound_double_beep.c:38:6:sound_double_beep_start	24	static
+../Core/Src/sounds/sound_double_beep.c:50:6:sound_double_beep_update	8	static
+../Core/Src/sounds/sound_double_beep.c:80:6:sound_double_beep_is_active	8	static

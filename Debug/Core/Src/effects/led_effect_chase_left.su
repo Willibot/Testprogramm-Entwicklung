@@ -1,0 +1,2 @@
+../Core/Src/effects/led_effect_chase_left.c:31:6:led_effect_chase_left_start	8	static
+../Core/Src/effects/led_effect_chase_left.c:36:6:led_effect_chase_left_update	40	static

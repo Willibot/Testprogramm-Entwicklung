@@ -1,0 +1,3 @@
+../Core/Src/sounds/sound_beep.c:27:6:sound_beep_start	16	static
+../Core/Src/sounds/sound_beep.c:33:6:sound_beep_update	8	static
+../Core/Src/sounds/sound_beep.c:40:6:sound_beep_is_active	8	static
