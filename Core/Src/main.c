@@ -98,7 +98,7 @@ int main(void)
   led_effect_engine_set(LED_EFFECT_SOLID);
 
   HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
-  __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 50); // 50% Dutycycle
+  __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 5); // 50% Dutycycle bei Period 9
   HAL_Delay(1000);
   /* USER CODE END 2 */
 
