@@ -11,10 +11,12 @@
 #include "dma.h"
 #include "tim.h"
 #include "gpio.h"
-
-/* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "config.h"
+#include "effects/led_effect_engine.h"
+#include "sounds/sound_engine.h"
+#include "sounds/sound_beep.h"
+#include "sounds/piezo_driver.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -33,10 +35,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE BEGIN PV */
 bool output_state[3] = {0};
-uint32_t timer_tick = 0; // <-- Globale Definition für timer_tick
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -48,6 +48,17 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// Interrupt-Callback für PA1 (Touch-INT)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == GPIO_PIN_1)
+    {
+        sound_engine_play(SOUND_BEEP);
+        // Optional: Debug-LED toggeln
+        // HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
+    }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -56,7 +67,6 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
   // Ziel: Nur den ersten LED-Effekt (solid) testen, um DMA, Timer und LED-Treiber zu prüfen.
   /* USER CODE END 1 */
@@ -81,17 +91,29 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
+  sound_engine_init();
+  led_effect_engine_init();
+  led_effect_engine_set(LED_EFFECT_SOLID);
 
+  // Test: Piezo über Sound-Engine beim Start
+  sound_engine_play(SOUND_BEEP);
+
+  // Interrupt für EXTI0_1 (PA1) aktivieren (falls nicht automatisch durch CubeMX)
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+    sound_engine_tick();
+    sound_beep_update();
+    led_effect_engine_update(HAL_GetTick());
+    // ... weitere zyklische Funktionen ...
   }
+  /* USER CODE END WHILE */
+  /* USER CODE BEGIN 3 */
   /* USER CODE END 3 */
 }
 
@@ -152,7 +174,6 @@ void SystemClock_Config(void)
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-  /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
   while (1)
   {
@@ -171,8 +192,6 @@ void Error_Handler(void)
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
