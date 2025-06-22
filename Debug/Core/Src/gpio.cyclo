@@ -1,4 +1,1 @@
-../Core/Src/gpio.c:56:6:MX_GPIO_Init	1
-../Core/Src/gpio.c:147:6:EXTI0_1_IRQHandler	1
-../Core/Src/gpio.c:160:6:HAL_GPIO_EXTI_Callback	2
-../Core/Src/gpio.c:178:6:MX_NVIC_Init	1
+../Core/Src/gpio.c:54:6:MX_GPIO_Init	1

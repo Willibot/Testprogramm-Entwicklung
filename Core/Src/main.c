@@ -11,11 +11,10 @@
 #include "dma.h"
 #include "tim.h"
 #include "gpio.h"
-#include "config.h"
-#include "effects/led_effect_engine.h"
-#include "sounds/sound_engine.h"
-#include "sounds/sound_beep.h"    // <--- Diese Zeile ergänzen!
-#include "sounds/piezo_driver.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,15 +50,6 @@ void SystemClock_Config(void);
 
 /* USER CODE END 0 */
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-    if (GPIO_Pin == GPIO_PIN_1)
-    {
-        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8); // PA8 toggeln als Test
-        sound_engine_play(SOUND_BEEP);
-    }
-}
-
 /**
   * @brief  The application entry point.
   * @retval int
@@ -87,29 +77,20 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-
-  // Interrupt für EXTI0_1 (PA1) aktivieren
-  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-
   MX_DMA_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();
+  /* USER CODE BEGIN 2 */
 
-  sound_engine_init(); // <-- Initialisiert Piezo/Timer
-
-  led_effect_engine_init();
-  led_effect_engine_set(LED_EFFECT_SOLID);
-
-  // Test: Piezo über Sound-Engine
-  sound_engine_play(SOUND_BEEP);
+  /* USER CODE END 2 */
 
   /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   while (1)
   {
-      sound_engine_tick();
-      sound_beep_update();           // <-- Diese Zeile ergänzen!
-      led_effect_engine_update(HAL_GetTick());
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }

@@ -43,7 +43,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_single_led.h \
  ../Core/Inc/dma.h ../Core/Inc/main.h ../Core/Inc/tim.h \
  ../Core/Inc/gpio.h ../Core/Inc/effects/led_effect_engine.h \
- ../Core/Inc/sounds/sound_engine.h ../Core/Inc/sounds/piezo_driver.h
+ ../Core/Inc/sounds/sound_engine.h ../Core/Inc/sounds/sound_beep.h \
+ ../Core/Inc/sounds/piezo_driver.h
 ../Core/Inc/main.h:
 ../Drivers/STM32G0xx_HAL_Driver/Inc/stm32g0xx_hal.h:
 ../Core/Inc/stm32g0xx_hal_conf.h:
@@ -93,4 +94,5 @@ E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Co
 ../Core/Inc/gpio.h:
 ../Core/Inc/effects/led_effect_engine.h:
 ../Core/Inc/sounds/sound_engine.h:
+../Core/Inc/sounds/sound_beep.h:
 ../Core/Inc/sounds/piezo_driver.h:
