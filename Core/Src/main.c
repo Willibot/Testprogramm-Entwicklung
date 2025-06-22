@@ -97,9 +97,8 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+    sound_engine_tick();
+    led_effect_engine_update(HAL_GetTick());
   }
   /* USER CODE END 3 */
 }
