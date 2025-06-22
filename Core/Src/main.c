@@ -83,13 +83,11 @@ int main(void)
   MX_GPIO_Init();
   MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
-  led_effect_engine_init();  // Initialisiert die Effekt-Engine und ggf. den LED-Treiber
+  led_effect_engine_init();
   led_effect_engine_set(LED_EFFECT_SOLID);
 
-  // Testloop ENTFERNT!
-  // HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
-  // __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 5);
-  // HAL_Delay(1000);
+  // Test: Piezo direkt ansteuern
+  sound_engine_play(SOUND_BEEP);
 
   /* USER CODE END 2 */
 
