@@ -91,6 +91,12 @@ int main(void)
   // Test: Piezo direkt ansteuern
   sound_engine_play(SOUND_BEEP);
 
+  // Nach MX_TIM14_Init();
+  HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
+  __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 5); // 50% Dutycycle (bei Period=9)
+  HAL_Delay(5000); // 5 Sekunden Signal an PA4
+  HAL_TIM_PWM_Stop(&htim14, TIM_CHANNEL_1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
