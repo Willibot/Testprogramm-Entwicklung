@@ -42,20 +42,23 @@ void sound_engine_tick(void) {
 
     switch (current_sound) {
         case SOUND_BEEP:
-            sound_beep_start(80, 4000); // Beispiel: 80 ms, 4 kHz
+            // Nur starten, wenn kein Beep aktiv ist!
+            if (!sound_beep_is_active()) {
+                sound_beep_start(80, 4000); // Beispiel: 80 ms, 4 kHz
+                sound_repeat_counter--;
+                if (sound_repeat_counter == 0) {
+                    current_sound = SOUND_NONE;
+                }
+            }
             break;
         case SOUND_DOUBLE_BEEP:
-            sound_double_beep_start(4000, 80, 50); // freq, len, pause
+            // Analog: Hier ggf. sound_double_beep_is_active() prüfen!
             break;
         case SOUND_CONFIG_MODE:
-            sound_config_mode_start();
+            // Analog: Hier ggf. sound_config_mode_is_active() prüfen!
             break;
         default:
             break;
-    }
-
-    if (--sound_repeat_counter == 0) {
-        current_sound = SOUND_NONE;
     }
 }
 
