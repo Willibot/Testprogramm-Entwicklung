@@ -165,10 +165,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
   if (GPIO_Pin == GPIO_PIN_1)
   {
-    /* USER CODE BEGIN EXTI1_IRQn 1 */
-    sound_engine_play(SOUND_BEEP);           // Soundmodul: Piezo-Beep abspielen
-    led_effect_engine_set(LED_EFFECT_SOLID); // LED-Modul: Effekt setzen (optional)
-    /* USER CODE END EXTI1_IRQn 1 */
+    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8); // Test-LED oder Oszi an PA8
+    sound_engine_play(SOUND_BEEP);
+    led_effect_engine_set(LED_EFFECT_SOLID);
   }
 
   /* USER CODE BEGIN HAL_GPIO_EXTI_Callback 1 */
