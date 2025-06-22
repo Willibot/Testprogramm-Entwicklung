@@ -20,6 +20,10 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
+#include "sound_engine.h"
+#include "led_effect_engine.h"
+#include "sounds.h"
+#include "effects.h"
 
 /* USER CODE BEGIN 0 */
 // Copilot/Entwickler-Hinweis:
