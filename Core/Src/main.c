@@ -104,6 +104,10 @@ int main(void)
   {
     sound_engine_tick();
     led_effect_engine_update(HAL_GetTick());
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+	  HAL_Delay(500);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+	  HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
