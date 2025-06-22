@@ -53,9 +53,8 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8); // PA8 toggeln als Debug
         sound_engine_play(SOUND_BEEP);
-        // Optional: Debug-LED toggeln
-        // HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8);
     }
 }
 
