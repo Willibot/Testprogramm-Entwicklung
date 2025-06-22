@@ -82,6 +82,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_NVIC_Init();
+  MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
   led_effect_engine_init();
   led_effect_engine_set(LED_EFFECT_SOLID);
