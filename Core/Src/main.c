@@ -11,13 +11,10 @@
 #include "dma.h"
 #include "tim.h"
 #include "gpio.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "config.h"
 #include "effects/led_effect_engine.h"
 #include "sounds/sound_engine.h"
-//#include "logic/logic_engine.h"
+#include "sounds/sound_beep.h"    // <--- Diese Zeile ergänzen!
 #include "sounds/piezo_driver.h"
 /* USER CODE END Includes */
 
