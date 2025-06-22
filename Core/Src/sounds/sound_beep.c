@@ -19,20 +19,20 @@
 
 #include "sound_beep.h"
 #include "piezo_driver.h"
-extern uint32_t timer_tick; // <-- hinzufügen
+#include "stm32g0xx_hal.h" // Für HAL_GetTick()
 
 static bool beep_active = false;
 static uint32_t beep_end_time = 0;
 
 void sound_beep_start(uint16_t duration_ms, uint16_t frequency_hz) {
-    piezo_beep(frequency_hz, duration_ms); // <-- piezo_beep statt piezo_on
-    beep_end_time = timer_tick + duration_ms;
+    piezo_beep(frequency_hz, duration_ms);
+    beep_end_time = HAL_GetTick() + duration_ms;
     beep_active = true;
 }
 
 void sound_beep_update(void) {
-    if (beep_active && timer_tick >= beep_end_time) {
-        piezo_stop(); // <-- piezo_stop statt piezo_off
+    if (beep_active && HAL_GetTick() >= beep_end_time) {
+        piezo_stop();
         beep_active = false;
     }
 }
