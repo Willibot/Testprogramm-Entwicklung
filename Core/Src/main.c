@@ -111,6 +111,7 @@ int main(void)
   while (1)
   {
       sound_engine_tick();
+      sound_beep_update();           // <-- Diese Zeile ergänzen!
       led_effect_engine_update(HAL_GetTick());
   }
   /* USER CODE END 3 */
