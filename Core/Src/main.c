@@ -54,6 +54,15 @@ void SystemClock_Config(void);
 
 /* USER CODE END 0 */
 
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if (GPIO_Pin == GPIO_PIN_1)
+    {
+        // Hier gewünschte Aktion, z.B. Piezo oder LED
+        sound_engine_play(SOUND_BEEP);
+    }
+}
+
 /**
   * @brief  The application entry point.
   * @retval int
@@ -81,6 +90,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+
+  // Interrupt für EXTI0_1 (PA1) aktivieren
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+
   MX_DMA_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();

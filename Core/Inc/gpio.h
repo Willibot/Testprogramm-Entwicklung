@@ -44,6 +44,10 @@ void MX_GPIO_Init(void);
 /* USER CODE BEGIN Prototypes */
 // Eigene GPIO-Callback-Prototypen oder spezielle Handler können hier ergänzt werden.
 // Beispiel: void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
+// Callback-Prototyp für externe Interrupts (z.B. PA1)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
