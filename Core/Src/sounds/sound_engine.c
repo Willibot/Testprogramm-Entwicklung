@@ -22,6 +22,7 @@
 #include "sound_double_beep.h"
 #include "sound_config_mode.h"
 #include "config.h"
+#include "piezo_driver.h"
 
 // Globale Zustände
 static sound_id_t current_sound = SOUND_NONE;
@@ -56,6 +57,10 @@ void sound_engine_tick(void) {
     if (--sound_repeat_counter == 0) {
         current_sound = SOUND_NONE;
     }
+}
+
+void sound_engine_init(void) {
+    piezo_init();
 }
 
 // Hinweis: Die zyklischen Update-Funktionen (sound_beep_update, ...) müssen im Mainloop aufgerufen werden!

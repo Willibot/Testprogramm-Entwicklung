@@ -84,28 +84,20 @@ int main(void)
   MX_DMA_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();
-  /* USER CODE BEGIN 2 */
+
+  sound_engine_init(); // <-- Initialisiert Piezo/Timer
+
   led_effect_engine_init();
   led_effect_engine_set(LED_EFFECT_SOLID);
 
-  // Test: Piezo direkt ansteuern
+  // Test: Piezo über Sound-Engine
   sound_engine_play(SOUND_BEEP);
 
-  // Nach MX_TIM14_Init();
-  HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
-  __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 5); // 50% Dutycycle (bei Period=9)
-  HAL_Delay(5000); // 5 Sekunden Signal an PA4
-  HAL_TIM_PWM_Stop(&htim14, TIM_CHANNEL_1);
-
-  /* USER CODE END 2 */
-
   /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
+      sound_engine_tick();
+      led_effect_engine_update(HAL_GetTick());
   }
   /* USER CODE END 3 */
 }
