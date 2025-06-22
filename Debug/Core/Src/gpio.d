@@ -40,7 +40,8 @@ Core/Src/gpio.o: ../Core/Src/gpio.c ../Core/Inc/gpio.h ../Core/Inc/main.h \
  E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_chase_left.h \
  E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_chase_right.h \
  E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_config_mode.h \
- E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_single_led.h
+ E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_single_led.h \
+ E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/sounds/sound_engine.h
 ../Core/Inc/gpio.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32G0xx_HAL_Driver/Inc/stm32g0xx_hal.h:
@@ -85,3 +86,4 @@ E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Co
 E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_chase_right.h:
 E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_config_mode.h:
 E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/effects/led_effect_single_led.h:
+E:/CAD/NX12/Eigene\ Projekte/Sensortaster/Programme/Testprogramm\ Entwicklung/Core/Inc/sounds/sound_engine.h:

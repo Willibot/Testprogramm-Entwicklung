@@ -81,7 +81,8 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_NVIC_Init();
+  MX_DMA_Init();
+  MX_TIM3_Init();
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
   led_effect_engine_init();
@@ -92,22 +93,13 @@ int main(void)
 
   /* USER CODE END 2 */
 
-  /* Direkt nach MX_TIM14_Init(); */
-  HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
-  __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, 5); // 50% Dutycycle (bei Period=9)
-  HAL_Delay(5000); // 5 Sekunden Signal an PA4
-  HAL_TIM_PWM_Stop(&htim14, TIM_CHANNEL_1);
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    sound_engine_tick();
-    led_effect_engine_update(HAL_GetTick());
-	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-	  HAL_Delay(500);
-	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-	  HAL_Delay(500);
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
