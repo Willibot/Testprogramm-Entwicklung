@@ -102,7 +102,7 @@ int main(void)
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 
   // Manuelles EXTI-Routing für PA1 (EXTI1 auf Port A) – STM32G0-spezifisch!
-  SYSCFG->EXTICR[0] &= ~(0xF << 4); // Bits 7:4 für EXTI1 löschen (EXTI1[3:0])
+  SYSCFG->EXTICR1 &= ~(0xF << 4); // Bits 7:4 für EXTI1 löschen (EXTI1[3:0])
   // 0x0 << 4 ist Port A, also keine weiteren Bits setzen
 
   /* USER CODE END 2 */
