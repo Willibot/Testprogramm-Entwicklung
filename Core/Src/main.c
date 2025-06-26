@@ -100,6 +100,11 @@ int main(void)
   // Interrupt für EXTI0_1 (PA1) aktivieren (falls nicht automatisch durch CubeMX)
   HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+
+  // Manuelles EXTI-Routing für PA1 (EXTI1 auf Port A)
+  SYSCFG->EXTICR[0] &= ~(SYSCFG_EXTICR1_EXTI1); // Clear EXTI1 bits
+  SYSCFG->EXTICR[0] |= (0x0 << SYSCFG_EXTICR1_EXTI1_Pos); // Set EXTI1 to Port A
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
