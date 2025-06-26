@@ -101,9 +101,9 @@ int main(void)
   HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 
-  // Manuelles EXTI-Routing für PA1 (EXTI1 auf Port A)
-  SYSCFG->EXTICR[0] &= ~(SYSCFG_EXTICR1_EXTI1); // Clear EXTI1 bits
-  SYSCFG->EXTICR[0] |= (0x0 << SYSCFG_EXTICR1_EXTI1_Pos); // Set EXTI1 to Port A
+  // Manuelles EXTI-Routing für PA1 (EXTI1 auf Port A) – STM32G0-spezifisch!
+  SYSCFG->EXTICR[0] &= ~(0xF << 4); // Bits 7:4 für EXTI1 löschen (EXTI1[3:0])
+  // 0x0 << 4 ist Port A, also keine weiteren Bits setzen
 
   /* USER CODE END 2 */
 
