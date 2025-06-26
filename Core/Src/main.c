@@ -101,9 +101,16 @@ int main(void)
   HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 
-  // Manuelles EXTI-Routing für PA1 (EXTI1 auf Port A) – STM32G0-spezifisch!
-  SYSCFG->EXTICR &= ~(0xF << 4); // Bits 7:4 für EXTI1 löschen (EXTI1[3:0])
-  // 0x0 << 4 ist Port A, also keine weiteren Bits setzen
+  // Aktiviere SYSCFG-Clock (wichtig für EXTI-Routing!)
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
+  // EXTI1 auf Port A routen (PA1)
+  SYSCFG->EXTICR[0] &= ~(0xF << 4);   // Lösche EXTI1-Routing
+  SYSCFG->EXTICR[0] |=  (0x0 << 4);   // Setze auf Port A (0b0000)
+
+  // EXTI1 aktivieren und auf fallende Flanke setzen
+  EXTI->IMR1  |= EXTI_IMR1_IM1;       // Interrupt unmask für EXTI1
+  EXTI->FTSR1 |= EXTI_FTSR1_FT1;      // Trigger auf fallende Flanke
 
   /* USER CODE END 2 */
 
