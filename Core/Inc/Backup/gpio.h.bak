@@ -1,0 +1,57 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * @file    gpio.h
+  * @brief   This file contains all the function prototypes for
+  *          the gpio.c file
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2025 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __GPIO_H__
+#define __GPIO_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
+/* USER CODE BEGIN Includes */
+// Copilot/Entwickler-Hinweis:
+// - Diese Header-Datei wird von STM32CubeMX generiert und enthält die Prototypen für die GPIO-Initialisierung.
+// - Eigene GPIO-Callback-Prototypen oder spezielle Handler können in den USER CODE-Bereichen ergänzt werden.
+// - Für neue Hardwarefunktionen: Hier und in CubeMX anpassen!
+/* USER CODE END Includes */
+
+/* USER CODE BEGIN Private defines */
+
+/* USER CODE END Private defines */
+
+void MX_GPIO_Init(void);
+
+/* USER CODE BEGIN Prototypes */
+// Eigene GPIO-Callback-Prototypen oder spezielle Handler können hier ergänzt werden.
+// Beispiel: void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
+// Callback-Prototyp für externe Interrupts (z.B. PA1)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
+/* USER CODE END Prototypes */
+
+#ifdef __cplusplus
+}
+#endif
+#endif /*__ GPIO_H__ */
+
