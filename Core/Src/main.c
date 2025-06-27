@@ -96,22 +96,7 @@ int main(void)
 
   // Test: Piezo über Sound-Engine beim Start
   sound_engine_play(SOUND_BEEP);
-
-  // Interrupt für EXTI0_1 (PA1) aktivieren (falls nicht automatisch durch CubeMX)
-  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
-
-  // Aktiviere SYSCFG-Clock (wichtig für EXTI-Routing!)
-  __HAL_RCC_SYSCFG_CLK_ENABLE();
-
-  // EXTI1 auf Port A routen (PA1)
-  SYSCFG->EXTICR1 &= ~(0xF << 4);   // Lösche EXTI1-Routing
-  SYSCFG->EXTICR1 |=  (0x0 << 4);   // Setze auf Port A (0b0000)
-
-  // EXTI1 aktivieren und auf fallende Flanke setzen
-  EXTI->IMR1  |= EXTI_IMR1_IM1;       // Interrupt unmask für EXTI1
-  EXTI->FTSR1 |= EXTI_FTSR1_FT1;      // Trigger auf fallende Flanke
-
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
