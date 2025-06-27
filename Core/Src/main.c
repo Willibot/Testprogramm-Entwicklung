@@ -105,8 +105,8 @@ int main(void)
   __HAL_RCC_SYSCFG_CLK_ENABLE();
 
   // EXTI1 auf Port A routen (PA1)
-  SYSCFG->EXTICR[0] &= ~(0xF << 4);   // Lösche EXTI1-Routing
-  SYSCFG->EXTICR[0] |=  (0x0 << 4);   // Setze auf Port A (0b0000)
+  SYSCFG->EXTICR1 &= ~(0xF << 4);   // Lösche EXTI1-Routing
+  SYSCFG->EXTICR1 |=  (0x0 << 4);   // Setze auf Port A (0b0000)
 
   // EXTI1 aktivieren und auf fallende Flanke setzen
   EXTI->IMR1  |= EXTI_IMR1_IM1;       // Interrupt unmask für EXTI1
