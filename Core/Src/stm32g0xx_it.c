@@ -150,12 +150,7 @@ void SysTick_Handler(void)
   */
 void EXTI0_1_IRQHandler(void)
 {
-    if (__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET)
-    {
-        __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
-        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8); // Test: PA8 toggeln
-        // Hier Breakpoint setzen: Wird erreicht?
-    }
+    HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
 }
 
 /**
