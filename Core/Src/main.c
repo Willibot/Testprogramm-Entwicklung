@@ -91,7 +91,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   // Test: EXTI1 explizit auf Port A routen (nur zum Test)
-  SYSCFG->EXTICR[0] &= ~(0xF << 4); // Bits 7:4 auf 0 für EXTI1 -> PA1
+  SYSCFG->EXTICR1 &= ~(0xF << 4); // Bits 7:4 auf 0 für EXTI1 -> PA1
   MX_DMA_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();
