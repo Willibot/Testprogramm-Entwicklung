@@ -50,25 +50,24 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-// Interrupt-Callback für PA1 (Touch-INT)
-// Alte Funktion entfernen:
-// void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-// {
-//     if (GPIO_Pin == GPIO_PIN_1)
-//     {
-//         HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8); // PA8 toggeln als Debug
-//         sound_engine_play(SOUND_BEEP);         // Piezo-Beep beim Interrupt
-//     }
-// }
+// Effektsteuerung für LED-Blinken bei Interrupt
+volatile uint32_t effect_end_time = 0;
+volatile bool effect_active = false;
 
 // Neue Funktion für STM32G0 HAL verwenden:
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
-        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8); // PA8 toggeln als Debug
-        sound_engine_play(SOUND_BEEP);         // Piezo-Beep beim Interrupt
+        sound_engine_play(SOUND_BEEP); // Piezo-Beep beim Interrupt
+
+        // LEDs: Rot blinken für 0,5s
+        led_effect_engine_set(LED_EFFECT_BLINK);
+        effect_params.hue = 0; // Rot
+        effect_params.brightness = 255;
+        effect_params.speed = 20; // Schnell genug für doppeltes Blinken in 0,5s
+        effect_active = true;
+        effect_end_time = HAL_GetTick() + 500; // 0,5s
     }
 }
 /* USER CODE END 0 */
@@ -108,11 +107,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
   sound_engine_init();
   led_effect_engine_init();
-  led_effect_engine_set(LED_EFFECT_SOLID);
 
-  // Test: Piezo über Sound-Engine beim Start
-  sound_engine_play(SOUND_BEEP);
-  
+  // Start mit solid green
+  led_effect_engine_set(LED_EFFECT_SOLID);
+  effect_params.hue = 85; // Grün
+  effect_params.brightness = 255;
+  effect_active = false;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -122,6 +122,15 @@ int main(void)
     sound_engine_tick();
     sound_beep_update();
     led_effect_engine_update(HAL_GetTick());
+
+    // Nach 0,5s zurück zu grün
+    if (effect_active && HAL_GetTick() > effect_end_time)
+    {
+        led_effect_engine_set(LED_EFFECT_SOLID);
+        effect_params.hue = 85; // Grün
+        effect_params.brightness = 255;
+        effect_active = false;
+    }
     // ... weitere zyklische Funktionen ...
   }
     /* USER CODE END WHILE */
