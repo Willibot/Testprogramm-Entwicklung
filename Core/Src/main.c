@@ -129,11 +129,11 @@ int main(void)
     // Nach 0,5s zurück zu grün
     if (effect_active && HAL_GetTick() > effect_end_time)
     {
-        led_effect_engine_set(LED_EFFECT_SOLID);
         effect_params.hue = 85; // Grün
         effect_params.brightness = 255;
+        led_effect_engine_set(LED_EFFECT_SOLID);
         effect_active = false;
-        led_driver_update(); // <-- Direktes Update, damit LEDs sofort grün werden!
+        // led_driver_update(); // ENTFERNEN!
     }
     // ... weitere zyklische Funktionen ...
   }
