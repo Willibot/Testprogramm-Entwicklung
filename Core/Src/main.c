@@ -115,7 +115,7 @@ int main(void)
   // Start mit solid green
   led_effect_engine_set(LED_EFFECT_SOLID);
   effect_params.hue = 85; // Grün
-  effect_params.brightness = 255;
+  effect_params.brightness = 85;
   effect_active = false;
   /* USER CODE END 2 */
 
