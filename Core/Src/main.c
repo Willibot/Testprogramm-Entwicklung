@@ -133,6 +133,7 @@ int main(void)
         effect_params.hue = 85; // Grün
         effect_params.brightness = 255;
         effect_active = false;
+        led_driver_update(); // <-- Direktes Update, damit LEDs sofort grün werden!
     }
     // ... weitere zyklische Funktionen ...
   }
@@ -220,3 +221,12 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+/* led_effect_solid.c */
+void led_effect_solid_start(void) {
+    RGB_t color = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
+    for (int i = 0; i < LED_COUNT; i++) {
+        led_state[i] = color;
+    }
+    led_driver_update(); // <-- wichtig!
+}
