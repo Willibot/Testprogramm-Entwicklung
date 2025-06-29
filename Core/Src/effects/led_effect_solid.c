@@ -29,8 +29,13 @@ static uint8_t prev_hue = 255;
 static uint8_t prev_brightness = 255;
 
 void led_effect_solid_start(void) {
-    prev_hue = 255;         // Erzwingt Update beim ersten Tick
-    prev_brightness = 255;
+    RGB_t color = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
+    for (int i = 0; i < LED_COUNT; i++) {
+        led_state[i] = color;
+    }
+    led_driver_update(); // <-- Erzwingt sofortiges Setzen der LEDs!
+    prev_hue = effect_params.hue;
+    prev_brightness = effect_params.brightness;
 }
 
 void led_effect_solid_update(uint32_t tick) {
