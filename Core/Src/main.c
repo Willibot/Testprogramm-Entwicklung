@@ -54,20 +54,24 @@ void SystemClock_Config(void);
 volatile uint32_t effect_end_time = 0;
 volatile bool effect_active = false;
 
-// Neue Funktion für STM32G0 HAL verwenden:
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
-        sound_engine_play(SOUND_BEEP); // Piezo-Beep beim Interrupt
+        if (!effect_active) // Nur wenn kein Effekt läuft
+        {
+            sound_engine_play(SOUND_BEEP);
 
-        // LEDs: Rot blinken für 0,5s
-        led_effect_engine_set(LED_EFFECT_BLINK);
-        effect_params.hue = 0; // Rot
-        effect_params.brightness = 255;
-        effect_params.speed = 20; // Schnell genug für doppeltes Blinken in 0,5s
-        effect_active = true;
-        effect_end_time = HAL_GetTick() + 500; // 0,5s
+            // LEDs: Rot blinken für 0,5s
+            led_effect_engine_set(LED_EFFECT_BLINK);
+            effect_params.hue = 0; // Rot
+            effect_params.brightness = 255;
+            effect_params.speed = 20; // Schnell genug für doppeltes Blinken in 0,5s
+            effect_active = true;
+            effect_end_time = HAL_GetTick() + 500; // 0,5s
+        }
+        // Optional: Wenn du möchtest, dass ein erneuter Interrupt das Blinken neu startet,
+        // dann entferne die if(!effect_active)-Bedingung.
     }
 }
 /* USER CODE END 0 */
