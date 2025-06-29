@@ -52,7 +52,18 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 // Interrupt-Callback für PA1 (Touch-INT)
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+// Alte Funktion entfernen:
+// void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+// {
+//     if (GPIO_Pin == GPIO_PIN_1)
+//     {
+//         HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_8); // PA8 toggeln als Debug
+//         sound_engine_play(SOUND_BEEP);         // Piezo-Beep beim Interrupt
+//     }
+// }
+
+// Neue Funktion für STM32G0 HAL verwenden:
+void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
@@ -60,7 +71,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         sound_engine_play(SOUND_BEEP);         // Piezo-Beep beim Interrupt
     }
 }
-
 /* USER CODE END 0 */
 
 /**
@@ -91,7 +101,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   // Test: EXTI1 explizit auf Port A routen (nur zum Test)
-  SYSCFG->EXTICR[0] &= ~(0xF << 4); // Bits 7:4 auf 0 für EXTI1 -> PA1
+  // SYSCFG->EXTICR[0] &= ~(0xF << 4); // Entfernt, CubeMX übernimmt das Routing
   MX_DMA_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();
