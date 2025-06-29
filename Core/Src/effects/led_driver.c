@@ -28,6 +28,7 @@
 #include "tim.h"         // CubeMX generierte Timer-Konfiguration
 #include "dma.h"         // DMA Handle
 #include "color_utils.h"
+#include "stm32g0xx_hal.h" // Für HAL_DMA_STATE_READY
 #include <string.h>
 
 #define WS2812_BITS_PER_LED 24
@@ -41,6 +42,8 @@ static uint16_t pwm_buffer[(LED_COUNT * WS2812_BITS_PER_LED) + LED_RESET_SLOTS];
 
 // LED-Zustände (RGB für jede LED)
 RGB_t led_state[LED_COUNT];
+
+static volatile bool dma_busy = false;
 
 // -----------------------------------------------------------------------------
 // encode_leds_to_pwm
@@ -70,6 +73,7 @@ static void encode_leds_to_pwm(void) {
 // Initialisiert den LED-Treiber, setzt alle LEDs aus und startet die erste DMA-Übertragung.
 // -----------------------------------------------------------------------------
 void led_driver_init(void) {
+    dma_busy = true;
     led_driver_clear();
     encode_leds_to_pwm();
     HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_2, (uint32_t *)pwm_buffer, sizeof(pwm_buffer) / sizeof(uint16_t));
@@ -119,7 +123,17 @@ void led_driver_clear(void) {
 // Startet die DMA-Übertragung erneut (z.B. nach led_driver_update()).
 // -----------------------------------------------------------------------------
 void led_driver_refresh(void) {
-    HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_2, (uint32_t *)pwm_buffer, sizeof(pwm_buffer) / sizeof(uint16_t));
+    if (!dma_busy) {
+        dma_busy = true;
+        HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_2, (uint32_t *)pwm_buffer, sizeof(pwm_buffer) / sizeof(uint16_t));
+    }
+}
+
+// Wird vom HAL nach DMA-Ende aufgerufen
+void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim) {
+    if (htim == &htim3) {
+        dma_busy = false;
+    }
 }
 
 // Copilot: 
