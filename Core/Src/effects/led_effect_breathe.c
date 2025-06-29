@@ -51,7 +51,7 @@ void led_effect_breathe_update(uint32_t tick) {
 
     RGB_t color = hsv_to_rgb(effect_params.hue, 255, brightness);
 
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
         led_state[i] = color;
     }
 

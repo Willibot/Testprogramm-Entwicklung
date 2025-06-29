@@ -23,7 +23,7 @@
 #include "config.h"
 #include "color_utils.h"
 
-extern RGB_t led_state[12];
+extern RGB_t led_state[LED_COUNT];
 extern effect_params_t effect_params;
 
 static uint8_t flash_on = 0;
@@ -44,7 +44,7 @@ void led_effect_flash_alt_update(uint32_t tick) {
         ? hsv_to_rgb(effect_params.hue, 255, effect_params.brightness)
         : hsv_to_rgb((effect_params.hue + 128) % 256, 255, effect_params.brightness); // Kontrastfarbe
 
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
         led_state[i] = color;
     }
 

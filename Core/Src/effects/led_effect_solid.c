@@ -22,7 +22,7 @@
 #include "config.h"
 #include "color_utils.h"
 
-extern RGB_t led_state[12];
+extern RGB_t led_state[LED_COUNT];
 extern effect_params_t effect_params;
 
 static uint8_t prev_hue = 255;
@@ -43,7 +43,7 @@ void led_effect_solid_update(uint32_t tick) {
 
     if (effect_params.hue != prev_hue || effect_params.brightness != prev_brightness) {
         RGB_t color = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
-        for (int i = 0; i < 12; i++) {
+        for (int i = 0; i < LED_COUNT; i++) {
             led_state[i] = color;
         }
         led_driver_update();
@@ -53,7 +53,7 @@ void led_effect_solid_update(uint32_t tick) {
 }
 
 void led_effect_solid_stop(void) {
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
         led_state[i] = (RGB_t){0, 0, 0};
     }
     led_driver_update();

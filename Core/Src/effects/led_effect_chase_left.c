@@ -23,7 +23,7 @@
 #include "color_utils.h"
 
 extern effect_params_t effect_params;
-extern RGB_t led_state[12];
+extern RGB_t led_state[LED_COUNT];
 
 static uint8_t current_pos = 0;
 static uint32_t last_update = 0;
@@ -39,13 +39,13 @@ void led_effect_chase_left_update(uint32_t tick) {
     if (tick - last_update < interval) return;
     last_update = tick;
 
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
         led_state[i] = (i == current_pos)
             ? hsv_to_rgb(effect_params.hue, 255, effect_params.brightness)
             : (RGB_t){0, 0, 0};
     }
 
-    current_pos = (current_pos + 1) % 12;
+    current_pos = (current_pos + 1) % LED_COUNT;
     led_driver_update();
 }
 
