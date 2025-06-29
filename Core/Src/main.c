@@ -40,6 +40,7 @@
 
 /* USER CODE BEGIN PV */
 bool output_state[3] = {0};
+uint32_t timer_tick = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
