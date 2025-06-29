@@ -208,13 +208,6 @@ void Error_Handler(void)
 }
 
 #ifdef  USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
@@ -222,11 +215,4 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/* led_effect_solid.c */
-void led_effect_solid_start(void) {
-    RGB_t color = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
-    for (int i = 0; i < LED_COUNT; i++) {
-        led_state[i] = color;
-    }
-    led_driver_update(); // <-- wichtig!
-}
+/* KEINE led_effect_solid_start hier! */
