@@ -66,7 +66,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
             led_effect_engine_set(LED_EFFECT_BLINK);
             effect_params.hue = 0; // Rot
             effect_params.brightness = 255;
-            effect_params.speed = 200; // Ergibt ca. 120 ms Intervall für 2x Blinken in 0,5s
+            effect_params.speed = 137; // (1000 - 125) / 8 = 109,375 → speed ≈ 137
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500; // 0,5s
         }

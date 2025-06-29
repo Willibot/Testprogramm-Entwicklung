@@ -38,9 +38,10 @@ void led_effect_blink_start(void) {
 
 void led_effect_blink_update(uint32_t tick)
 {
-    uint32_t interval = 200 + (1000 - (uint32_t)effect_params.speed * 8);
+    int32_t interval = 200 + (1000 - (int32_t)effect_params.speed * 8);
+    if (interval < 30) interval = 30; // Mindestintervall
 
-    if (tick - last_toggle >= interval) {
+    if (tick - last_toggle >= (uint32_t)interval) {
         last_toggle = tick;
         state = !state;
 
