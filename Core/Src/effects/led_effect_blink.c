@@ -36,8 +36,8 @@ void led_effect_blink_start(void) {
     led_driver_clear();
 }
 
-void led_effect_blink_update(uint32_t tick) {
-    // Geschwindigkeit: speed 0–255 → Intervall 1000–200 ms
+void led_effect_blink_update(uint32_t tick)
+{
     uint32_t interval = 200 + (1000 - (uint32_t)effect_params.speed * 8);
 
     if (tick - last_toggle >= interval) {
@@ -45,7 +45,6 @@ void led_effect_blink_update(uint32_t tick) {
         state = !state;
 
         if (state) {
-            // KORREKTUR: Funktionsname hsv2rgb → hsv_to_rgb
             RGB_t color = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
             for (int i = 0; i < LED_COUNT; i++) {
                 led_state[i] = color;
