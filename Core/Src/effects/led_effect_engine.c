@@ -41,6 +41,34 @@ void led_effect_engine_init(void) {
 
 void led_effect_engine_set(led_effect_id_t effect) {
     current_effect = effect;
+    switch (effect) {
+        case LED_EFFECT_SOLID:
+            led_effect_solid_start();
+            break;
+        case LED_EFFECT_BLINK:
+            led_effect_blink_start();
+            break;
+        case LED_EFFECT_BREATHE:
+            led_effect_breathe_start();
+            break;
+        case LED_EFFECT_FLASH_ALT:
+            led_effect_flash_alt_start();
+            break;
+        case LED_EFFECT_CHASE_LEFT:
+            led_effect_chase_left_start();
+            break;
+        case LED_EFFECT_CHASE_RIGHT:
+            led_effect_chase_right_start();
+            break;
+        case LED_EFFECT_CONFIG_MODE:
+            led_effect_config_mode_start();
+            break;
+        case LED_EFFECT_SINGLE_LED:
+            led_effect_single_led_start();
+            break;
+        default:
+            break;
+    }
 }
 
 void led_effect_engine_update(uint32_t tick) {

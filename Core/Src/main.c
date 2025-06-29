@@ -132,8 +132,6 @@ int main(void)
         effect_params.hue = 85; // Grün
         effect_params.brightness = 255;
         led_effect_engine_set(LED_EFFECT_SOLID);
-        led_driver_update(); // 1. Update
-        led_driver_update(); // 2. Update (Test!)
         effect_active = false;
     }
     // ... weitere zyklische Funktionen ...
