@@ -32,7 +32,7 @@
 #include <string.h>
 
 #define WS2812_BITS_PER_LED 24
-#define LED_RESET_SLOTS     48  // ca. 50µs Reset-Zeit für Latch
+#define LED_RESET_SLOTS     100  // ca. 50µs Reset-Zeit für Latch
 
 #define TIMER_PWM_HIGH  65  // ca. 0.7 µs bei 800kHz
 #define TIMER_PWM_LOW   30  // ca. 0.35 µs
