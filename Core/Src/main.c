@@ -104,6 +104,7 @@ int main(void)
   MX_DMA_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();
+  led_driver_init();
   /* USER CODE BEGIN 2 */
   sound_engine_init();
   led_effect_engine_init();
