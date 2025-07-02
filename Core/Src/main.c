@@ -115,7 +115,7 @@ int main(void)
   // Start mit solid green
   led_effect_engine_set(LED_EFFECT_SOLID);
   effect_params.hue = 85; // Grün
-  effect_params.brightness = 85;
+  effect_params.brightness = 50;
   effect_active = false;
   /* USER CODE END 2 */
 
@@ -131,7 +131,7 @@ int main(void)
     if (effect_active && HAL_GetTick() > effect_end_time)
     {
         effect_params.hue = 85; // Grün
-        effect_params.brightness = 255;
+        effect_params.brightness = 50;
         led_effect_engine_set(LED_EFFECT_SOLID);
         effect_active = false;
     }
