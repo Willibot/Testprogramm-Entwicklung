@@ -19,6 +19,7 @@
 #include "sounds/sound_engine.h"
 #include "sounds/sound_beep.h"
 #include "sounds/piezo_driver.h"
+#include "Driver/cy8cmbr3108.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,15 +70,27 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
     {
         if (!effect_active) // Nur wenn kein Effekt läuft
         {
-            sound_engine_play(SOUND_BEEP);
+            uint8_t status = cy8cmbr3108_read_sensor_status();
 
-            // LEDs: Rot blinken für 0,5s (doppeltes Blinken)
+            // Taste 1: Rot, 2: Blau, 3: Magenta, 4: Orange
+            if (status & 0x01) { // Taste 1
+                effect_params.hue = 0;    // Rot
+            } else if (status & 0x02) { // Taste 2
+                effect_params.hue = 170;  // Blau
+            } else if (status & 0x04) { // Taste 3
+                effect_params.hue = 213;  // Magenta
+            } else if (status & 0x08) { // Taste 4
+                effect_params.hue = 25;   // Orange
+            } else {
+                return; // Keine Taste gedrückt
+            }
+
+            sound_engine_play(SOUND_BEEP);
             led_effect_engine_set(LED_EFFECT_BLINK);
-            effect_params.hue = 0; // Rot
             effect_params.brightness = 255;
-            effect_params.speed = 137; // (1000 - 125) / 8 = 109,375 → speed ≈ 137
+            effect_params.speed = 137;
             effect_active = true;
-            effect_end_time = HAL_GetTick() + 500; // 0,5s
+            effect_end_time = HAL_GetTick() + 500;
         }
     }
 }
