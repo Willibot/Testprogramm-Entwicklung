@@ -55,6 +55,14 @@ void SystemClock_Config(void);
 volatile uint32_t effect_end_time = 0;
 volatile bool effect_active = false;
 
+// Zentrale Funktion für Grundzustand (solid green, reduzierte Helligkeit)
+void set_leds_solid_green(void) {
+    effect_params.hue = 85; // Grün
+    effect_params.brightness = 50; // 1/5 Helligkeit, anpassbar
+    led_effect_engine_set(LED_EFFECT_SOLID);
+    effect_active = false;
+}
+
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
@@ -113,10 +121,7 @@ int main(void)
   led_effect_engine_init();
 
   // Start mit solid green
-  led_effect_engine_set(LED_EFFECT_SOLID);
-  effect_params.hue = 85; // Grün
-  effect_params.brightness = 50;
-  effect_active = false;
+  set_leds_solid_green();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -130,16 +135,13 @@ int main(void)
     // Nach 0,5s zurück zu grün
     if (effect_active && HAL_GetTick() > effect_end_time)
     {
-        effect_params.hue = 85; // Grün
-        effect_params.brightness = 50;
-        led_effect_engine_set(LED_EFFECT_SOLID);
-        effect_active = false;
+        set_leds_solid_green();
     }
     // ... weitere zyklische Funktionen ...
   }
-    /* USER CODE END WHILE */
+  /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+  /* USER CODE BEGIN 3 */
   /* USER CODE END 3 */
 }
 
