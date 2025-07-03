@@ -1,4 +1,0 @@
-../Core/Src/sounds/sound_engine.c:31:6:sound_engine_set	1
-../Core/Src/sounds/sound_engine.c:36:6:sound_engine_play	1
-../Core/Src/sounds/sound_engine.c:40:6:sound_engine_tick	8
-../Core/Src/sounds/sound_engine.c:65:6:sound_engine_init	1

@@ -1,2 +1,0 @@
-../Core/Src/effects/led_effect_single_led.c:31:6:led_effect_single_led_start	8	static
-../Core/Src/effects/led_effect_single_led.c:36:6:led_effect_single_led_update	32	static

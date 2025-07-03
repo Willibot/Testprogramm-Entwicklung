@@ -1,2 +1,0 @@
-../Core/Src/effects/led_effect_flash_alt.c:32:6:led_effect_flash_alt_start	8	static
-../Core/Src/effects/led_effect_flash_alt.c:37:6:led_effect_flash_alt_update	24	static

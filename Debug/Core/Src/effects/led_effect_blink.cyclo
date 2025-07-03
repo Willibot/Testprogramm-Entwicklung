@@ -1,2 +1,0 @@
-../Core/Src/effects/led_effect_blink.c:33:6:led_effect_blink_start	1
-../Core/Src/effects/led_effect_blink.c:39:6:led_effect_blink_update	5

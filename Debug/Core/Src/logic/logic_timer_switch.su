@@ -1,3 +1,0 @@
-../Core/Src/logic/logic_timer_switch.c:12:6:logic_timer_switch_init	8	static
-../Core/Src/logic/logic_timer_switch.c:17:6:logic_timer_switch_trigger	8	static
-../Core/Src/logic/logic_timer_switch.c:23:6:logic_timer_switch_update	16	static

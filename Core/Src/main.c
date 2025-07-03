@@ -9,6 +9,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
 
@@ -123,12 +124,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  // Test: EXTI1 explizit auf Port A routen (nur zum Test)
-  // SYSCFG->EXTICR[0] &= ~(0xF << 4); // Entfernt, CubeMX übernimmt das Routing
   MX_DMA_Init();
   MX_TIM3_Init();
   MX_TIM14_Init();
-  led_driver_init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   sound_engine_init();
   led_effect_engine_init();
@@ -152,9 +151,9 @@ int main(void)
     }
     // ... weitere zyklische Funktionen ...
   }
-  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
   /* USER CODE END 3 */
 }
 
@@ -223,11 +222,16 @@ void Error_Handler(void)
 }
 
 #ifdef  USE_FULL_ASSERT
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/* KEINE led_effect_solid_start hier! */

@@ -14,6 +14,7 @@ RM := rm -rf
 -include Core/Src/sounds/subdir.mk
 -include Core/Src/logic/subdir.mk
 -include Core/Src/effects/subdir.mk
+-include Core/Src/Driver/subdir.mk
 -include Core/Src/subdir.mk
 -include objects.mk
 

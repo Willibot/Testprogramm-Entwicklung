@@ -1,3 +1,0 @@
-../Core/Src/logic/logic_config.c:14:6:logic_config_init	8	static
-../Core/Src/logic/logic_config.c:23:6:logic_config_update	16	static
-../Core/Src/logic/logic_config.c:30:6:logic_config_button_event	16	static

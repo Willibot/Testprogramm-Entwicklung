@@ -1,3 +1,0 @@
-../Core/Src/logic/logic_toggle.c:7:6:logic_toggle_init	1
-../Core/Src/logic/logic_toggle.c:12:6:logic_toggle_update	1
-../Core/Src/logic/logic_toggle.c:16:6:logic_toggle_handle	2

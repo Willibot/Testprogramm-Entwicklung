@@ -1,3 +1,0 @@
-../Core/Src/effects/led_effect_solid.c:31:6:led_effect_solid_start	16	static
-../Core/Src/effects/led_effect_solid.c:41:6:led_effect_solid_update	24	static
-../Core/Src/effects/led_effect_solid.c:55:6:led_effect_solid_stop	16	static

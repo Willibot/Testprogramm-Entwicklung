@@ -1,3 +1,0 @@
-../Core/Src/effects/led_effect_engine.c:38:6:led_effect_engine_init	8	static
-../Core/Src/effects/led_effect_engine.c:42:6:led_effect_engine_set	16	static
-../Core/Src/effects/led_effect_engine.c:74:6:led_effect_engine_update	16	static
