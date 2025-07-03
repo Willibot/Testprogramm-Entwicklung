@@ -134,14 +134,14 @@ int main(void)
         touch_event_pending = false;
         uint8_t status = cy8cmbr3108_read_sensor_status();
 
-        // Taste 1: Rot, 2: Blau, 3: Magenta, 4: Orange
-        if (status & 0x01) { // Taste 1
+        // KORREKTE Button-Auswertung laut Datenblatt:
+        if (status & 0x01) { // Button 1: CS0/PS0
             effect_params.hue = 0;    // Rot
-        } else if (status & 0x02) { // Taste 2
+        } else if (status & 0x02) { // Button 2: CS1/PS1
             effect_params.hue = 170;  // Blau
-        } else if (status & 0x04) { // Taste 3
+        } else if (status & 0x20) { // Button 3: CS5/GP01
             effect_params.hue = 213;  // Magenta
-        } else if (status & 0x08) { // Taste 4
+        } else if (status & 0x40) { // Button 4: CS6/GP02
             effect_params.hue = 25;   // Orange
         } else {
             continue; // Keine Taste gedrückt
