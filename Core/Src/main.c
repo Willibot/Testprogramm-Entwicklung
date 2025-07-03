@@ -43,6 +43,7 @@
 /* USER CODE BEGIN PV */
 bool output_state[3] = {0};
 uint32_t timer_tick = 0;
+volatile bool touch_event_pending = false; // Flag für neuen Tastendruck
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -69,30 +70,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
-        if (!effect_active) // Nur wenn kein Effekt läuft
-        {
-            uint8_t status = cy8cmbr3108_read_sensor_status();
-
-            // Taste 1: Rot, 2: Blau, 3: Magenta, 4: Orange
-            if (status & 0x01) { // Taste 1
-                effect_params.hue = 0;    // Rot
-            } else if (status & 0x02) { // Taste 2
-                effect_params.hue = 170;  // Blau
-            } else if (status & 0x04) { // Taste 3
-                effect_params.hue = 213;  // Magenta
-            } else if (status & 0x08) { // Taste 4
-                effect_params.hue = 25;   // Orange
-            } else {
-                return; // Keine Taste gedrückt
-            }
-
-            sound_engine_play(SOUND_BEEP);
-            led_effect_engine_set(LED_EFFECT_BLINK);
-            effect_params.brightness = 255;
-            effect_params.speed = 137;
-            effect_active = true;
-            effect_end_time = HAL_GetTick() + 500;
-        }
+        touch_event_pending = true; // Nur das Flag setzen!
     }
 }
 /* USER CODE END 0 */
@@ -149,8 +127,35 @@ int main(void)
     {
         set_leds_solid_green();
     }
+
+    // I2C-Status nur außerhalb des Interrupts abfragen!
+    if (touch_event_pending && !effect_active)
+    {
+        touch_event_pending = false;
+        uint8_t status = cy8cmbr3108_read_sensor_status();
+
+        // Taste 1: Rot, 2: Blau, 3: Magenta, 4: Orange
+        if (status & 0x01) { // Taste 1
+            effect_params.hue = 0;    // Rot
+        } else if (status & 0x02) { // Taste 2
+            effect_params.hue = 170;  // Blau
+        } else if (status & 0x04) { // Taste 3
+            effect_params.hue = 213;  // Magenta
+        } else if (status & 0x08) { // Taste 4
+            effect_params.hue = 25;   // Orange
+        } else {
+            continue; // Keine Taste gedrückt
+        }
+
+        sound_engine_play(SOUND_BEEP);
+        led_effect_engine_set(LED_EFFECT_BLINK);
+        effect_params.brightness = 255;
+        effect_params.speed = 137;
+        effect_active = true;
+        effect_end_time = HAL_GetTick() + 500;
+    }
     // ... weitere zyklische Funktionen ...
-  }
+}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
