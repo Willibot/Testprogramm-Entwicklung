@@ -134,29 +134,32 @@ int main(void)
         touch_event_pending = false;
         uint8_t status = cy8cmbr3108_read_latched_button_stat();
 
+        bool taste_erkannt = false;
         if (status & 0x01) {
             effect_params.hue = 0;    // Rot
+            taste_erkannt = true;
         } else if (status & 0x02) {
             effect_params.hue = 170;  // Blau
+            taste_erkannt = true;
         } else if (status & 0x20) {
             effect_params.hue = 213;  // Magenta
+            taste_erkannt = true;
         } else if (status & 0x40) {
             effect_params.hue = 25;   // Orange
-        } else {
-            // Keine Taste gedrückt, Register zurücksetzen und nichts tun
-            cy8cmbr3108_clear_latched_button_stat();
-            // Kein return hier!
-            // Die Schleife läuft einfach weiter.
+            taste_erkannt = true;
         }
 
-        cy8cmbr3108_clear_latched_button_stat(); // Register zurücksetzen!
+        cy8cmbr3108_clear_latched_button_stat(); // Register immer zurücksetzen!
 
-        effect_params.brightness = 255;
-        effect_params.speed = 137;
-        led_effect_engine_set(LED_EFFECT_BLINK);
-        sound_engine_play(SOUND_BEEP);
-        effect_active = true;
-        effect_end_time = HAL_GetTick() + 500;
+        if (taste_erkannt) {
+            effect_params.brightness = 255;
+            effect_params.speed = 137;
+            led_effect_engine_set(LED_EFFECT_BLINK);
+            sound_engine_play(SOUND_BEEP);
+            effect_active = true;
+            effect_end_time = HAL_GetTick() + 500;
+        }
+        // Wenn keine Taste erkannt wurde, passiert einfach nichts weiter!
     }
     // ... weitere zyklische Funktionen ...
 }
