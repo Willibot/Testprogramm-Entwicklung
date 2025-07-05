@@ -145,7 +145,8 @@ int main(void)
         } else {
             // Keine Taste gedrückt, Register zurücksetzen und nichts tun
             cy8cmbr3108_clear_latched_button_stat();
-            return; // <-- Nur aus dem if-Block, nicht aus main!
+            // Kein return hier!
+            // Die Schleife läuft einfach weiter.
         }
 
         cy8cmbr3108_clear_latched_button_stat(); // Register zurücksetzen!
