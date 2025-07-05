@@ -129,28 +129,27 @@ int main(void)
     }
 
     // I2C-Status nur außerhalb des Interrupts abfragen!
-    if (touch_event_pending && !effect_active)
+    if (touch_event_pending)
     {
         touch_event_pending = false;
         uint8_t status = cy8cmbr3108_read_button_stat();
 
-        // KORREKTE Button-Auswertung laut Datenblatt:
-        if (status & 0x01) { // Button 1: CS0/PS0
+        if (status & 0x01) {
             effect_params.hue = 0;    // Rot
-        } else if (status & 0x02) { // Button 2: CS1/PS1
+        } else if (status & 0x02) {
             effect_params.hue = 170;  // Blau
-        } else if (status & 0x20) { // Button 3: CS5/GP01
+        } else if (status & 0x20) {
             effect_params.hue = 213;  // Magenta
-        } else if (status & 0x40) { // Button 4: CS6/GP02
+        } else if (status & 0x40) {
             effect_params.hue = 25;   // Orange
         } else {
-            continue; // Keine Taste gedrückt
+            return; // Keine Taste gedrückt
         }
 
-        sound_engine_play(SOUND_BEEP);
-        led_effect_engine_set(LED_EFFECT_BLINK);
         effect_params.brightness = 255;
         effect_params.speed = 137;
+        led_effect_engine_set(LED_EFFECT_BLINK);
+        sound_engine_play(SOUND_BEEP);
         effect_active = true;
         effect_end_time = HAL_GetTick() + 500;
     }
