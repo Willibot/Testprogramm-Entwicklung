@@ -142,6 +142,9 @@ int main(void)
             effect_params.hue = 213;  // Magenta
         } else if (status & 0x40) {
             effect_params.hue = 25;   // Orange
+        } else {
+            // Keine Taste gedrückt, Register trotzdem zurücksetzen und nichts tun
+            cy8cmbr3108_clear_latched_button_stat();
         }
 
         cy8cmbr3108_clear_latched_button_stat(); // Register zurücksetzen!
