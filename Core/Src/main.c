@@ -132,7 +132,7 @@ int main(void)
     if (touch_event_pending)
     {
         touch_event_pending = false;
-        uint8_t status = cy8cmbr3108_read_button_stat();
+        uint8_t status = cy8cmbr3108_read_latched_button_stat();
 
         if (status & 0x01) {
             effect_params.hue = 0;    // Rot
@@ -145,6 +145,8 @@ int main(void)
         } else {
             return; // Keine Taste gedrückt
         }
+
+        cy8cmbr3108_clear_latched_button_stat(); // Register zurücksetzen!
 
         effect_params.brightness = 255;
         effect_params.speed = 137;
