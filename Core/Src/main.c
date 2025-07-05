@@ -132,7 +132,7 @@ int main(void)
     if (touch_event_pending && !effect_active)
     {
         touch_event_pending = false;
-        uint8_t status = cy8cmbr3108_read_sensor_input_status();
+        uint8_t status = cy8cmbr3108_read_button_stat();
 
         // KORREKTE Button-Auswertung laut Datenblatt:
         if (status & 0x01) { // Button 1: CS0/PS0
