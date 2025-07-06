@@ -147,7 +147,6 @@ int main(void)
             effect_params.hue = 25;   // Orange
         } else {
             // Keine Taste gedrückt, nichts tun
-            return;
         }
 
         effect_params.brightness = 255;
