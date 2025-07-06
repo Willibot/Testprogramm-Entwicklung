@@ -133,8 +133,6 @@ int main(void)
     {
         touch_event_pending = false;
         uint8_t status = cy8cmbr3108_read_latched_button_stat();
-
-        // Latch-Register immer sofort zurücksetzen!
         cy8cmbr3108_clear_latched_button_stat();
 
         bool taste_erkannt = false;
@@ -144,10 +142,10 @@ int main(void)
         } else if (status & 0x02) {
             effect_params.hue = 170;  // Blau
             taste_erkannt = true;
-        } else if (status & 0x20) {
+        } else if (status & 0x04) {
             effect_params.hue = 213;  // Magenta
             taste_erkannt = true;
-        } else if (status & 0x40) {
+        } else if (status & 0x08) {
             effect_params.hue = 25;   // Orange
             taste_erkannt = true;
         }
@@ -160,7 +158,6 @@ int main(void)
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
         }
-        // Wenn keine Taste erkannt wurde, passiert einfach nichts weiter!
     }
     // ... weitere zyklische Funktionen ...
 }
