@@ -133,7 +133,6 @@ int main(void)
     {
         touch_event_pending = false;
         uint8_t status = cy8cmbr3108_read_latched_button_stat();
-        cy8cmbr3108_clear_latched_button_stat();
 
         bool taste_erkannt = false;
         if (status & 0x01) {
@@ -151,6 +150,7 @@ int main(void)
         }
 
         if (taste_erkannt) {
+            cy8cmbr3108_clear_latched_button_stat(); // NUR HIER zurücksetzen!
             effect_params.brightness = 255;
             effect_params.speed = 137;
             led_effect_engine_set(LED_EFFECT_BLINK);
@@ -158,6 +158,7 @@ int main(void)
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
         }
+        // Wenn keine Taste erkannt wurde, NICHT zurücksetzen!
     }
     // ... weitere zyklische Funktionen ...
 }
