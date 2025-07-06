@@ -149,9 +149,10 @@ int main(void)
             taste_erkannt = true;
         }
 
-        cy8cmbr3108_clear_latched_button_stat(); // Register immer zurücksetzen!
-
         if (taste_erkannt) {
+            if (cy8cmbr3108_clear_latched_button_stat() != HAL_OK) {
+                // Fehlerbehandlung, z.B. LED rot blinken lassen
+            }
             effect_params.brightness = 255;
             effect_params.speed = 137;
             led_effect_engine_set(LED_EFFECT_BLINK);
