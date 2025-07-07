@@ -8,4 +8,5 @@
 #define CY8CMBR3108_LATCHED_BUTTON_STAT 0xAC
 
 uint8_t cy8cmbr3108_read_latched_button_stat(void);
+uint8_t cy8cmbr3108_read_button_stat(void); // <--- HIER ergänzen!
 HAL_StatusTypeDef cy8cmbr3108_clear_latched_button_stat(void);
