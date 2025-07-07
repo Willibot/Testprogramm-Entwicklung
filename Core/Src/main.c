@@ -44,8 +44,7 @@
 bool output_state[3] = {0};
 uint32_t timer_tick = 0;
 volatile bool touch_event_pending = false; // Flag für neuen Tastendruck
-uint8_t live_status = 0;
-live_status = cy8cmbr3108_read_button_stat(); // Funktion analog zu read_latched_button_stat()
+uint8_t live_status = 0; // nur Initialisierung
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -126,6 +125,9 @@ int main(void)
     sound_engine_tick();
     sound_beep_update();
     led_effect_engine_update(HAL_GetTick());
+
+    // Debug: Echtzeit-Status der Tasten lesen
+    live_status = cy8cmbr3108_read_button_stat();
 
     // Nach 0,5s zurück zu grün
     if (effect_active && HAL_GetTick() > effect_end_time)
