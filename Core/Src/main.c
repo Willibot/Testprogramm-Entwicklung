@@ -112,6 +112,9 @@ int main(void)
 
   // Start mit solid green
   set_leds_solid_green();
+
+  // Latch-Register beim Start zurücksetzen!
+  cy8cmbr3108_clear_latched_button_stat();
   /* USER CODE END 2 */
 
   /* Infinite loop */
