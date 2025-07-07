@@ -45,6 +45,7 @@ bool output_state[3] = {0};
 uint32_t timer_tick = 0;
 volatile bool touch_event_pending = false; // Flag für neuen Tastendruck
 uint8_t live_status = 0;
+live_status = cy8cmbr3108_read_button_stat(); // Funktion analog zu read_latched_button_stat()
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
