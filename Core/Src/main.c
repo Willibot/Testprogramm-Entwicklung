@@ -134,23 +134,35 @@ int main(void)
         touch_event_pending = false;
         uint8_t status = cy8cmbr3108_read_latched_button_stat();
 
-        bool taste_erkannt = false;
+        // Latch-Register immer zurücksetzen!
+        cy8cmbr3108_clear_latched_button_stat();
+
         if (status & 0x01) {
             effect_params.hue = 0;    // Rot
-            taste_erkannt = true;
+            effect_params.brightness = 255;
+            effect_params.speed = 137;
+            led_effect_engine_set(LED_EFFECT_BLINK);
+            sound_engine_play(SOUND_BEEP);
+            effect_active = true;
+            effect_end_time = HAL_GetTick() + 500;
         } else if (status & 0x02) {
             effect_params.hue = 170;  // Blau
-            taste_erkannt = true;
+            effect_params.brightness = 255;
+            effect_params.speed = 137;
+            led_effect_engine_set(LED_EFFECT_BLINK);
+            sound_engine_play(SOUND_BEEP);
+            effect_active = true;
+            effect_end_time = HAL_GetTick() + 500;
         } else if (status & 0x04) {
             effect_params.hue = 213;  // Magenta
-            taste_erkannt = true;
+            effect_params.brightness = 255;
+            effect_params.speed = 137;
+            led_effect_engine_set(LED_EFFECT_BLINK);
+            sound_engine_play(SOUND_BEEP);
+            effect_active = true;
+            effect_end_time = HAL_GetTick() + 500;
         } else if (status & 0x08) {
             effect_params.hue = 25;   // Orange
-            taste_erkannt = true;
-        }
-
-        if (taste_erkannt) {
-            cy8cmbr3108_clear_latched_button_stat(); // NUR HIER zurücksetzen!
             effect_params.brightness = 255;
             effect_params.speed = 137;
             led_effect_engine_set(LED_EFFECT_BLINK);
@@ -158,7 +170,7 @@ int main(void)
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
         }
-        // Wenn keine Taste erkannt wurde, NICHT zurücksetzen!
+        // Wenn kein Status-Bit gesetzt ist, passiert einfach nichts weiter!
     }
     // ... weitere zyklische Funktionen ...
 }
