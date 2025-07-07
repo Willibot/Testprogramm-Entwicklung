@@ -113,8 +113,8 @@ int main(void)
   // Start mit solid green
   set_leds_solid_green();
 
-  // Latch-Register beim Start zurücksetzen!
-  cy8cmbr3108_clear_latched_button_stat();
+  // Initialstatus lesen, um INT-Latch zurückzusetzen
+  cy8cmbr3108_read_latched_button_stat();  // <-- Das löscht den Interrupt
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -135,10 +135,7 @@ int main(void)
     if (touch_event_pending)
     {
         touch_event_pending = false;
-        uint8_t status = cy8cmbr3108_read_latched_button_stat();
-
-        // Latch-Register immer zurücksetzen!
-        cy8cmbr3108_clear_latched_button_stat();
+        uint8_t status = cy8cmbr3108_read_latched_button_stat(); // Lesen reicht!
 
         if (status & 0x01) {
             effect_params.hue = 0;    // Rot
@@ -173,7 +170,7 @@ int main(void)
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
         }
-        // Wenn kein Status-Bit gesetzt ist, passiert einfach nichts weiter!
+        // Kein manuelles Rücksetzen mehr!
     }
     // ... weitere zyklische Funktionen ...
 }
