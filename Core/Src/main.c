@@ -44,6 +44,7 @@
 bool output_state[3] = {0};
 uint32_t timer_tick = 0;
 volatile bool touch_event_pending = false; // Flag für neuen Tastendruck
+uint8_t live_status = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
