@@ -116,6 +116,14 @@ int main(void)
 
   // Initialstatus lesen, um INT-Latch zurückzusetzen
   cy8cmbr3108_read_latched_button_stat();  // <-- Das löscht den Interrupt
+
+  uint8_t btn_en = 0;
+  HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x06, I2C_MEMADD_SIZE_8BIT, &btn_en, 1, 10);
+  // btn_en jetzt im Debugger anschauen
+
+  uint8_t pin_map = 0;
+  HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x07, I2C_MEMADD_SIZE_8BIT, &pin_map, 1, 10);
+  // pin_map jetzt im Debugger anschauen
   /* USER CODE END 2 */
 
   /* Infinite loop */
