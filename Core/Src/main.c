@@ -107,6 +107,10 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM14_Init();
   MX_I2C1_Init();
+
+  // Cypress-Konfiguration in den Baustein schreiben
+  cy8cmbr3108_write_config();
+
   /* USER CODE BEGIN 2 */
   sound_engine_init();
   led_effect_engine_init();
