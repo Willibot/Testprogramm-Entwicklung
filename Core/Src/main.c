@@ -109,12 +109,22 @@ int main(void)
             touch_event_pending = false;
 
             uint8_t button_status = 0;
-            HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x07, I2C_MEMADD_SIZE_8BIT, &button_status, 1, 10);
+            // Auslesen des aktuellen Button-Status (0xAA laut TRM)
+            HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(
+                &hi2c1,
+                CY8CMBR3108_I2C_ADDR,
+                CY8CMBR3108_BUTTON_STAT, // Korrekte Adresse für Button Status!
+                I2C_MEMADD_SIZE_8BIT,
+                &button_status,
+                1,
+                10
+            );
 
             if (ret != HAL_OK) {
                 continue; // Fehler beim Lesen, keine Auswertung
             }
 
+            // Tasten-Auswertung wie gehabt, jetzt sollte button_status ≠ 0 sein!
             if (button_status & 0x01) { // CS0
                 effect_params.hue = 0;    // Rot
             } else if (button_status & 0x02) { // CS1
@@ -124,7 +134,7 @@ int main(void)
             } else if (button_status & 0x40) { // CS6
                 effect_params.hue = 25;   // Orange
             } else {
-                continue;
+                continue; // Kein gültiger Taster
             }
 
             effect_params.brightness = 255;
