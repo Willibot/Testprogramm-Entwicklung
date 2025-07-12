@@ -72,16 +72,10 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
-        latched_status = cy8cmbr3108_read_latched_button_stat(); // clear latched register
-        touch_event_pending = true;
+        touch_event_pending = true;  // Nur das Flag setzen!
     }
 }
-/* USER CODE END 0 */
 
-/**
-  * @brief  The application entry point.
-  * @retval int
-  */
 int main(void)
 {
     HAL_Init();
@@ -99,8 +93,6 @@ int main(void)
 
     set_leds_solid_green();
 
-    // touch_event_pending = false; // Kann stehen bleiben, aber kein Latch-Register-Löschen mehr!
-
     while (1)
     {
         sound_engine_tick();
@@ -116,16 +108,19 @@ int main(void)
         {
             touch_event_pending = false;
 
-            if (latched_status & 0x01) { // CS0
+            uint8_t button_status = 0;
+            HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x07, I2C_MEMADD_SIZE_8BIT, &button_status, 1, 10);
+
+            if (button_status & 0x01) { // CS0
                 effect_params.hue = 0;    // Rot
-            } else if (latched_status & 0x02) { // CS1
+            } else if (button_status & 0x02) { // CS1
                 effect_params.hue = 170;  // Blau
-            } else if (latched_status & 0x20) { // CS5
+            } else if (button_status & 0x20) { // CS5
                 effect_params.hue = 213;  // Magenta
-            } else if (latched_status & 0x40) { // CS6
+            } else if (button_status & 0x40) { // CS6
                 effect_params.hue = 25;   // Orange
             } else {
-                continue; // Kein gültiger Taster
+                continue;
             }
 
             effect_params.brightness = 255;
