@@ -12,15 +12,16 @@
 #include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
 #include "config.h"
 #include "effects/led_effect_engine.h"
 #include "sounds/sound_engine.h"
 #include "sounds/sound_beep.h"
 #include "sounds/piezo_driver.h"
 #include "Driver/cy8cmbr3108.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +45,9 @@
 bool output_state[3] = {0};
 uint32_t timer_tick = 0;
 volatile bool touch_event_pending = false; // Flag für neuen Tastendruck
-uint8_t live_status = 0; // nur Initialisierung
+volatile uint8_t latched_status = 0;
+volatile uint32_t effect_end_time = 0;
+volatile bool effect_active = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -56,8 +59,6 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 // Effektsteuerung für LED-Blinken bei Interrupt
-volatile uint32_t effect_end_time = 0;
-volatile bool effect_active = false;
 
 // Zentrale Funktion für Grundzustand (solid green, reduzierte Helligkeit)
 void set_leds_solid_green(void) {
@@ -71,7 +72,8 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
-        touch_event_pending = true; // Nur das Flag setzen!
+        latched_status = cy8cmbr3108_read_latched_button_stat(); // Register 0x08 (löscht sich selbst)
+        touch_event_pending = true;
     }
 }
 /* USER CODE END 0 */
@@ -138,9 +140,6 @@ int main(void)
     sound_beep_update();
     led_effect_engine_update(HAL_GetTick());
 
-    // Debug: Echtzeit-Status der Tasten lesen
-    live_status = cy8cmbr3108_read_button_stat();
-
     // Nach 0,5s zurück zu grün
     if (effect_active && HAL_GetTick() > effect_end_time)
     {
@@ -151,9 +150,8 @@ int main(void)
     if (touch_event_pending)
     {
         touch_event_pending = false;
-        uint8_t status = cy8cmbr3108_read_latched_button_stat(); // Lesen reicht!
 
-        if (status & 0x01) { // CS0
+        if (latched_status & 0x01) { // CS0
             effect_params.hue = 0;    // Rot
             effect_params.brightness = 255;
             effect_params.speed = 137;
@@ -161,7 +159,7 @@ int main(void)
             sound_engine_play(SOUND_BEEP);
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
-        } else if (status & 0x02) { // CS1
+        } else if (latched_status & 0x02) { // CS1
             effect_params.hue = 170;  // Blau
             effect_params.brightness = 255;
             effect_params.speed = 137;
@@ -169,7 +167,7 @@ int main(void)
             sound_engine_play(SOUND_BEEP);
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
-        } else if (status & 0x20) { // CS5
+        } else if (latched_status & 0x20) { // CS5
             effect_params.hue = 213;  // Magenta
             effect_params.brightness = 255;
             effect_params.speed = 137;
@@ -177,7 +175,7 @@ int main(void)
             sound_engine_play(SOUND_BEEP);
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
-        } else if (status & 0x40) { // CS6
+        } else if (latched_status & 0x40) { // CS6
             effect_params.hue = 25;   // Orange
             effect_params.brightness = 255;
             effect_params.speed = 137;
