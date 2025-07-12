@@ -84,99 +84,52 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
   */
 int main(void)
 {
+    HAL_Init();
+    SystemClock_Config();
+    MX_GPIO_Init();
+    MX_DMA_Init();
+    MX_TIM3_Init();
+    MX_TIM14_Init();
+    MX_I2C1_Init();
 
-  /* USER CODE BEGIN 1 */
-  // Ziel: Nur den ersten LED-Effekt (solid) testen, um DMA, Timer und LED-Treiber zu prüfen.
-  /* USER CODE END 1 */
+    cy8cmbr3108_write_config();
 
-  /* MCU Configuration--------------------------------------------------------*/
+    sound_engine_init();
+    led_effect_engine_init();
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+    set_leds_solid_green();
 
-  /* USER CODE BEGIN Init */
-  /* USER CODE END Init */
+    // Initialen Spurious-Interrupt entfernen
+    cy8cmbr3108_read_latched_button_stat(); // clear latched register
+    touch_event_pending = false;            // reset software flag
 
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_DMA_Init();
-  MX_TIM3_Init();
-  MX_TIM14_Init();
-  MX_I2C1_Init();
-
-  // Cypress-Konfiguration in den Baustein schreiben
-  cy8cmbr3108_write_config();
-
-  /* USER CODE BEGIN 2 */
-  sound_engine_init();
-  led_effect_engine_init();
-
-  // Start mit solid green
-  set_leds_solid_green();
-
-  // Initialstatus lesen, um INT-Latch zurückzusetzen
-  cy8cmbr3108_read_latched_button_stat();  // <-- Das löscht den Interrupt
-
-  uint8_t btn_en = 0;
-  HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x06, I2C_MEMADD_SIZE_8BIT, &btn_en, 1, 10);
-  // btn_en jetzt im Debugger anschauen
-
-  uint8_t pin_map = 0;
-  HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x07, I2C_MEMADD_SIZE_8BIT, &pin_map, 1, 10);
-  // pin_map jetzt im Debugger anschauen
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    sound_engine_tick();
-    sound_beep_update();
-    led_effect_engine_update(HAL_GetTick());
-
-    // Nach 0,5s zurück zu grün
-    if (effect_active && HAL_GetTick() > effect_end_time)
+    while (1)
     {
-        set_leds_solid_green();
-    }
+        sound_engine_tick();
+        sound_beep_update();
+        led_effect_engine_update(HAL_GetTick());
 
-    // I2C-Status nur außerhalb des Interrupts abfragen!
-    if (touch_event_pending)
-    {
-        touch_event_pending = false;
+        if (effect_active && HAL_GetTick() > effect_end_time)
+        {
+            set_leds_solid_green();
+        }
 
-        if (latched_status & 0x01) { // CS0
-            effect_params.hue = 0;    // Rot
-            effect_params.brightness = 255;
-            effect_params.speed = 137;
-            led_effect_engine_set(LED_EFFECT_BLINK);
-            sound_engine_play(SOUND_BEEP);
-            effect_active = true;
-            effect_end_time = HAL_GetTick() + 500;
-        } else if (latched_status & 0x02) { // CS1
-            effect_params.hue = 170;  // Blau
-            effect_params.brightness = 255;
-            effect_params.speed = 137;
-            led_effect_engine_set(LED_EFFECT_BLINK);
-            sound_engine_play(SOUND_BEEP);
-            effect_active = true;
-            effect_end_time = HAL_GetTick() + 500;
-        } else if (latched_status & 0x20) { // CS5
-            effect_params.hue = 213;  // Magenta
-            effect_params.brightness = 255;
-            effect_params.speed = 137;
-            led_effect_engine_set(LED_EFFECT_BLINK);
-            sound_engine_play(SOUND_BEEP);
-            effect_active = true;
-            effect_end_time = HAL_GetTick() + 500;
-        } else if (latched_status & 0x40) { // CS6
-            effect_params.hue = 25;   // Orange
+        if (touch_event_pending)
+        {
+            touch_event_pending = false;
+
+            if (latched_status & 0x01) { // CS0
+                effect_params.hue = 0;    // Rot
+            } else if (latched_status & 0x02) { // CS1
+                effect_params.hue = 170;  // Blau
+            } else if (latched_status & 0x20) { // CS5
+                effect_params.hue = 213;  // Magenta
+            } else if (latched_status & 0x40) { // CS6
+                effect_params.hue = 25;   // Orange
+            } else {
+                continue; // Kein gültiger Taster
+            }
+
             effect_params.brightness = 255;
             effect_params.speed = 137;
             led_effect_engine_set(LED_EFFECT_BLINK);
@@ -184,14 +137,7 @@ int main(void)
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
         }
-        // Kein manuelles Rücksetzen mehr!
     }
-    // ... weitere zyklische Funktionen ...
-}
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  /* USER CODE END 3 */
 }
 
 /**
