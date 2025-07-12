@@ -109,7 +109,11 @@ int main(void)
             touch_event_pending = false;
 
             uint8_t button_status = 0;
-            HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x07, I2C_MEMADD_SIZE_8BIT, &button_status, 1, 10);
+            HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x07, I2C_MEMADD_SIZE_8BIT, &button_status, 1, 10);
+
+            if (ret != HAL_OK) {
+                continue; // Fehler beim Lesen, keine Auswertung
+            }
 
             if (button_status & 0x01) { // CS0
                 effect_params.hue = 0;    // Rot
