@@ -153,7 +153,7 @@ int main(void)
         touch_event_pending = false;
         uint8_t status = cy8cmbr3108_read_latched_button_stat(); // Lesen reicht!
 
-        if (status & 0x01) {
+        if (status & 0x01) { // CS0
             effect_params.hue = 0;    // Rot
             effect_params.brightness = 255;
             effect_params.speed = 137;
@@ -161,7 +161,7 @@ int main(void)
             sound_engine_play(SOUND_BEEP);
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
-        } else if (status & 0x02) {
+        } else if (status & 0x02) { // CS1
             effect_params.hue = 170;  // Blau
             effect_params.brightness = 255;
             effect_params.speed = 137;
@@ -169,7 +169,7 @@ int main(void)
             sound_engine_play(SOUND_BEEP);
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
-        } else if (status & 0x04) {
+        } else if (status & 0x20) { // CS5
             effect_params.hue = 213;  // Magenta
             effect_params.brightness = 255;
             effect_params.speed = 137;
@@ -177,7 +177,7 @@ int main(void)
             sound_engine_play(SOUND_BEEP);
             effect_active = true;
             effect_end_time = HAL_GetTick() + 500;
-        } else if (status & 0x08) {
+        } else if (status & 0x40) { // CS6
             effect_params.hue = 25;   // Orange
             effect_params.brightness = 255;
             effect_params.speed = 137;
