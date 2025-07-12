@@ -72,7 +72,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
-        latched_status = cy8cmbr3108_read_latched_button_stat(); // Register 0x08 (löscht sich selbst)
+        latched_status = cy8cmbr3108_read_latched_button_stat(); // clear latched register
         touch_event_pending = true;
     }
 }
@@ -99,9 +99,7 @@ int main(void)
 
     set_leds_solid_green();
 
-    // Initialen Spurious-Interrupt entfernen
-    cy8cmbr3108_read_latched_button_stat(); // clear latched register
-    touch_event_pending = false;            // reset software flag
+    // touch_event_pending = false; // Kann stehen bleiben, aber kein Latch-Register-Löschen mehr!
 
     while (1)
     {
