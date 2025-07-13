@@ -173,7 +173,8 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+uint8_t reg20 = cy8cmbr3108_read_config_byte(0x20); // Beispiel: Sensor Enable Register
+// Setze hier einen Breakpoint und prüfe reg20 im Debugger
 /* USER CODE END 4 */
 
 /**

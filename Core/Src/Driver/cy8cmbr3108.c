@@ -71,3 +71,9 @@ void cy8cmbr3108_dump_config(void) {
         printf("Reg 0x%02X: 0x%02X\r\n", addr, value);
     }
 }
+
+uint8_t cy8cmbr3108_read_config_byte(uint8_t addr) {
+    uint8_t value = 0;
+    HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, addr, I2C_MEMADD_SIZE_8BIT, &value, 1, 10);
+    return value;
+}
