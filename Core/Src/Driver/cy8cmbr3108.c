@@ -2,6 +2,7 @@
 #include "Driver/cy8cmbr3108.h"
 #include "Driver/cy8cmbr3108_config.h"
 #include "i2c.h"
+#include <stdio.h>
 
 extern I2C_HandleTypeDef hi2c1;
 
