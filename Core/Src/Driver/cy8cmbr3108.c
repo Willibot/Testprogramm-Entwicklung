@@ -61,6 +61,7 @@ HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
     }
     uint8_t cmd = 0xA0;
     HAL_I2C_Mem_Write(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x86, I2C_MEMADD_SIZE_8BIT, &cmd, 1, 100);
+    HAL_Delay(50);
     return HAL_OK;
 }
 
