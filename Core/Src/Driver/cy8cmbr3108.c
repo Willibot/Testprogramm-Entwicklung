@@ -3,6 +3,8 @@
 #include "Driver/cy8cmbr3108_config.h"
 #include "i2c.h"
 
+extern I2C_HandleTypeDef hi2c1;
+
 uint8_t cy8cmbr3108_read_button_stat(void) {
     uint8_t value = 0;
     HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, CY8CMBR3108_BUTTON_STAT, I2C_MEMADD_SIZE_8BIT, &value, 1, 10);
@@ -35,4 +37,16 @@ HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
     uint8_t cmd = 0xA0;
     HAL_I2C_Mem_Write(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x86, I2C_MEMADD_SIZE_8BIT, &cmd, 1, 100);
     return HAL_OK;
+}
+
+uint8_t cy8cmbr3108_read_sensor_input_status(void) {
+    uint8_t status = 0;
+    HAL_I2C_Mem_Read(&hi2c1,
+                     CY8CMBR3108_I2C_ADDR,
+                     CY8CMBR3108_SENSOR_INPUT_STATUS, // 0x08
+                     I2C_MEMADD_SIZE_8BIT,
+                     &status,
+                     1,
+                     10);
+    return status;
 }

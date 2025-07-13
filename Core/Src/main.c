@@ -108,35 +108,20 @@ int main(void)
         {
             touch_event_pending = false;
 
-            uint8_t test_value = 0;
-            // Test: Lese ein einfaches Register, z.B. Sensor Input Status (0x08)
-            HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(
-                &hi2c1,
-                CY8CMBR3108_I2C_ADDR,
-                0x08, // Sensor Input Status Register (funktionierte früher!)
-                I2C_MEMADD_SIZE_8BIT,
-                &test_value,
-                1,
-                10
-            );
+            uint8_t status = cy8cmbr3108_read_sensor_input_status();
 
-            // Setze hier einen Breakpoint!
-            // Prüfe im Debugger: ret (sollte HAL_OK sein) und test_value (sollte sich bei Tastendruck ändern)
-            if (ret != HAL_OK) {
-                // Fehler beim Lesen, ggf. Error_Handler() oder debuggen
-                continue;
-            }
+            if (status & 0x01) { effect_params.hue = 0; }      // CS0: Rot
+            else if (status & 0x02) { effect_params.hue = 170; } // CS1: Blau
+            else if (status & 0x20) { effect_params.hue = 213; } // CS5: Magenta
+            else if (status & 0x40) { effect_params.hue = 25; }  // CS6: Orange
+            else { continue; }
 
-            // Optional: Wert auswerten wie früher
-            if (test_value & 0x01) { /* CS0: Rot */ }
-            else if (test_value & 0x02) { /* CS1: Blau */ }
-            else if (test_value & 0x20) { /* CS5: Magenta */ }
-            else if (test_value & 0x40) { /* CS6: Orange */ }
-            else {
-                continue;
-            }
-
-            // ...Effekt setzen wie gehabt...
+            effect_params.brightness = 255;
+            effect_params.speed = 137;
+            led_effect_engine_set(LED_EFFECT_BLINK);
+            sound_engine_play(SOUND_BEEP);
+            effect_active = true;
+            effect_end_time = HAL_GetTick() + 500;
         }
     }
 }
