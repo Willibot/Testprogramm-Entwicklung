@@ -108,41 +108,35 @@ int main(void)
         {
             touch_event_pending = false;
 
-            uint8_t button_status = 0;
-            // Auslesen des aktuellen Button-Status (0xAA laut TRM)
+            uint8_t test_value = 0;
+            // Test: Lese ein einfaches Register, z.B. Sensor Input Status (0x08)
             HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(
                 &hi2c1,
                 CY8CMBR3108_I2C_ADDR,
-                CY8CMBR3108_BUTTON_STAT, // Korrekte Adresse für Button Status!
+                0x08, // Sensor Input Status Register (funktionierte früher!)
                 I2C_MEMADD_SIZE_8BIT,
-                &button_status,
+                &test_value,
                 1,
                 10
             );
 
+            // Setze hier einen Breakpoint!
+            // Prüfe im Debugger: ret (sollte HAL_OK sein) und test_value (sollte sich bei Tastendruck ändern)
             if (ret != HAL_OK) {
-                continue; // Fehler beim Lesen, keine Auswertung
+                // Fehler beim Lesen, ggf. Error_Handler() oder debuggen
+                continue;
             }
 
-            // Tasten-Auswertung wie gehabt, jetzt sollte button_status ≠ 0 sein!
-            if (button_status & 0x01) { // CS0
-                effect_params.hue = 0;    // Rot
-            } else if (button_status & 0x02) { // CS1
-                effect_params.hue = 170;  // Blau
-            } else if (button_status & 0x20) { // CS5
-                effect_params.hue = 213;  // Magenta
-            } else if (button_status & 0x40) { // CS6
-                effect_params.hue = 25;   // Orange
-            } else {
-                continue; // Kein gültiger Taster
+            // Optional: Wert auswerten wie früher
+            if (test_value & 0x01) { /* CS0: Rot */ }
+            else if (test_value & 0x02) { /* CS1: Blau */ }
+            else if (test_value & 0x20) { /* CS5: Magenta */ }
+            else if (test_value & 0x40) { /* CS6: Orange */ }
+            else {
+                continue;
             }
 
-            effect_params.brightness = 255;
-            effect_params.speed = 137;
-            led_effect_engine_set(LED_EFFECT_BLINK);
-            sound_engine_play(SOUND_BEEP);
-            effect_active = true;
-            effect_end_time = HAL_GetTick() + 500;
+            // ...Effekt setzen wie gehabt...
         }
     }
 }
