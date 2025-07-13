@@ -62,3 +62,11 @@ HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
     HAL_I2C_Mem_Write(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x86, I2C_MEMADD_SIZE_8BIT, &cmd, 1, 100);
     return HAL_OK;
 }
+
+void cy8cmbr3108_dump_config(void) {
+    for (uint8_t addr = 0; addr < 0x80; addr++) {
+        uint8_t value = 0;
+        HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, addr, I2C_MEMADD_SIZE_8BIT, &value, 1, 10);
+        printf("Reg 0x%02X: 0x%02X\r\n", addr, value);
+    }
+}
