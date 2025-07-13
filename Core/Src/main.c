@@ -93,6 +93,11 @@ int main(void)
 
     set_leds_solid_green();
 
+    // Nach cy8cmbr3108_write_config();
+    uint8_t reg20 = 0;
+    reg20 = cy8cmbr3108_read_config_byte(0x20); // Sensor Enable Register
+    // Setze hier einen Breakpoint und prüfe reg20 im Debugger
+
     while (1)
     {
         sound_engine_tick();

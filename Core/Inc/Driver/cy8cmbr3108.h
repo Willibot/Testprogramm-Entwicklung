@@ -13,3 +13,4 @@ uint8_t cy8cmbr3108_read_button_stat(void);
 uint8_t cy8cmbr3108_read_latched_button_stat(void);
 HAL_StatusTypeDef cy8cmbr3108_clear_latched_button_stat(void);
 HAL_StatusTypeDef cy8cmbr3108_write_config(void);
+uint8_t cy8cmbr3108_read_config_byte(uint8_t addr);
