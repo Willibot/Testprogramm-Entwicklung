@@ -86,15 +86,21 @@ int main(void)
     MX_TIM14_Init();
     MX_I2C1_Init();
 
-    cy8cmbr3108_write_config();
+    HAL_Delay(100); // Warten nach Power-On
+
+    if (cy8cmbr3108_write_config() != HAL_OK) {
+        Error_Handler();
+    }
+
+    uint8_t reg7E = cy8cmbr3108_read_config_byte(0x7E); // Statusregister für CRC prüfen
+    if (reg7E != 0xA5) {
+        Error_Handler(); // Konfiguration nicht übernommen!
+    }
 
     sound_engine_init();
     led_effect_engine_init();
 
     set_leds_solid_green();
-
-    uint8_t reg7E = cy8cmbr3108_read_config_byte(0x7E); // <-- Statusregister für CRC prüfen
-    // Setze hier einen Breakpoint und prüfe reg7E im Debugger
 
     while (1)
     {
