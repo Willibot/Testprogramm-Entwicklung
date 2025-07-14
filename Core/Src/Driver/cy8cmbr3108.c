@@ -42,17 +42,6 @@ uint8_t cy8cmbr3108_read_latched_button_stat(void) {
     return value;
 }
 
-HAL_StatusTypeDef cy8cmbr3108_clear_latched_button_stat(void) {
-    uint8_t clear = 0x01;
-    return HAL_I2C_Mem_Write(&hi2c1,
-                             CY8CMBR3108_I2C_ADDR,
-                             0x86,
-                             I2C_MEMADD_SIZE_8BIT,
-                             &clear,
-                             1,
-                             10);
-}
-
 HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
     for (uint8_t addr = 0; addr < 0x80; addr++) {
         uint8_t value = cy8cmbr3108_config_data[addr];
