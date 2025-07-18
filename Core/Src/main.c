@@ -86,7 +86,17 @@ int main(void)
     MX_TIM14_Init();
     MX_I2C1_Init();
 
-    HAL_Delay(100); // Warten nach Power-On
+    HAL_Delay(200); // Warten nach Power-On
+
+    // I2C-Check: Antwortet der CY8CMBR3108 auf 0x6E?
+    if (HAL_I2C_IsDeviceReady(&hi2c1, 0x6E, 2, 100) == HAL_OK) {
+        // Optional: Setze hier einen Breakpoint oder toggel eine LED
+        // z.B. printf("CY8CMBR3108 antwortet auf 0x6E!\r\n");
+    } else {
+        // Optional: Setze hier einen Breakpoint oder toggel eine andere LED
+        // z.B. printf("CY8CMBR3108 antwortet NICHT auf 0x6E!\r\n");
+        Error_Handler(); // Stoppe hier, wenn kein ACK kommt!
+    }
 
     if (cy8cmbr3108_write_config() != HAL_OK) {
         Error_Handler();
