@@ -43,30 +43,24 @@ uint8_t cy8cmbr3108_read_latched_button_stat(void) {
 }
 
 HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
-    for (uint8_t i = 0; i < 128; i++) {
-    uint8_t addr = i;
-    uint8_t value = cy8cmbr3108_config_data[i];
     HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(&hi2c1,
                                               CY8CMBR3108_I2C_ADDR,
-                                              addr,
+                                              0x00,
                                               I2C_MEMADD_SIZE_8BIT,
-                                              &value,
-                                              1,
+                                              cy8cmbr3108_config_data,
+                                              128,
                                               HAL_MAX_DELAY);
     if (ret != HAL_OK) return ret;
-}
 
-// Save and Activate
-uint8_t cmd = 0xA0;
-HAL_I2C_Mem_Write(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x86, I2C_MEMADD_SIZE_8BIT, &cmd, 1, HAL_MAX_DELAY);
-HAL_Delay(10);  // Kurze Pause
+    uint8_t cmd = 0xA0;
+    HAL_I2C_Mem_Write(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x86, I2C_MEMADD_SIZE_8BIT, &cmd, 1, HAL_MAX_DELAY);
+    HAL_Delay(10);
 
-// Software Reset (empfohlen!)
-cmd = 0xB1;
-HAL_I2C_Mem_Write(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x86, I2C_MEMADD_SIZE_8BIT, &cmd, 1, HAL_MAX_DELAY);
-HAL_Delay(100);  // Zeit für Reboot
+    cmd = 0xB1;
+    HAL_I2C_Mem_Write(&hi2c1, CY8CMBR3108_I2C_ADDR, 0x86, I2C_MEMADD_SIZE_8BIT, &cmd, 1, HAL_MAX_DELAY);
+    HAL_Delay(100);
 
-return HAL_OK;
+    return HAL_OK;
 }
 
 void cy8cmbr3108_dump_config(void) {
