@@ -47,7 +47,7 @@ HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
                                               CY8CMBR3108_I2C_ADDR,
                                               0x00,
                                               I2C_MEMADD_SIZE_8BIT,
-                                              cy8cmbr3108_config_data,
+                                              (uint8_t*)cy8cmbr3108_config_data,
                                               128,
                                               HAL_MAX_DELAY);
     if (ret != HAL_OK) return ret;
