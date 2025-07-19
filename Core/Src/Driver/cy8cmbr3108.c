@@ -45,10 +45,10 @@ uint8_t cy8cmbr3108_read_latched_button_stat(void) {
 HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
     HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(&hi2c1,
                                               CY8CMBR3108_I2C_ADDR,
-                                              0x00,
+                                              0x06, // Start bei Register 0x06!
                                               I2C_MEMADD_SIZE_8BIT,
-                                              (uint8_t*)cy8cmbr3108_config_data,
-                                              128,
+                                              (uint8_t*)&cy8cmbr3108_config_data[6], // Array ab Index 6
+                                              122, // 128 - 6 = 122 Bytes
                                               HAL_MAX_DELAY);
     if (ret != HAL_OK) return ret;
 
