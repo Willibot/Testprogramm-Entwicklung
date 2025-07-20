@@ -8,6 +8,10 @@
 #define CY8CMBR3108_REGISTER_START 0x06
 #define CY8CMBR3108_REGISTER_COUNT 0x7D - 0x06 + 1 // = 122
 
+#define BLOCK1_LEN  41
+#define BLOCK2_LEN  41
+#define BLOCK3_LEN  40
+
 extern I2C_HandleTypeDef hi2c1;
 extern const uint8_t cy8cmbr3108_config_data[128];
 
@@ -95,4 +99,46 @@ uint8_t cy8cmbr3108_read_config_byte(uint8_t addr) {
     uint8_t value = 0;
     HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, addr, I2C_MEMADD_SIZE_8BIT, &value, 1, 10);
     return value;
+}
+
+HAL_StatusTypeDef cy8cmbr3108_write_config_partial(void) {
+    HAL_StatusTypeDef ret;
+
+    // Erster Block (0x06 bis 0x2E)
+    ret = HAL_I2C_Mem_Write(
+        &hi2c1,
+        CY8CMBR3108_I2C_ADDRESS,
+        CY8CMBR3108_REGISTER_START,
+        I2C_MEMADD_SIZE_8BIT,
+        (uint8_t*)&cy8cmbr3108_config_data[CY8CMBR3108_REGISTER_START],
+        BLOCK1_LEN,
+        100
+    );
+    if (ret != HAL_OK) return ret;
+    HAL_Delay(10);
+
+    // Zweiter Block (0x2F bis 0x57)
+    ret = HAL_I2C_Mem_Write(
+        &hi2c1,
+        CY8CMBR3108_I2C_ADDRESS,
+        CY8CMBR3108_REGISTER_START + BLOCK1_LEN,
+        I2C_MEMADD_SIZE_8BIT,
+        (uint8_t*)&cy8cmbr3108_config_data[CY8CMBR3108_REGISTER_START + BLOCK1_LEN],
+        BLOCK2_LEN,
+        100
+    );
+    if (ret != HAL_OK) return ret;
+    HAL_Delay(10);
+
+    // Dritter Block (0x58 bis 0x7D)
+    ret = HAL_I2C_Mem_Write(
+        &hi2c1,
+        CY8CMBR3108_I2C_ADDRESS,
+        CY8CMBR3108_REGISTER_START + BLOCK1_LEN + BLOCK2_LEN,
+        I2C_MEMADD_SIZE_8BIT,
+        (uint8_t*)&cy8cmbr3108_config_data[CY8CMBR3108_REGISTER_START + BLOCK1_LEN + BLOCK2_LEN],
+        BLOCK3_LEN,
+        100
+    );
+    return ret;
 }
