@@ -105,7 +105,7 @@ int main(void)
     // Jetzt Block 2 schreiben (0x2F bis 0x57)
     HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(
         &hi2c1,
-        CY8CMBR3108_I2C_ADDRESS,
+        CY8CMBR3108_I2C_ADDR,
         CY8CMBR3108_REGISTER_START + BLOCK1_LEN,
         I2C_MEMADD_SIZE_8BIT,
         (uint8_t*)&cy8cmbr3108_config_data[CY8CMBR3108_REGISTER_START + BLOCK1_LEN],
