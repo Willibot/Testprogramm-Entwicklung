@@ -4,6 +4,7 @@
  * Hinweise:
  *  - Das CRC-Register (0x7E) MUSS geschrieben werden!
  *  - 0x00, 0x02, 0x04, 0x7C, 0x7D, 0x7F NICHT schreiben!
+ *  - Das Konfigurationsarray ist NUR in der .c-Datei definiert!
  */
 
 #ifndef CY8CMBR3108_CONFIG_H
@@ -12,18 +13,13 @@
 #include <stdint.h>
 #include "i2c.h"
 
-/*
- * CY8CMBR3108 Konfigurations- und Write-Interface
- * 
- * Hinweise:
- *  - Das CRC-Register (0x7E) MUSS geschrieben werden!
- *  - 0x00, 0x02, 0x04, 0x7C, 0x7D, 0x7F NICHT schreiben!
- */
-
-// 128-Byte-Konfigurationsarray (aus EZ-Click)
+// Nur Deklaration! Definition in cy8cmbr3108_config.c
 extern const uint8_t cy8cmbr3108_config_data[128];
 
-// Array aller beschreibbaren Registeradressen (laut TRM/EZ-Click, mit Kommentaren)
+/*
+ * Array aller beschreibbaren Registeradressen (laut TRM/EZ-Click)
+ * Die Kommentare geben den Zweck des Registers an.
+ */
 static const uint8_t cy8cmbr3108_writable_registers[] = {
     0x06, // LED_ON_EN
     0x08, // SENSITIVITY0
@@ -101,7 +97,11 @@ static const uint8_t cy8cmbr3108_writable_registers[] = {
     0x7E  // CONFIG_CRC (muss geschrieben werden!)
 };
 
-// Write-Funktion: Schreibt automatisch alle beschreibbaren Register
+/*
+ * Write-Funktion: Schreibt automatisch alle beschreibbaren Register
+ * Holt für jedes Register den Wert aus cy8cmbr3108_config_data[reg]
+ * und schreibt ihn per I2C in das entsprechende Register.
+ */
 static inline HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
     HAL_StatusTypeDef ret;
     for (unsigned i = 0; i < sizeof(cy8cmbr3108_writable_registers)/sizeof(cy8cmbr3108_writable_registers[0]); ++i) {
