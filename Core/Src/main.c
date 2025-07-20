@@ -18,6 +18,7 @@
 #include "sounds/sound_beep.h"
 #include "sounds/piezo_driver.h"
 #include "Driver/cy8cmbr3108.h"
+#include "Driver/cy8cmbr3108_config.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -88,39 +89,14 @@ int main(void)
 
     HAL_Delay(200); // Warten nach Power-On
 
-    // I2C-Check: Antwortet der CY8CMBR3108 auf 0x6E?
-    if (HAL_I2C_IsDeviceReady(&hi2c1, 0x6E, 2, 100) == HAL_OK) {
-        // Optional: Breakpoint oder LED
-    } else {
+    if (HAL_I2C_IsDeviceReady(&hi2c1, 0x6E, 2, 100) != HAL_OK) {
         Error_Handler();
     }
 
-    // Nur Block 1 schreiben
-    if (cy8cmbr3108_write_config_first_block() != HAL_OK) {
+    // Schreibe komplette Konfiguration (alle gültigen Register)
+    if (cy8cmbr3108_write_config() != HAL_OK) {
         Error_Handler();
     }
-
-    HAL_Delay(10); // Kurze Pause zwischen den Blöcken
-
-    // Jetzt Block 2 schreiben (0x2F bis 0x57)
-    HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(
-        &hi2c1,
-        CY8CMBR3108_I2C_ADDR,
-        CY8CMBR3108_REGISTER_START + BLOCK1_LEN,
-        I2C_MEMADD_SIZE_8BIT,
-        (uint8_t*)&cy8cmbr3108_config_data[CY8CMBR3108_REGISTER_START + BLOCK1_LEN],
-        BLOCK2_LEN,
-        100
-    );
-    if (ret != HAL_OK) {
-        Error_Handler();
-    }
-
-    // Restliche Initialisierung kannst du vorerst auskommentieren oder stehen lassen
-    // uint8_t reg7E = cy8cmbr3108_read_config_byte(0x7E);
-    // if (reg7E != 0xA5) {
-    //     Error_Handler();
-    // }
 
     sound_engine_init();
     led_effect_engine_init();
