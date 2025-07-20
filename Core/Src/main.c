@@ -95,8 +95,24 @@ int main(void)
         Error_Handler();
     }
 
-    // Nur den ersten Block schreiben!
+    // Nur Block 1 schreiben
     if (cy8cmbr3108_write_config_first_block() != HAL_OK) {
+        Error_Handler();
+    }
+
+    HAL_Delay(10); // Kurze Pause zwischen den Blöcken
+
+    // Jetzt Block 2 schreiben (0x2F bis 0x57)
+    HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(
+        &hi2c1,
+        CY8CMBR3108_I2C_ADDRESS,
+        CY8CMBR3108_REGISTER_START + BLOCK1_LEN,
+        I2C_MEMADD_SIZE_8BIT,
+        (uint8_t*)&cy8cmbr3108_config_data[CY8CMBR3108_REGISTER_START + BLOCK1_LEN],
+        BLOCK2_LEN,
+        100
+    );
+    if (ret != HAL_OK) {
         Error_Handler();
     }
 
