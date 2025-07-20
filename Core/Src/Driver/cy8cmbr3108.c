@@ -142,3 +142,19 @@ HAL_StatusTypeDef cy8cmbr3108_write_config_partial(void) {
     );
     return ret;
 }
+
+HAL_StatusTypeDef cy8cmbr3108_write_config_first_block(void) {
+    HAL_StatusTypeDef ret;
+
+    // Erster Block (0x06 bis 0x2E, 41 Bytes)
+    ret = HAL_I2C_Mem_Write(
+        &hi2c1,
+        CY8CMBR3108_I2C_ADDRESS,
+        CY8CMBR3108_REGISTER_START,
+        I2C_MEMADD_SIZE_8BIT,
+        (uint8_t*)&cy8cmbr3108_config_data[CY8CMBR3108_REGISTER_START],
+        BLOCK1_LEN,
+        100
+    );
+    return ret;
+}

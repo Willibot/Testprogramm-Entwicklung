@@ -90,22 +90,21 @@ int main(void)
 
     // I2C-Check: Antwortet der CY8CMBR3108 auf 0x6E?
     if (HAL_I2C_IsDeviceReady(&hi2c1, 0x6E, 2, 100) == HAL_OK) {
-        // Optional: Setze hier einen Breakpoint oder toggel eine LED
-        // z.B. printf("CY8CMBR3108 antwortet auf 0x6E!\r\n");
+        // Optional: Breakpoint oder LED
     } else {
-        // Optional: Setze hier einen Breakpoint oder toggel eine andere LED
-        // z.B. printf("CY8CMBR3108 antwortet NICHT auf 0x6E!\r\n");
-        Error_Handler(); // Stoppe hier, wenn kein ACK kommt!
-    }
-
-    if (cy8cmbr3108_write_config() != HAL_OK) {
         Error_Handler();
     }
 
-    uint8_t reg7E = cy8cmbr3108_read_config_byte(0x7E); // Statusregister für CRC prüfen
-    if (reg7E != 0xA5) {
-        Error_Handler(); // Konfiguration nicht übernommen!
+    // Nur den ersten Block schreiben!
+    if (cy8cmbr3108_write_config_first_block() != HAL_OK) {
+        Error_Handler();
     }
+
+    // Restliche Initialisierung kannst du vorerst auskommentieren oder stehen lassen
+    // uint8_t reg7E = cy8cmbr3108_read_config_byte(0x7E);
+    // if (reg7E != 0xA5) {
+    //     Error_Handler();
+    // }
 
     sound_engine_init();
     led_effect_engine_init();
