@@ -47,7 +47,7 @@ uint8_t cy8cmbr3108_read_latched_button_stat(void) {
     return value;
 }
 
-bool cy8cmbr3108_write_config(void) {
+HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
     // Nur gültige Konfigurationsdaten übertragen (0x06–0x7D)
     HAL_StatusTypeDef ret = HAL_I2C_Mem_Write(
         &hi2c1,
@@ -58,7 +58,7 @@ bool cy8cmbr3108_write_config(void) {
         CY8CMBR3108_REGISTER_COUNT,
         100
     );
-    if (ret != HAL_OK) return false;
+    if (ret != HAL_OK) return ret;
 
     HAL_Delay(10);
 
@@ -69,7 +69,7 @@ bool cy8cmbr3108_write_config(void) {
         0x86, I2C_MEMADD_SIZE_8BIT,
         &cmd, 1, 100
     );
-    if (ret != HAL_OK) return false;
+    if (ret != HAL_OK) return ret;
 
     HAL_Delay(10);
 
@@ -80,7 +80,7 @@ bool cy8cmbr3108_write_config(void) {
         0x86, I2C_MEMADD_SIZE_8BIT,
         &cmd, 1, 100
     );
-    return (ret == HAL_OK);
+    return ret;
 }
 
 void cy8cmbr3108_dump_config(void) {
