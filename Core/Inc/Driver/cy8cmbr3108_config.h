@@ -102,7 +102,10 @@ static const uint8_t cy8cmbr3108_writable_registers[] = {
  * Holt für jedes Register den Wert aus cy8cmbr3108_config_data[reg]
  * und schreibt ihn per I2C in das entsprechende Register.
  */
+#include "config.h"
+
 static inline HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
+#if USE_I2C_CY8CMBR3108_WRITE
     HAL_StatusTypeDef ret;
     for (unsigned i = 0; i < sizeof(cy8cmbr3108_writable_registers)/sizeof(cy8cmbr3108_writable_registers[0]); ++i) {
         uint8_t reg = cy8cmbr3108_writable_registers[i];
@@ -112,6 +115,9 @@ static inline HAL_StatusTypeDef cy8cmbr3108_write_config(void) {
         HAL_Delay(2);
     }
     return HAL_OK;
+#else
+    return HAL_OK; // Kein Fehler, aber nichts gemacht
+#endif
 }
 
 #endif // CY8CMBR3108_CONFIG_H

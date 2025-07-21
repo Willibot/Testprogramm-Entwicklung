@@ -94,9 +94,11 @@ int main(void)
     }
 
     // Schreibe komplette Konfiguration (alle gültigen Register)
+    #if USE_I2C_CY8CMBR3108_WRITE
     if (cy8cmbr3108_write_config() != HAL_OK) {
         Error_Handler();
     }
+    #endif
 
     sound_engine_init();
     led_effect_engine_init();
@@ -118,7 +120,9 @@ int main(void)
         {
             touch_event_pending = false;
 
+            #if USE_I2C_CY8CMBR3108_READ
             uint8_t status = cy8cmbr3108_read_sensor_input_status();
+            #endif
 
             if (status & 0x01) { effect_params.hue = 0; }      // CS0: Rot
             else if (status & 0x02) { effect_params.hue = 170; } // CS1: Blau

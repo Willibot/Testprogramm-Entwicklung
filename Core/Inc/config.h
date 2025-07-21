@@ -29,6 +29,8 @@ extern bool output_state[3];
 #define USE_PIEZO_DRIVER     1
 #define USE_LOGIC_ENGINE     1
 #define USE_LED_EFFECTS      1
+#define USE_I2C_CY8CMBR3108_READ   1   // 1 = Lesen vom CY8 erlaubt
+#define USE_I2C_CY8CMBR3108_WRITE  0   // 1 = Schreiben/Konfiguration erlaubt
 
 // === Konfigurations-Modus freischalten ===
 #define ENABLE_CONFIG_MODE   1
