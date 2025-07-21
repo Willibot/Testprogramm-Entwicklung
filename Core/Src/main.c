@@ -124,11 +124,13 @@ int main(void)
             uint8_t status = cy8cmbr3108_read_sensor_input_status();
             #endif
 
+            #if USE_I2C_CY8CMBR3108_READ
             if (status & 0x01) { effect_params.hue = 0; }      // CS0: Rot
             else if (status & 0x02) { effect_params.hue = 170; } // CS1: Blau
             else if (status & 0x20) { effect_params.hue = 213; } // CS5: Magenta
             else if (status & 0x40) { effect_params.hue = 25; }  // CS6: Orange
             else { continue; }
+#endif
 
             effect_params.brightness = 255;
             effect_params.speed = 137;
