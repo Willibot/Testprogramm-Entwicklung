@@ -41,14 +41,3 @@ uint8_t cy8cmbr3108_read_latched_button_stat(void) {
     return 0;
 #endif
 }
-
-// Liest ein beliebiges Register (z.B. für Debug oder Konfiguration)
-uint8_t cy8cmbr3108_read_config_byte(uint8_t addr) {
-#if USE_I2C_CY8CMBR3108_READ
-    uint8_t value = 0;
-    HAL_I2C_Mem_Read(&hi2c1, CY8CMBR3108_I2C_ADDR, addr, I2C_MEMADD_SIZE_8BIT, &value, 1, 10);
-    return value;
-#else
-    return 0;
-#endif
-}

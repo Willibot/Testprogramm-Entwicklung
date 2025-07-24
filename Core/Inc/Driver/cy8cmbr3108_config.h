@@ -21,6 +21,7 @@ extern const uint8_t cy8cmbr3108_config_data[128];
  * Die Kommentare geben den Zweck des Registers an.
  */
 static const uint8_t cy8cmbr3108_writable_registers[] = {
+    0x00, // SENSOR_EN
     0x06, // LED_ON_EN
     0x08, // SENSITIVITY0
     0x09, // SENSITIVITY1
