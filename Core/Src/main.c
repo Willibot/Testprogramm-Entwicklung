@@ -105,7 +105,25 @@ void handle_touch_events(void)
                     button_press_timestamp[i] = HAL_GetTick();
 
                     sound_engine_play(SOUND_BEEP);
-                    effect_params.hue = 0; // Beispiel: Rot (anpassen je Taste)
+
+                    // Farbwahl je Taste
+                    switch(i) {
+                        case 0:  // CS0: Rot
+                            effect_params.hue = 0;
+                            break;
+                        case 1:  // CS1: Blau
+                            effect_params.hue = 170;
+                            break;
+                        case 5:  // CS5: Magenta
+                            effect_params.hue = 213;
+                            break;
+                        case 6:  // CS6: Gelb
+                            effect_params.hue = 42;
+                            break;
+                        default: // Andere: Grün
+                            effect_params.hue = 85;
+                            break;
+                    }
                     effect_params.brightness = 255;
                     led_effect_engine_set(LED_EFFECT_BLINK);
                     effect_active = true;
