@@ -43,37 +43,80 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+// Status der Ausgänge (z.B. Relais oder LEDs)
 bool output_state[3] = {0};
+// Zähler für Zeitmessungen (z.B. für Effekte)
 uint32_t timer_tick = 0;
-volatile bool touch_event_pending = false; // Flag für neuen Tastendruck
+// Wird vom Interrupt gesetzt, wenn ein Touch-Event erkannt wurde
+volatile bool touch_event_pending = false;
+// Zeitstempel für jede Taste (CS0-CS7), um die Haltedauer zu messen
+uint32_t button_press_timestamp[8] = {0};
+// Status der zuletzt gelesenen Latch-Register (optional)
 volatile uint8_t latched_status = 0;
+// Zeit, wann der aktuelle Effekt enden soll
 volatile uint32_t effect_end_time = 0;
+// Ist gerade ein Effekt aktiv?
 volatile bool effect_active = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void set_leds_solid_green(void);
+void handle_touch_events(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 // Effektsteuerung für LED-Blinken bei Interrupt
 
-// Zentrale Funktion für Grundzustand (solid green, reduzierte Helligkeit)
+// Setzt alle LEDs auf ein dauerhaftes Grün mit reduzierter Helligkeit
 void set_leds_solid_green(void) {
-    effect_params.hue = 85; // Grün
-    effect_params.brightness = 50; // 1/5 Helligkeit, anpassbar
+    effect_params.hue = 85; // Farbwert für Grün
+    effect_params.brightness = 50; // Geringe Helligkeit
     led_effect_engine_set(LED_EFFECT_SOLID);
     effect_active = false;
 }
 
+// Diese Funktion wird automatisch aufgerufen, wenn am INT-Pin (PA1) ein
+// fallender Flankenwechsel erkannt wird (Interrupt vom CY8CMBR3108).
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
-        touch_event_pending = true;  // Nur das Flag setzen!
+        touch_event_pending = true;
+    }
+}
+
+// Diese Funktion übernimmt die komplette Tasten- und Haltedauer-Logik.
+// Sie wird im Mainloop regelmäßig aufgerufen.
+void handle_touch_events(void)
+{
+    if (touch_event_pending)
+    {
+        touch_event_pending = false;
+        uint8_t latched = cy8cmbr3108_read_latched_button_stat();
+        for (int i = 0; i < 8; ++i) {
+            if ((BUTTON_MASK & (1 << i)) && (latched & (1 << i))) {
+                button_press_timestamp[i] = HAL_GetTick();
+            }
+        }
+    }
+
+    uint8_t status = cy8cmbr3108_read_button_stat();
+    uint32_t now = HAL_GetTick();
+    for (int i = 0; i < 8; ++i) {
+        if (BUTTON_MASK & (1 << i)) {
+            if (status & (1 << i)) {
+                if (button_press_timestamp[i] &&
+                    (now - button_press_timestamp[i] >= BUTTON_HOLD_TIME_MS)) {
+                    sound_engine_play(SOUND_BEEP); // Piepton nach 10s
+                    button_press_timestamp[i] = 0;
+                }
+            } else {
+                button_press_timestamp[i] = 0;
+            }
+        }
     }
 }
 
@@ -116,29 +159,7 @@ int main(void)
             set_leds_solid_green();
         }
 
-        if (touch_event_pending)
-        {
-            touch_event_pending = false;
-
-            #if USE_I2C_CY8CMBR3108_READ
-            uint8_t status = cy8cmbr3108_read_button_stat();
-            #endif
-
-            #if USE_I2C_CY8CMBR3108_READ
-            if (status & 0x01) { effect_params.hue = 0; }      // CS0: Rot
-            else if (status & 0x02) { effect_params.hue = 170; } // CS1: Blau
-            else if (status & 0x20) { effect_params.hue = 213; } // CS5: Magenta
-            else if (status & 0x40) { effect_params.hue = 25; }  // CS6: Orange
-            else { continue; }
-#endif
-
-            effect_params.brightness = 255;
-            effect_params.speed = 137;
-            led_effect_engine_set(LED_EFFECT_BLINK);
-            sound_engine_play(SOUND_BEEP);
-            effect_active = true;
-            effect_end_time = HAL_GetTick() + 500;
-        }
+        handle_touch_events();
     }
 }
 

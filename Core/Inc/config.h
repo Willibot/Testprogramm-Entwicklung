@@ -30,7 +30,7 @@ extern bool output_state[3];
 #define USE_LOGIC_ENGINE     1
 #define USE_LED_EFFECTS      1
 #define USE_I2C_CY8CMBR3108_READ   1   // 1 = Lesen vom CY8 erlaubt
-#define USE_I2C_CY8CMBR3108_WRITE  0   // 1 = Schreiben/Konfiguration erlaubt
+#define USE_I2C_CY8CMBR3108_WRITE  1   // 1 = Schreiben/Konfiguration erlaubt
 
 // === Konfigurations-Modus freischalten ===
 #define ENABLE_CONFIG_MODE   1
@@ -61,5 +61,33 @@ typedef struct {
 // - Keine Magic Numbers im Code – immer Defines aus config.h nutzen!
 
 #define EFFECT_CONFIG_MODE LED_EFFECT_CONFIG_MODE
+
+// === Tastenüberwachung (CS0, CS1, CS5, CS6) ===
+// Diese Maske gibt an, welche Tasten überwacht werden sollen.
+// Bit 0 = CS0, Bit 1 = CS1, Bit 5 = CS5, Bit 6 = CS6
+// Du kannst die Maske anpassen, falls du andere Tasten überwachen willst.
+#define BUTTON_MASK ((1<<0)|(1<<1)|(1<<5)|(1<<6))
+
+// Zeit in Millisekunden, wie lange eine Taste gehalten werden muss,
+// damit ein Soundeffekt ausgelöst wird.
+// Beispiel: 10000 = 10 Sekunden Halten für einen Spezialeffekt
+#define BUTTON_HOLD_TIME_MS 10000
+
+#include <stdint.h>
+#include <stdbool.h>
+
+// === Globale Variablen für die Tastenüberwachung ===
+
+// Dieses Flag wird vom Interrupt gesetzt, wenn ein Touch-Event erkannt wurde.
+// Das Hauptprogramm prüft dieses Flag regelmäßig und setzt es dann zurück.
+// Vorteil: Die eigentliche Auswertung passiert nicht im Interrupt, sondern im Mainloop.
+// Das ist sicherer und entspricht der Cypress-Empfehlung.
+extern volatile bool touch_event_pending;
+
+// Zeitstempel für jede Taste (CS0-CS7), um die Haltedauer zu messen.
+// Nur die Tasten aus BUTTON_MASK werden tatsächlich genutzt.
+// Beispiel: button_press_timestamp[0] ist für CS0, [1] für CS1, [5] für CS5, [6] für CS6.
+// Die anderen Einträge bleiben ungenutzt, stören aber nicht.
+extern uint32_t button_press_timestamp[8];
 
 #endif // CONFIG_H

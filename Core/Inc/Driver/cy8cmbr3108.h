@@ -10,8 +10,8 @@
 #define CY8CMBR3108_LATCHED_BUTTON_STAT 0xAC
 
 // Funktionsprototypen für Status-Lesen
-uint8_t cy8cmbr3108_read_button_stat(void);
-uint8_t cy8cmbr3108_read_latched_button_stat(void);
+uint8_t cy8cmbr3108_read_button_stat(void);         // liest 0xAA
+uint8_t cy8cmbr3108_read_latched_button_stat(void); // liest 0xAC
 
 // Das Konfigurationsarray (Definition in .c-Datei)
 extern const uint8_t cy8cmbr3108_config_data[128];
