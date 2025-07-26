@@ -41,3 +41,11 @@ uint8_t cy8cmbr3108_read_latched_button_stat(void) {
     return 0;
 #endif
 }
+// Setzt das Latch-Register (0xAC) zurück, indem 0x08 an das Command-Register (0x86) geschrieben wird
+void cy8cmbr3108_reset_latch_status(void)
+{
+    uint8_t cmd_reg = 0x86;
+    uint8_t reset_cmd = 0x08;
+    // 0x6E ist die 7-bit I2C-Adresse des CY8CMBR3108 (bit0=0 für Write)
+    HAL_I2C_Mem_Write(&hi2c1, 0x6E, cmd_reg, I2C_MEMADD_SIZE_8BIT, &reset_cmd, 1, 100);
+}
