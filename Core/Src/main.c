@@ -110,7 +110,7 @@ void handle_touch_events(void)
             if (status & (1 << i)) {
                 if (button_press_timestamp[i] &&
                     (now - button_press_timestamp[i] >= BUTTON_HOLD_TIME_MS)) {
-                    sound_engine_play(SOUND_BEEP); // Piepton nach 10s
+                    sound_engine_play(SOUND_BEEP); // SOUND_BEEP ist vom Typ sound_id_t
                     button_press_timestamp[i] = 0;
                 }
             } else {

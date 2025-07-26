@@ -17,7 +17,7 @@ typedef enum {
 
 void sound_engine_init(void);
 void sound_engine_update(uint32_t tick);
-void sound_engine_play(uint8_t sound_id);
+void sound_engine_play(sound_id_t sound_id);
 void sound_engine_stop(void);
 bool sound_engine_is_playing(void);
 void sound_play(uint8_t sound_id);
