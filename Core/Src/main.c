@@ -95,6 +95,10 @@ void handle_touch_events(void)
     if (touch_event_pending)
     {
         touch_event_pending = false;
+
+        // <<< Hier kurze Wartezeit einfügen, damit das Latch-Register sicher gesetzt ist >>>
+        HAL_Delay(3); // 2–5 ms reichen meist aus
+
         uint8_t latched = cy8cmbr3108_read_latched_button_stat();
         uint8_t status = cy8cmbr3108_read_button_stat(); // Status sofort lesen
 
