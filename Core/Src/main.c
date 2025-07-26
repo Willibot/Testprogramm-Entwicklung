@@ -96,14 +96,29 @@ void handle_touch_events(void)
     {
         touch_event_pending = false;
         uint8_t latched = cy8cmbr3108_read_latched_button_stat();
+        uint8_t status = cy8cmbr3108_read_button_stat(); // Status sofort lesen
+
         for (int i = 0; i < 8; ++i) {
             if ((BUTTON_MASK & (1 << i)) && (latched & (1 << i))) {
-                button_press_timestamp[i] = HAL_GetTick();
+                if (status & (1 << i)) {
+                    // Taste wurde gedrückt: Sofortige Rückmeldung
+                    button_press_timestamp[i] = HAL_GetTick();
+
+                    sound_engine_play(SOUND_BEEP);
+                    effect_params.hue = 0; // Beispiel: Rot (anpassen je Taste)
+                    effect_params.brightness = 255;
+                    led_effect_engine_set(LED_EFFECT_BLINK);
+                    effect_active = true;
+                    effect_end_time = HAL_GetTick() + 500; // Effekt 500 ms
+                } else {
+                    // Taste wurde losgelassen: Zeitstempel löschen
+                    button_press_timestamp[i] = 0;
+                }
             }
         }
     }
 
-    // Prüfe, ob überhaupt eine Taste überwacht werden muss
+    // Prüfe, ob überhaupt eine Taste überwacht werden muss (für Haltedauer)
     bool any_pressed = false;
     for (int i = 0; i < 8; ++i) {
         if ((BUTTON_MASK & (1 << i)) && button_press_timestamp[i]) {
@@ -120,7 +135,8 @@ void handle_touch_events(void)
                 if (status & (1 << i)) {
                     if (button_press_timestamp[i] &&
                         (now - button_press_timestamp[i] >= BUTTON_HOLD_TIME_MS)) {
-                        sound_engine_play(SOUND_BEEP);
+                        // Nach langer Haltedauer: Anderer Sound/Effekt möglich
+                        sound_engine_play(SOUND_CONFIG_MODE);
                         button_press_timestamp[i] = 0;
                     }
                 } else {
