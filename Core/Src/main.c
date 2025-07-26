@@ -103,18 +103,29 @@ void handle_touch_events(void)
         }
     }
 
-    uint8_t status = cy8cmbr3108_read_button_stat();
-    uint32_t now = HAL_GetTick();
+    // Prüfe, ob überhaupt eine Taste überwacht werden muss
+    bool any_pressed = false;
     for (int i = 0; i < 8; ++i) {
-        if (BUTTON_MASK & (1 << i)) {
-            if (status & (1 << i)) {
-                if (button_press_timestamp[i] &&
-                    (now - button_press_timestamp[i] >= BUTTON_HOLD_TIME_MS)) {
-                    sound_engine_play(SOUND_BEEP); // SOUND_BEEP ist vom Typ sound_id_t
+        if ((BUTTON_MASK & (1 << i)) && button_press_timestamp[i]) {
+            any_pressed = true;
+            break;
+        }
+    }
+
+    if (any_pressed) {
+        uint8_t status = cy8cmbr3108_read_button_stat();
+        uint32_t now = HAL_GetTick();
+        for (int i = 0; i < 8; ++i) {
+            if (BUTTON_MASK & (1 << i)) {
+                if (status & (1 << i)) {
+                    if (button_press_timestamp[i] &&
+                        (now - button_press_timestamp[i] >= BUTTON_HOLD_TIME_MS)) {
+                        sound_engine_play(SOUND_BEEP);
+                        button_press_timestamp[i] = 0;
+                    }
+                } else {
                     button_press_timestamp[i] = 0;
                 }
-            } else {
-                button_press_timestamp[i] = 0;
             }
         }
     }
