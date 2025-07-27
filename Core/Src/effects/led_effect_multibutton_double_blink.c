@@ -35,7 +35,7 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
  * Ablauf: Startfarbe (durch Startfunktion) -> aus -> farbe -> zurück zu grün
  */
 void led_effect_multibutton_double_blink_update(uint32_t tick) {
-    if (phase == 2) {
+    if (phase == 3) {
         set_leds_solid_green();
         phase = 0;
         blink_count = 0;
@@ -51,12 +51,15 @@ void led_effect_multibutton_double_blink_update(uint32_t tick) {
         led_driver_update();
         phase = 1;
     } else if (phase == 1) {
-        // 2. Umschalten: FARBE
+        // 2. Umschalten: BLAU (oder andere Farbe)
         RGB_t color = hsv_to_rgb(effect_hue, 255, effect_brightness);
         for (int i = 0; i < LED_COUNT; i++) {
             led_driver_set_led(i, color);
         }
         led_driver_update();
         phase = 2;
+    } else if (phase == 2) {
+        // 3. Umschalten: BLAU bleibt noch stehen!
+        phase = 3;
     }
 }
