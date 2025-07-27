@@ -57,6 +57,8 @@ volatile uint8_t latched_status = 0;
 volatile uint32_t effect_end_time = 0;
 // Ist gerade ein Effekt aktiv?
 volatile bool effect_active = false;
+// Ganz oben (bei den anderen globalen Variablen)
+static bool any_button_pressed = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -92,58 +94,56 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 // Sie wird im Mainloop regelmäßig aufgerufen.
 void handle_touch_events(void)
 {
-    // Prüfe, ob ein Touch-Event vom Interrupt signalisiert wurde
     if (!touch_event_pending) return;
     touch_event_pending = false;
 
     // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt)
-    // Das ist nötig, weil der Chip nach einem Interrupt kurz beschäftigt ist.
-    // Timeout-Schutz: maximal 20 ms warten, um Endlosschleifen zu vermeiden
     uint32_t start = HAL_GetTick();
     while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
-        if ((HAL_GetTick() - start) > 20) {
-            // Nach 20 ms abbrechen, falls der Chip nicht antwortet
-            // Das verhindert ein Hängenbleiben bei Hardwareproblemen
-            return;
-        }
+        if ((HAL_GetTick() - start) > 20) return;
     }
 
-    // Jetzt ist der CY8CMBR3108 bereit für I2C-Zugriffe
+    // Status-Register (0xAA) lesen: zeigt, welche Tasten aktuell gedrückt sind
+    uint8_t status = cy8cmbr3108_read_button_stat();
 
-    // Latch-Register (0xAC) lesen: zeigt, welche Tasten ein Event hatten
-    uint8_t latched = cy8cmbr3108_read_latched_button_stat();
+    // Prüfen, ob aktuell mindestens eine Taste gedrückt ist
+    bool now_pressed = (status & BUTTON_MASK) != 0;
 
-    // Wenn kein Event erkannt wurde, Funktion beenden
-    if (latched == 0) return;
+    // Effekt nur auslösen, wenn vorher keine Taste gedrückt war und jetzt mindestens eine
+    if (!any_button_pressed && now_pressed) {
+        // Effekt für alle aktuell gedrückten Tasten auslösen
+        for (int i = 0; i < 8; ++i) {
+            uint8_t mask = (1 << i);
+            if ((BUTTON_MASK & mask) && (status & mask)) {
+                button_press_timestamp[i] = HAL_GetTick();
+                sound_engine_play(SOUND_BEEP);
 
-    // Für alle Tasten prüfen, ob ein Event vorliegt und ggf. Effekt auslösen
-    for (int i = 0; i < 8; ++i) {
-        if ((BUTTON_MASK & (1 << i)) && (latched & (1 << i))) {
-            // Zeitstempel für Haltedauer speichern
-            button_press_timestamp[i] = HAL_GetTick();
+                switch(i) {
+                    case 0: effect_params.hue = 0; break;      // Rot
+                    case 1: effect_params.hue = 170; break;    // Blau
+                    case 5: effect_params.hue = 213; break;    // Magenta
+                    case 6: effect_params.hue = 42; break;     // Gelb
+                    default: effect_params.hue = 85; break;    // Grün
+                }
 
-            // Soundeffekt auslösen
-            sound_engine_play(SOUND_BEEP);
-
-            // Farbwahl je Taste
-            switch(i) {
-                case 0: effect_params.hue = 0; break;      // Rot
-                case 1: effect_params.hue = 170; break;    // Blau
-                case 5: effect_params.hue = 213; break;    // Magenta
-                case 6: effect_params.hue = 42; break;     // Gelb
-                default: effect_params.hue = 85; break;    // Grün
+                effect_params.brightness = 255;
+                led_effect_engine_set(LED_EFFECT_BLINK);
+                effect_active = true;
+                effect_end_time = HAL_GetTick() + 500;
             }
-
-            // LED-Effekt starten
-            effect_params.brightness = 255;
-            led_effect_engine_set(LED_EFFECT_BLINK);
-            effect_active = true;
-            effect_end_time = HAL_GetTick() + 500; // Effekt 500 ms
         }
     }
 
-    // Latch-Register jetzt zurücksetzen, damit neue Events erkannt werden
-    cy8cmbr3108_reset_latch_status();
+    // any_button_pressed für die nächste Runde merken
+    any_button_pressed = now_pressed;
+
+    // Optional: Zeitmessung für Long-Press oder Loslassen zurücksetzen
+    for (int i = 0; i < 8; ++i) {
+        uint8_t mask = (1 << i);
+        if ((BUTTON_MASK & mask) && !(status & mask)) {
+            button_press_timestamp[i] = 0;
+        }
+    }
 }
 
 int main(void)
