@@ -63,7 +63,7 @@ void handle_touch_events(void)
         // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt).
         uint32_t start = HAL_GetTick();
         while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
-            if ((HAL_GetTick() - start) > 50) {
+            if ((HAL_GetTick() - start) > 10) { // <-- hier auf 10 ms setzen
                 return;
             }
         }
