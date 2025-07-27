@@ -59,6 +59,8 @@ volatile uint32_t effect_end_time = 0;
 volatile bool effect_active = false;
 // Ganz oben (bei den anderen globalen Variablen)
 static bool any_button_pressed = false;
+// Zähler für die Anzahl der Touch-Events
+volatile uint8_t touch_event_count = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -86,7 +88,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
-        touch_event_pending = true;
+        touch_event_count++;
     }
 }
 
@@ -94,54 +96,55 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 // Sie wird im Mainloop regelmäßig aufgerufen.
 void handle_touch_events(void)
 {
-    if (!touch_event_pending) return;
-    touch_event_pending = false;
+    while (touch_event_count > 0) {
+        touch_event_count--;
 
-    // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt)
-    uint32_t start = HAL_GetTick();
-    while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
-        if ((HAL_GetTick() - start) > 20) return;
-    }
+        // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt)
+        uint32_t start = HAL_GetTick();
+        while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
+            if ((HAL_GetTick() - start) > 50) return;
+        }
 
-    // Status-Register (0xAA) lesen: zeigt, welche Tasten aktuell gedrückt sind
-    uint8_t status = cy8cmbr3108_read_button_stat();
+        // Status-Register (0xAA) lesen: zeigt, welche Tasten aktuell gedrückt sind
+        uint8_t status = cy8cmbr3108_read_button_stat();
 
-    // Prüfen, ob aktuell mindestens eine Taste gedrückt ist
-    bool now_pressed = (status & BUTTON_MASK) != 0;
+        // Prüfen, ob aktuell mindestens eine Taste gedrückt ist
+        bool now_pressed = (status & BUTTON_MASK) != 0;
 
-    // Effekt nur auslösen, wenn vorher keine Taste gedrückt war und jetzt mindestens eine
-    if (!any_button_pressed && now_pressed) {
-        // Effekt für alle aktuell gedrückten Tasten auslösen
-        for (int i = 0; i < 8; ++i) {
-            uint8_t mask = (1 << i);
-            if ((BUTTON_MASK & mask) && (status & mask)) {
-                button_press_timestamp[i] = HAL_GetTick();
-                sound_engine_play(SOUND_BEEP);
+        // Effekt nur auslösen, wenn vorher keine Taste gedrückt war und jetzt mindestens eine
+        if (!any_button_pressed && now_pressed) {
+            // Effekt für alle aktuell gedrückten Tasten auslösen
+            for (int i = 0; i < 8; ++i) {
+                uint8_t mask = (1 << i);
+                if ((BUTTON_MASK & mask) && (status & mask)) {
+                    button_press_timestamp[i] = HAL_GetTick();
+                    sound_engine_play(SOUND_BEEP);
 
-                switch(i) {
-                    case 0: effect_params.hue = 0; break;      // Rot
-                    case 1: effect_params.hue = 170; break;    // Blau
-                    case 5: effect_params.hue = 213; break;    // Magenta
-                    case 6: effect_params.hue = 42; break;     // Gelb
-                    default: effect_params.hue = 85; break;    // Grün
+                    switch(i) {
+                        case 0: effect_params.hue = 0; break;      // Rot
+                        case 1: effect_params.hue = 170; break;    // Blau
+                        case 5: effect_params.hue = 213; break;    // Magenta
+                        case 6: effect_params.hue = 42; break;     // Gelb
+                        default: effect_params.hue = 85; break;    // Grün
+                    }
+
+                    effect_params.brightness = 255;
+                    led_effect_engine_set(LED_EFFECT_BLINK);
+                    effect_active = true;
+                    effect_end_time = HAL_GetTick() + 500;
                 }
-
-                effect_params.brightness = 255;
-                led_effect_engine_set(LED_EFFECT_BLINK);
-                effect_active = true;
-                effect_end_time = HAL_GetTick() + 500;
             }
         }
-    }
 
-    // any_button_pressed für die nächste Runde merken
-    any_button_pressed = now_pressed;
+        // any_button_pressed für die nächste Runde merken
+        any_button_pressed = now_pressed;
 
-    // Optional: Zeitmessung für Long-Press oder Loslassen zurücksetzen
-    for (int i = 0; i < 8; ++i) {
-        uint8_t mask = (1 << i);
-        if ((BUTTON_MASK & mask) && !(status & mask)) {
-            button_press_timestamp[i] = 0;
+        // Optional: Zeitmessung für Long-Press oder Loslassen zurücksetzen
+        for (int i = 0; i < 8; ++i) {
+            uint8_t mask = (1 << i);
+            if ((BUTTON_MASK & mask) && !(status & mask)) {
+                button_press_timestamp[i] = 0;
+            }
         }
     }
 }
