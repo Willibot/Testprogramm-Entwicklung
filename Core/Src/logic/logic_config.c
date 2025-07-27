@@ -3,6 +3,7 @@
 #include "config.h"
 #include "led_effect_engine.h"
 #include "sound_engine.h"
+#include "stm32g0xx_hal.h" // Für HAL_GetTick()
 
 #define CONFIG_TIMEOUT_MS 10000
 
