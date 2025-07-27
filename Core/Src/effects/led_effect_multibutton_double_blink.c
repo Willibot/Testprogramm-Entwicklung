@@ -2,6 +2,9 @@
 #include "led_driver.h"
 #include "color_utils.h"
 
+// Funktionsprototyp aus main.c:
+void set_leds_solid_green(void);
+
 // Interner Zähler, wie viele Umschaltungen (An/Aus) schon erfolgt sind
 static uint8_t blink_count = 0;
 static uint32_t last_toggle = 0;
