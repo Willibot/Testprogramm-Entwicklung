@@ -82,12 +82,13 @@ void set_leds_solid_green(void) {
     effect_active = false;
 }
 
-// Diese Funktion wird automatisch aufgerufen, wenn am INT-Pin (PA1) ein
-// fallender Flankenwechsel erkannt wird (Interrupt vom CY8CMBR3108).
+// Diese Funktion wird vom EXTI-Interrupt aufgerufen, wenn am INT-Pin (PA1) ein
+// fallender Flankenwechsel erkannt wird (also ein Event vom CY8CMBR3108).
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 {
     if (GPIO_Pin == GPIO_PIN_1)
     {
+        // Erhöhe den Event-Zähler. So geht kein Event verloren, auch wenn mehrere schnell kommen.
         touch_event_count++;
     }
 }
@@ -96,30 +97,45 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 // Sie wird im Mainloop regelmäßig aufgerufen.
 void handle_touch_events(void)
 {
+    // Solange noch nicht abgearbeitete Events im Zähler stehen, wiederhole:
     while (touch_event_count > 0) {
+        // Ein Event wird jetzt bearbeitet, also Zähler verringern
         touch_event_count--;
 
-        // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt)
+        // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt).
+        // Nach einem Event kann der Chip kurz beschäftigt sein.
+        // Timeout-Schutz: maximal 50 ms warten, um Endlosschleifen zu vermeiden.
         uint32_t start = HAL_GetTick();
         while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
-            if ((HAL_GetTick() - start) > 50) return;
+            if ((HAL_GetTick() - start) > 50) {
+                // Wenn der Chip nach 50 ms immer noch nicht bereit ist,
+                // wird das Event nicht verarbeitet, sondern beim nächsten Mainloop-Durchlauf erneut versucht.
+                return;
+            }
         }
 
-        // Status-Register (0xAA) lesen: zeigt, welche Tasten aktuell gedrückt sind
+        // Status-Register (0xAA) lesen: zeigt, welche Tasten aktuell gedrückt sind.
         uint8_t status = cy8cmbr3108_read_button_stat();
 
-        // Prüfen, ob aktuell mindestens eine Taste gedrückt ist
+        // now_pressed ist true, wenn mindestens eine Taste gedrückt ist.
         bool now_pressed = (status & BUTTON_MASK) != 0;
 
-        // Effekt nur auslösen, wenn vorher keine Taste gedrückt war und jetzt mindestens eine
+        // Effekt nur auslösen, wenn vorher keine Taste gedrückt war und jetzt mindestens eine.
+        // So wird der Effekt nur beim ersten Auflegen eines Fingers ausgelöst,
+        // nicht beim Halten oder Loslassen.
         if (!any_button_pressed && now_pressed) {
-            // Effekt für alle aktuell gedrückten Tasten auslösen
+            // Effekt für alle aktuell gedrückten Tasten auslösen.
             for (int i = 0; i < 8; ++i) {
                 uint8_t mask = (1 << i);
+                // Nur Tasten auswerten, die im BUTTON_MASK erlaubt sind und gerade gedrückt sind.
                 if ((BUTTON_MASK & mask) && (status & mask)) {
+                    // Zeitstempel für Long-Press oder spätere Auswertung speichern.
                     button_press_timestamp[i] = HAL_GetTick();
+
+                    // Soundeffekt abspielen.
                     sound_engine_play(SOUND_BEEP);
 
+                    // Farbwahl je Taste.
                     switch(i) {
                         case 0: effect_params.hue = 0; break;      // Rot
                         case 1: effect_params.hue = 170; break;    // Blau
@@ -128,18 +144,20 @@ void handle_touch_events(void)
                         default: effect_params.hue = 85; break;    // Grün
                     }
 
+                    // LED-Effekt starten.
                     effect_params.brightness = 255;
                     led_effect_engine_set(LED_EFFECT_BLINK);
                     effect_active = true;
-                    effect_end_time = HAL_GetTick() + 500;
+                    effect_end_time = HAL_GetTick() + 500; // Effekt 500 ms
                 }
             }
         }
 
-        // any_button_pressed für die nächste Runde merken
+        // Merke, ob aktuell mindestens eine Taste gedrückt ist (für die nächste Runde).
         any_button_pressed = now_pressed;
 
-        // Optional: Zeitmessung für Long-Press oder Loslassen zurücksetzen
+        // Optional: Zeitmessung für Long-Press oder Loslassen zurücksetzen.
+        // Wenn eine Taste losgelassen wurde, setze ihren Zeitstempel auf 0.
         for (int i = 0; i < 8; ++i) {
             uint8_t mask = (1 << i);
             if ((BUTTON_MASK & mask) && !(status & mask)) {
