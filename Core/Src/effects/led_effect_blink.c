@@ -25,14 +25,12 @@
 #include "main.h" // für timer_tick
 #include "led_effect_engine.h"
 
-extern uint32_t timer_tick;
-
 static bool state = false;
 static uint32_t last_toggle = 0;
 
 void led_effect_blink_start(void) {
     state = false;
-    last_toggle = timer_tick;
+    last_toggle = HAL_GetTick();
     led_driver_clear();
 }
 

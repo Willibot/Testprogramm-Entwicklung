@@ -8,13 +8,12 @@
 
 static uint32_t config_start_time = 0;
 static uint8_t config_step = 0;
-extern uint32_t timer_tick;
 extern bool config_mode;
 
 void logic_config_init(void) {
     config_mode = true;
     config_step = 0;
-    config_start_time = timer_tick;
+    config_start_time = HAL_GetTick();
 
     led_effect_start(EFFECT_CONFIG_MODE);
     sound_play(SOUND_CONFIG_MODE);

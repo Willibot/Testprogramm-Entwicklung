@@ -59,7 +59,7 @@ void led_effect_multibutton_double_blink_update(uint32_t tick) {
         // LEDs an: gewünschte Farbe und Helligkeit setzen
         RGB_t color = hsv_to_rgb(effect_hue, 255, effect_brightness);
         for (int i = 0; i < LED_COUNT; i++) {
-            led_driver_set(i, color);
+            led_driver_set_led(i, color);
         }
     } else {
         // LEDs aus

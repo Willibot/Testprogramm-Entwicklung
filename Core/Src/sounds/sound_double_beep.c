@@ -19,7 +19,7 @@
 
 #include "sound_double_beep.h"
 #include "piezo_driver.h"
-extern uint32_t timer_tick;
+#include "stm32g0xx_hal.h" // Für HAL_GetTick()
 
 static enum {
     DBEEP_IDLE,
@@ -44,29 +44,29 @@ void sound_double_beep_start(uint16_t freq, uint16_t len_ms, uint16_t pause_ms) 
 
     piezo_beep(freq1, len1);
     state = DBEEP_FIRST_BEEP;
-    timestamp = timer_tick + len1;
+    timestamp = HAL_GetTick() + len1;
 }
 
 void sound_double_beep_update(void) {
     switch (state) {
         case DBEEP_FIRST_BEEP:
-            if (timer_tick >= timestamp) {
+            if (HAL_GetTick() >= timestamp) {
                 piezo_stop();
                 state = DBEEP_GAP;
-                timestamp = timer_tick + pause;
+                timestamp = HAL_GetTick() + pause;
             }
             break;
 
         case DBEEP_GAP:
-            if (timer_tick >= timestamp) {
+            if (HAL_GetTick() >= timestamp) {
                 piezo_beep(freq2, len2);
                 state = DBEEP_SECOND_BEEP;
-                timestamp = timer_tick + len2;
+                timestamp = HAL_GetTick() + len2;
             }
             break;
 
         case DBEEP_SECOND_BEEP:
-            if (timer_tick >= timestamp) {
+            if (HAL_GetTick() >= timestamp) {
                 piezo_stop();
                 state = DBEEP_IDLE;
             }
