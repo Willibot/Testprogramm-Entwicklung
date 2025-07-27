@@ -92,15 +92,18 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 // Sie wird im Mainloop regelmäßig aufgerufen.
 void handle_touch_events(void)
 {
+    // Prüfe, ob ein Touch-Event vom Interrupt signalisiert wurde
     if (!touch_event_pending) return;
     touch_event_pending = false;
 
-    // Warten, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK)
-    // Timeout-Schutz: maximal 20 ms warten
+    // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt)
+    // Das ist nötig, weil der Chip nach einem Interrupt kurz beschäftigt ist.
+    // Timeout-Schutz: maximal 20 ms warten, um Endlosschleifen zu vermeiden
     uint32_t start = HAL_GetTick();
     while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
         if ((HAL_GetTick() - start) > 20) {
             // Nach 20 ms abbrechen, falls der Chip nicht antwortet
+            // Das verhindert ein Hängenbleiben bei Hardwareproblemen
             return;
         }
     }
@@ -109,12 +112,17 @@ void handle_touch_events(void)
 
     // Latch-Register (0xAC) lesen: zeigt, welche Tasten ein Event hatten
     uint8_t latched = cy8cmbr3108_read_latched_button_stat();
-    if (latched == 0) return; // Kein Event? Abbrechen!
 
-    // Effekt(e) auslösen für alle erkannten Tasten
+    // Wenn kein Event erkannt wurde, Funktion beenden
+    if (latched == 0) return;
+
+    // Für alle Tasten prüfen, ob ein Event vorliegt und ggf. Effekt auslösen
     for (int i = 0; i < 8; ++i) {
         if ((BUTTON_MASK & (1 << i)) && (latched & (1 << i))) {
+            // Zeitstempel für Haltedauer speichern
             button_press_timestamp[i] = HAL_GetTick();
+
+            // Soundeffekt auslösen
             sound_engine_play(SOUND_BEEP);
 
             // Farbwahl je Taste
@@ -126,6 +134,7 @@ void handle_touch_events(void)
                 default: effect_params.hue = 85; break;    // Grün
             }
 
+            // LED-Effekt starten
             effect_params.brightness = 255;
             led_effect_engine_set(LED_EFFECT_BLINK);
             effect_active = true;
