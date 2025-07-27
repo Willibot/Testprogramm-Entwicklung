@@ -8,10 +8,9 @@ void set_leds_solid_green(void);
 // Interner Zähler, wie viele Umschaltungen (An/Aus) schon erfolgt sind
 static uint8_t blink_count = 0;
 static uint32_t last_toggle = 0;
-static uint8_t state = 1; // Effekt startet mit Farbe!
 static uint8_t effect_hue = 0;
 static uint8_t effect_brightness = 255;
-static uint8_t phase = 0; // <-- HIER auf Dateiebene!
+static uint8_t phase = 0; // <-- Hier, auf Dateiebene! (NICHT in einer Funktion)
 
 /**
  * @brief Startet den Multibutton-Doppelblink-Effekt.
