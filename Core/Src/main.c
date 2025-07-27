@@ -43,6 +43,7 @@ void set_leds_solid_green(void) {
     effect_params.hue = 85; // Grün
     effect_params.brightness = 50;
     led_effect_engine_set(LED_EFFECT_SOLID);
+    led_driver_update(); // <-- Ergänzen, falls nicht im Effektmodul enthalten!
     effect_active = false;
 }
 
