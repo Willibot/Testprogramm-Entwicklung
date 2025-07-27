@@ -11,6 +11,7 @@ static uint32_t last_toggle = 0;
 static uint8_t state = 1; // Effekt startet mit Farbe!
 static uint8_t effect_hue = 0;
 static uint8_t effect_brightness = 255;
+static uint8_t phase = 0; // <-- HIER auf Dateiebene!
 
 /**
  * @brief Startet den Multibutton-Doppelblink-Effekt.
@@ -26,9 +27,7 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
         led_driver_set_led(i, color);
     }
     led_driver_update();
-    // phase-Variable zurücksetzen!
-    extern uint8_t phase;
-    phase = 0;
+    phase = 0; // <-- Jetzt funktioniert das!
 }
 
 /**
@@ -37,9 +36,6 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
  * Ablauf: Startfarbe (durch Startfunktion) -> aus -> farbe -> zurück zu grün
  */
 void led_effect_multibutton_double_blink_update(uint32_t tick) {
-    // Ablauf: Startfarbe (durch Startfunktion) -> aus -> farbe -> zurück zu grün
-    static uint8_t phase = 0; // 0: aus, 1: farbe, 2: fertig
-
     if (phase == 2) {
         set_leds_solid_green();
         phase = 0;
