@@ -143,12 +143,13 @@ int main(void)
     {
         sound_engine_tick();
         sound_beep_update();
-        led_effect_engine_update(HAL_GetTick()); // <-- HIER ERGÄNZEN!
-        led_effect_multibutton_double_blink_update(HAL_GetTick());
+        led_effect_engine_update(HAL_GetTick());
 
-        if (effect_active && HAL_GetTick() > effect_end_time)
-        {
-            set_leds_solid_green();
+        if (effect_active) {
+            led_effect_multibutton_double_blink_update(HAL_GetTick());
+            if (HAL_GetTick() > effect_end_time) {
+                set_leds_solid_green();
+            }
         }
 
         handle_touch_events();
