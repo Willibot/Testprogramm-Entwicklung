@@ -2,16 +2,17 @@
 #include "led_driver.h"
 #include "color_utils.h"
 
-// Funktionsprototyp aus main.c (damit Rückfall auf grün möglich ist)
+// Rückfallfunktion aus main.c
 void set_leds_solid_green(void);
 
 // Interner Zustand für den Effekt
-static uint8_t phase = 0;            // 0: ausstehend, 1: aus, 2: farbe, 3: zurück zu grün
+static uint8_t phase = 0;            // 0: Startfarbe, 1: aus, 2: farbe, 3: fertig
 static uint32_t last_toggle = 0;     // Zeitstempel für Phasenwechsel
 static uint8_t effect_hue = 0;       // Farbe für den Blinkeffekt
 static uint8_t effect_brightness = 255; // Helligkeit
+static bool effect_active = false;   // Effekt läuft nur, wenn true
 
-#define PHASE_DURATION 200           // Dauer jeder Phase in ms
+#define PHASE_DURATION 150           // Dauer jeder Phase in ms
 
 /**
  * @brief Startet den Doppelblink-Effekt (z.B. blau → aus → blau → grün)
@@ -20,6 +21,7 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
     effect_hue = hue;
     effect_brightness = brightness;
     phase = 0;
+    effect_active = true;
     last_toggle = 0;
 
     // Sofort Farbe anzeigen (Impuls 1)
@@ -35,7 +37,8 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
  * Ablauf: Farbe (Start) → aus → Farbe → zurück zu grün
  */
 void led_effect_multibutton_double_blink_update(uint32_t tick) {
-    // Warte, bis die aktuelle Phase abgelaufen ist
+    if (!effect_active) return;
+
     if ((tick - last_toggle) < PHASE_DURATION) return;
     last_toggle = tick;
 
@@ -60,6 +63,7 @@ void led_effect_multibutton_double_blink_update(uint32_t tick) {
         case 2:
             // Phase 2: FARBE → zurück zu grün
             set_leds_solid_green();
+            effect_active = false;
             phase = 3; // Effekt ist fertig
             break;
         default:
