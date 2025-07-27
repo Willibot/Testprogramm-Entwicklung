@@ -95,34 +95,45 @@ void handle_touch_events(void)
     if (!touch_event_pending) return;
     touch_event_pending = false;
 
-    // Kurzes Delay, damit das Latch-Register sicher gesetzt ist
-    HAL_Delay(3);
+    // Warten, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK)
+    // Timeout-Schutz: maximal 20 ms warten
+    uint32_t start = HAL_GetTick();
+    while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
+        if ((HAL_GetTick() - start) > 20) {
+            // Nach 20 ms abbrechen, falls der Chip nicht antwortet
+            return;
+        }
+    }
 
+    // Jetzt ist der CY8CMBR3108 bereit für I2C-Zugriffe
+
+    // Latch-Register (0xAC) lesen: zeigt, welche Tasten ein Event hatten
     uint8_t latched = cy8cmbr3108_read_latched_button_stat();
     if (latched == 0) return; // Kein Event? Abbrechen!
 
-    // Effekt(e) auslösen
+    // Effekt(e) auslösen für alle erkannten Tasten
     for (int i = 0; i < 8; ++i) {
         if ((BUTTON_MASK & (1 << i)) && (latched & (1 << i))) {
             button_press_timestamp[i] = HAL_GetTick();
             sound_engine_play(SOUND_BEEP);
 
+            // Farbwahl je Taste
             switch(i) {
-                case 0: effect_params.hue = 0; break;
-                case 1: effect_params.hue = 170; break;
-                case 5: effect_params.hue = 213; break;
-                case 6: effect_params.hue = 42; break;
-                default: effect_params.hue = 85; break;
+                case 0: effect_params.hue = 0; break;      // Rot
+                case 1: effect_params.hue = 170; break;    // Blau
+                case 5: effect_params.hue = 213; break;    // Magenta
+                case 6: effect_params.hue = 42; break;     // Gelb
+                default: effect_params.hue = 85; break;    // Grün
             }
 
             effect_params.brightness = 255;
             led_effect_engine_set(LED_EFFECT_BLINK);
             effect_active = true;
-            effect_end_time = HAL_GetTick() + 500;
+            effect_end_time = HAL_GetTick() + 500; // Effekt 500 ms
         }
     }
 
-    // Jetzt Latch löschen (nur wenn ein Event erkannt wurde)
+    // Latch-Register jetzt zurücksetzen, damit neue Events erkannt werden
     cy8cmbr3108_reset_latch_status();
 }
 
