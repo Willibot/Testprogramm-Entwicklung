@@ -24,8 +24,6 @@
 /* Private variables ---------------------------------------------------------*/
 // Zeitstempel für jede Taste (CS0-CS7), um die Haltedauer zu messen
 uint32_t button_press_timestamp[8] = {0};
-// Zeit, wann der aktuelle Effekt enden soll
-volatile uint32_t effect_end_time = 0;
 // Ist gerade ein Effekt aktiv?
 volatile bool effect_active = false;
 // Merkt, ob aktuell mindestens eine Taste gedrückt ist
@@ -43,7 +41,7 @@ void set_leds_solid_green(void) {
     effect_params.hue = 85; // Grün
     effect_params.brightness = 50;
     led_effect_engine_set(LED_EFFECT_SOLID);
-    led_driver_update(); // <-- Ergänzen, falls nicht im Effektmodul enthalten!
+    led_driver_update();
     effect_active = false;
 }
 
@@ -95,7 +93,6 @@ void handle_touch_events(void)
                     led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
 
                     effect_active = true;
-                    effect_end_time = HAL_GetTick() + 800;
                 }
             }
         }
@@ -147,9 +144,6 @@ int main(void)
 
         if (effect_active) {
             led_effect_multibutton_double_blink_update(HAL_GetTick());
-            if (HAL_GetTick() > effect_end_time) {
-                set_leds_solid_green();
-            }
         }
 
         handle_touch_events();
