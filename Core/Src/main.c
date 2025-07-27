@@ -96,44 +96,40 @@ void handle_touch_events(void)
     {
         touch_event_pending = false;
 
-        // <<< Hier kurze Wartezeit einfügen, damit das Latch-Register sicher gesetzt ist >>>
-        HAL_Delay(3); // 2–5 ms reichen meist aus
+        // Kurze Wartezeit, damit das Latch-Register sicher gesetzt ist
+        HAL_Delay(3);
 
+        // Latch-Register lesen, ggf. mit Fallback
         uint8_t latched = cy8cmbr3108_read_latched_button_stat();
-        uint8_t status = cy8cmbr3108_read_button_stat(); // Status sofort lesen
+        if (latched == 0) {
+            HAL_Delay(2);
+            latched = cy8cmbr3108_read_latched_button_stat();
+        }
+
+        // Latch-Register jetzt SOFORT zurücksetzen!
+        cy8cmbr3108_reset_latch_status();
+
+        uint8_t status = cy8cmbr3108_read_button_stat();
 
         for (int i = 0; i < 8; ++i) {
             if ((BUTTON_MASK & (1 << i)) && (latched & (1 << i))) {
                 if (status & (1 << i)) {
-                    // Taste wurde gedrückt: Sofortige Rückmeldung
                     button_press_timestamp[i] = HAL_GetTick();
-
                     sound_engine_play(SOUND_BEEP);
 
                     // Farbwahl je Taste
                     switch(i) {
-                        case 0:  // CS0: Rot
-                            effect_params.hue = 0;
-                            break;
-                        case 1:  // CS1: Blau
-                            effect_params.hue = 170;
-                            break;
-                        case 5:  // CS5: Magenta
-                            effect_params.hue = 213;
-                            break;
-                        case 6:  // CS6: Gelb
-                            effect_params.hue = 42;
-                            break;
-                        default: // Andere: Grün
-                            effect_params.hue = 85;
-                            break;
+                        case 0:  effect_params.hue = 0; break;    // Rot
+                        case 1:  effect_params.hue = 170; break;  // Blau
+                        case 5:  effect_params.hue = 213; break;  // Magenta
+                        case 6:  effect_params.hue = 42; break;   // Gelb
+                        default: effect_params.hue = 85; break;   // Grün
                     }
                     effect_params.brightness = 255;
                     led_effect_engine_set(LED_EFFECT_BLINK);
                     effect_active = true;
-                    effect_end_time = HAL_GetTick() + 500; // Effekt 500 ms
+                    effect_end_time = HAL_GetTick() + 500;
                 } else {
-                    // Taste wurde losgelassen: Zeitstempel löschen
                     button_press_timestamp[i] = 0;
                 }
             }
