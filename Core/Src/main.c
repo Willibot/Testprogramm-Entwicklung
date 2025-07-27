@@ -92,77 +92,38 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
 // Sie wird im Mainloop regelmäßig aufgerufen.
 void handle_touch_events(void)
 {
-    if (touch_event_pending)
-    {
-        touch_event_pending = false;
+    if (!touch_event_pending) return;
+    touch_event_pending = false;
 
-        // Kurze Wartezeit, damit das Latch-Register sicher gesetzt ist
-        HAL_Delay(3);
+    // Kurzes Delay, damit das Latch-Register sicher gesetzt ist
+    HAL_Delay(3);
 
-        // Latch-Register lesen, ggf. mit Fallback
-        uint8_t latched = cy8cmbr3108_read_latched_button_stat();
-        if (latched == 0) {
-            HAL_Delay(2);
-            latched = cy8cmbr3108_read_latched_button_stat();
-        }
+    uint8_t latched = cy8cmbr3108_read_latched_button_stat();
+    if (latched == 0) return; // Kein Event? Abbrechen!
 
-        // Latch-Register jetzt SOFORT zurücksetzen!
-        cy8cmbr3108_reset_latch_status();
-
-        uint8_t status = cy8cmbr3108_read_button_stat();
-
-        for (int i = 0; i < 8; ++i) {
-            if ((BUTTON_MASK & (1 << i)) && (latched & (1 << i))) {
-                if (status & (1 << i)) {
-                    button_press_timestamp[i] = HAL_GetTick();
-                    sound_engine_play(SOUND_BEEP);
-
-                    // Farbwahl je Taste
-                    switch(i) {
-                        case 0:  effect_params.hue = 0; break;    // Rot
-                        case 1:  effect_params.hue = 170; break;  // Blau
-                        case 5:  effect_params.hue = 213; break;  // Magenta
-                        case 6:  effect_params.hue = 42; break;   // Gelb
-                        default: effect_params.hue = 85; break;   // Grün
-                    }
-                    effect_params.brightness = 255;
-                    led_effect_engine_set(LED_EFFECT_BLINK);
-                    effect_active = true;
-                    effect_end_time = HAL_GetTick() + 500;
-                } else {
-                    button_press_timestamp[i] = 0;
-                }
-            }
-        }
-    }
-
-    // Prüfe, ob überhaupt eine Taste überwacht werden muss (für Haltedauer)
-    bool any_pressed = false;
+    // Effekt(e) auslösen
     for (int i = 0; i < 8; ++i) {
-        if ((BUTTON_MASK & (1 << i)) && button_press_timestamp[i]) {
-            any_pressed = true;
-            break;
+        if ((BUTTON_MASK & (1 << i)) && (latched & (1 << i))) {
+            button_press_timestamp[i] = HAL_GetTick();
+            sound_engine_play(SOUND_BEEP);
+
+            switch(i) {
+                case 0: effect_params.hue = 0; break;
+                case 1: effect_params.hue = 170; break;
+                case 5: effect_params.hue = 213; break;
+                case 6: effect_params.hue = 42; break;
+                default: effect_params.hue = 85; break;
+            }
+
+            effect_params.brightness = 255;
+            led_effect_engine_set(LED_EFFECT_BLINK);
+            effect_active = true;
+            effect_end_time = HAL_GetTick() + 500;
         }
     }
 
-    if (any_pressed) {
-        uint8_t status = cy8cmbr3108_read_button_stat();
-        uint32_t now = HAL_GetTick();
-        for (int i = 0; i < 8; ++i) {
-            if (BUTTON_MASK & (1 << i)) {
-                if (status & (1 << i)) {
-                    if (button_press_timestamp[i] &&
-                        (now - button_press_timestamp[i] >= BUTTON_HOLD_TIME_MS)) {
-                        // Nach langer Haltedauer: Anderer Sound/Effekt möglich
-                        sound_engine_play(SOUND_CONFIG_MODE);
-                        button_press_timestamp[i] = 0;
-                    }
-                } else {
-                    button_press_timestamp[i] = 0;
-                }
-            }
-        }
-    }
+    // Jetzt Latch löschen (nur wenn ein Event erkannt wurde)
+    cy8cmbr3108_reset_latch_status();
 }
 
 int main(void)
