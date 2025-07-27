@@ -36,12 +36,12 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
  */
 void led_effect_multibutton_double_blink_update(uint32_t tick) {
     if (blink_count >= 2) {
-        // Effekt ist fertig: Sofort zurück zu solid grün
+        // Nach dem zweiten Farbschritt: Sofort zurück zu solid grün
         set_leds_solid_green();
         return;
     }
 
-    if (tick - last_toggle < 100) return; // <-- HIER AUF 100 ms ERHÖHEN!
+    if (tick - last_toggle < 200) return; // 200 ms pro Phase
     last_toggle = tick;
 
     if (blink_count == 0) {
