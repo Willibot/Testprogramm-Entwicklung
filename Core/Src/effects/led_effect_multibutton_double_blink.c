@@ -48,6 +48,11 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
  * @param tick Aktueller Zeitwert (z.B. von HAL_GetTick()), wird für das Timing verwendet.
  */
 void led_effect_multibutton_double_blink_update(uint32_t tick) {
+    // Effekt nach zwei Umschaltungen (aus, farbe) beenden!
+    if (blink_count >= 2) {
+        return;
+    }
+
     // Prüfe, ob seit der letzten Umschaltung mindestens 100 ms vergangen sind
     if (tick - last_toggle < 30) return;
     last_toggle = tick;
@@ -67,8 +72,5 @@ void led_effect_multibutton_double_blink_update(uint32_t tick) {
         led_driver_update();
         state = 1;
         blink_count++;
-    } else {
-        // Nach 0.3s: Effekt fertig, Rückfall ins grün übernimmt main.c
-        blink_count = 0;
     }
 }
