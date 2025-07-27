@@ -41,7 +41,7 @@ void led_effect_multibutton_double_blink_update(uint32_t tick) {
         return;
     }
 
-    if (tick - last_toggle < 30) return;
+    if (tick - last_toggle < 100) return; // <-- HIER AUF 100 ms ERHÖHEN!
     last_toggle = tick;
 
     if (blink_count == 0) {
