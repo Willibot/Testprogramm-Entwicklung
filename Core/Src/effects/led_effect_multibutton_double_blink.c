@@ -14,6 +14,8 @@ static bool effect_active = false;   // Effekt läuft nur, wenn true
 
 #define PHASE_DURATION 150           // Dauer jeder Phase in ms
 
+static RGB_t blink_color; // Buffer für die Blinkfarbe
+
 /**
  * @brief Startet den Doppelblink-Effekt (z.B. blau → aus → blau → grün)
  */
@@ -24,10 +26,10 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
     effect_active = true;
     last_toggle = 0;
 
-    // Sofort Farbe anzeigen (Impuls 1)
-    RGB_t color = hsv_to_rgb(effect_hue, 255, effect_brightness);
+    // Farbe nur einmal berechnen und im Buffer speichern
+    blink_color = hsv_to_rgb(effect_hue, 255, effect_brightness);
     for (int i = 0; i < LED_COUNT; i++) {
-        led_driver_set_led(i, color);
+        led_driver_set_led(i, blink_color);
     }
     led_driver_update();
 }
@@ -38,36 +40,30 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
  */
 void led_effect_multibutton_double_blink_update(uint32_t tick) {
     if (!effect_active) return;
-
     if ((tick - last_toggle) < PHASE_DURATION) return;
     last_toggle = tick;
 
     switch (phase) {
         case 0:
-            // Phase 0: Farbe → AUS
+            // AUS (alle LEDs auf 0)
             led_driver_clear();
             led_driver_update();
             phase = 1;
             break;
         case 1:
-            // Phase 1: AUS → FARBE (Impuls 2)
-            {
-                RGB_t color = hsv_to_rgb(effect_hue, 255, effect_brightness);
-                for (int i = 0; i < LED_COUNT; i++) {
-                    led_driver_set_led(i, color);
-                }
-                led_driver_update();
-                phase = 2;
+            // FARBE (Buffer mit bereits gesetztem Wert senden)
+            for (int i = 0; i < LED_COUNT; i++) {
+                led_driver_set_led(i, blink_color);
             }
+            led_driver_update();
+            phase = 2;
             break;
         case 2:
-            // Phase 2: FARBE → zurück zu grün
             set_leds_solid_green();
             effect_active = false;
-            phase = 3; // Effekt ist fertig
+            phase = 3;
             break;
         default:
-            // Effekt ist beendet, nichts tun
             break;
     }
 }
