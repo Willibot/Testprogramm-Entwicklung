@@ -1,6 +1,7 @@
 #include "effects/led_effect_multibutton_double_blink.h"
 #include "led_driver.h"
 #include "color_utils.h"
+#include "stm32g0xx_hal.h" // <-- Diese Zeile ergänzen!
 
 // Rückfallfunktion aus main.c
 void set_leds_solid_green(void);
