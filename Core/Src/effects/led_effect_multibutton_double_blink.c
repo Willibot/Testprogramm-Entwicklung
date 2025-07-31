@@ -13,7 +13,8 @@ static uint8_t effect_hue = 0;       // Farbe für den Blinkeffekt
 static uint8_t effect_brightness = 255; // Helligkeit
 static bool effect_active = false;   // Effekt läuft nur, wenn true
 
-#define PHASE_DURATION 150           // Dauer jeder Phase in ms
+#define PHASE_ON_DURATION   120  // ms, Dauer der Farbblitze
+#define PHASE_OFF_DURATION   80  // ms, Dauer der Dunkelphasen
 
 static RGB_t blink_color; // Buffer für die Blinkfarbe
 
@@ -25,13 +26,13 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
     effect_brightness = brightness;
     phase = 0;
     effect_active = true;
-    last_toggle = HAL_GetTick(); // <-- HIER statt 0 den aktuellen Tick setzen!
+    last_toggle = HAL_GetTick();
 
     // Farbe nur einmal berechnen und im Buffer speichern
     blink_color = hsv_to_rgb(effect_hue, 255, effect_brightness);
-    for (int i = 0; i < LED_COUNT; i++) {
-        led_driver_set_led(i, blink_color);
-    }
+
+    // Start mit Dunkelphase
+    led_driver_clear();
     led_driver_update();
 }
 
@@ -41,28 +42,40 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
  */
 void led_effect_multibutton_double_blink_update(uint32_t tick) {
     if (!effect_active) return;
-    if ((tick - last_toggle) < PHASE_DURATION) return;
+
+    uint32_t duration = (phase % 2 == 0) ? PHASE_OFF_DURATION : PHASE_ON_DURATION;
+    if ((tick - last_toggle) < duration) return;
     last_toggle = tick;
 
     switch (phase) {
-        case 0:
-            // AUS (alle LEDs auf 0)
-            led_driver_clear();
-            led_driver_update();
-            phase = 1;
-            break;
-        case 1:
-            // FARBE (Buffer mit bereits gesetztem Wert senden)
+        case 0: // Dunkelphase vor erstem Blink
             for (int i = 0; i < LED_COUNT; i++) {
                 led_driver_set_led(i, blink_color);
             }
             led_driver_update();
+            phase = 1;
+            break;
+        case 1: // Erster Blink
+            led_driver_clear();
+            led_driver_update();
             phase = 2;
             break;
-        case 2:
+        case 2: // Dunkelphase zwischen den Blinks
+            for (int i = 0; i < LED_COUNT; i++) {
+                led_driver_set_led(i, blink_color);
+            }
+            led_driver_update();
+            phase = 3;
+            break;
+        case 3: // Zweiter Blink
+            led_driver_clear();
+            led_driver_update();
+            phase = 4;
+            break;
+        case 4: // Dunkelphase nach dem zweiten Blink
             set_leds_solid_green();
             effect_active = false;
-            phase = 3;
+            phase = 5;
             break;
         default:
             break;
