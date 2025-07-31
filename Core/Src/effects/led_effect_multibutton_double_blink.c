@@ -24,7 +24,7 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
     effect_brightness = brightness;
     phase = 0;
     effect_active = true;
-    last_toggle = 0;
+    last_toggle = HAL_GetTick(); // <-- HIER statt 0 den aktuellen Tick setzen!
 
     // Farbe nur einmal berechnen und im Buffer speichern
     blink_color = hsv_to_rgb(effect_hue, 255, effect_brightness);
