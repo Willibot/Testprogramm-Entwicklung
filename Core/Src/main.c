@@ -18,6 +18,7 @@
 #include "sounds/sound_engine.h"
 #include "sounds/sound_beep.h"
 #include "sounds/piezo_driver.h"
+#include "sounds/sound_single_sweep_1.h"
 #include "Driver/cy8cmbr3108.h"
 #include "Driver/cy8cmbr3108_config.h"
 
@@ -78,7 +79,8 @@ void handle_touch_events(void)
                 uint8_t mask = (1 << i);
                 if ((BUTTON_MASK & mask) && (status & mask)) {
                     button_press_timestamp[i] = HAL_GetTick();
-                    sound_engine_play(SOUND_BEEP);
+                    // sound_engine_play(SOUND_BEEP); // <-- Entfernt, nur noch Sweep!
+                    sound_single_sweep_1_start();
 
                     // Farbwahl je Taste.
                     switch(i) {
@@ -140,6 +142,7 @@ int main(void)
     {
         sound_engine_tick();
         sound_beep_update();
+        sound_single_sweep_1_update(); // <--- Sweep-Update ergänzen!
         led_effect_engine_update(HAL_GetTick());
 
         if (effect_active) {
