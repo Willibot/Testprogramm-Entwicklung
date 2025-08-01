@@ -34,7 +34,7 @@ TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim14;
 DMA_HandleTypeDef hdma_tim3_ch2;
 
-/* TIM3 init function */
+/* TIM3 init function (LEDs, SK6812/WS2812) */
 void MX_TIM3_Init(void)
 {
 
@@ -78,7 +78,7 @@ void MX_TIM3_Init(void)
   HAL_TIM_MspPostInit(&htim3);
 
 }
-/* TIM14 init function */
+/* TIM14 init function (Piezo-Buzzer, Soundeffekte) */
 void MX_TIM14_Init(void)
 {
 
@@ -92,9 +92,9 @@ void MX_TIM14_Init(void)
 
   /* USER CODE END TIM14_Init 1 */
   htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 1599;
+  htim14.Init.Prescaler = 0; // Dummy-Wert, wird im Sound-Code gesetzt
   htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim14.Init.Period = 9;
+  htim14.Init.Period = 99;   // Dummy-Wert, wird im Sound-Code gesetzt
   htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
@@ -113,11 +113,7 @@ void MX_TIM14_Init(void)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM14_Init 2 */
-
-  /* USER CODE END TIM14_Init 2 */
   HAL_TIM_MspPostInit(&htim14);
-
 }
 
 void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef* tim_pwmHandle)
@@ -256,4 +252,12 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 /* USER CODE BEGIN 1 */
 // Eigene Timer-Initialisierungen, spezielle PWM-Frequenzen oder Interrupt-Handler können hier ergänzt werden.
 // Beispiel: Anpassung von TIM14 für Piezo-Buzzer in separater Funktion.
+// Hinweis: Die Frequenz für den Piezo-Buzzer wird im Sound-Code (z.B. piezo_beep())
+// dynamisch gesetzt, indem Prescaler und Period zur gewünschten Frequenz berechnet und
+// mit __HAL_TIM_SET_PRESCALER und __HAL_TIM_SET_AUTORELOAD gesetzt werden.
+// Beispiel für 4 kHz bei 32 MHz Timer-Clock:
+//   prescaler = 799; period = 9;
+// Beispiel für 2 kHz:
+//   prescaler = 1599; period = 9;
+// Die Initialisierung hier dient nur als Startwert.
 /* USER CODE END 1 */

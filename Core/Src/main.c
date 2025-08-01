@@ -85,7 +85,7 @@ void handle_touch_events(void)
                         case 0: effect_params.hue = 0; break;      // Rot
                         case 1: effect_params.hue = 170; break;    // Blau
                         case 5: effect_params.hue = 213; break;    // Magenta
-                        case 6: effect_params.hue = 28; break;     // Orange
+                        case 6: effect_params.hue = 14; break;     // Orange
                         default: effect_params.hue = 85; break;    // Grün
                     }
 

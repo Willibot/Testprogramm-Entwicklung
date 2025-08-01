@@ -32,7 +32,7 @@ void piezo_init(void) {
 
 void piezo_beep(uint16_t freq_hz, uint16_t duration_ms) {
     uint32_t timer_clock = HAL_RCC_GetPCLK1Freq(); // z.B. 64 MHz
-    uint32_t prescaler = 1;
+    uint32_t prescaler = 0; // Volle Clock!
     uint32_t period = (timer_clock / freq_hz) - 1;
 
     __HAL_TIM_SET_PRESCALER(&htim14, prescaler);
