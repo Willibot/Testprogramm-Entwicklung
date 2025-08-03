@@ -11,7 +11,7 @@ static uint8_t phase = 0;            // 0: Startfarbe, 1: aus, 2: farbe, 3: fert
 static uint32_t last_toggle = 0;     // Zeitstempel für Phasenwechsel
 static uint8_t effect_hue = 0;       // Farbe für den Blinkeffekt
 static uint8_t effect_brightness = 255; // Helligkeit
-static bool effect_active = false;   // Effekt läuft nur, wenn true
+extern volatile bool effect_active; // Globale Variable aus main.c verwenden!
 
 #define PHASE_ON_DURATION   120  // ms, Dauer der Farbblitze
 #define PHASE_OFF_DURATION   80  // ms, Dauer der Dunkelphasen
@@ -25,7 +25,7 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness) 
     effect_hue = hue;
     effect_brightness = brightness;
     phase = 0;
-    effect_active = true;
+    effect_active = true; // Globale Variable!
     last_toggle = HAL_GetTick();
 
     // Farbe nur einmal berechnen und im Buffer speichern
@@ -73,7 +73,7 @@ void led_effect_multibutton_double_blink_update(uint32_t tick) {
             phase = 4;
             break;
         case 4: // Dunkelphase nach dem zweiten Blink
-            effect_active = false; // Effekt ist beendet
+            effect_active = false; // Globale Variable!
             phase = 5;
             break;
         default:

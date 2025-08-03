@@ -45,7 +45,6 @@ void set_leds_solid_green(void) {
     effect_params.hue = 85; // Grün
     effect_params.brightness = 50; // Reduzierte Helligkeit
     led_effect_engine_set(LED_EFFECT_SOLID);
-    led_driver_update();
     effect_active = false;
 }
 
