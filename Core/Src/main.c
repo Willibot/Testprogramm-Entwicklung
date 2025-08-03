@@ -179,12 +179,15 @@ int main(void)
     {
         sound_engine_tick();
         sound_beep_update();
-        sound_single_sweep_1_update(); // <--- Sweep-Update ergänzen!
+        sound_single_sweep_1_update();
         led_effect_engine_update(HAL_GetTick());
 
         if (effect_active) {
             led_effect_multibutton_double_blink_update(HAL_GetTick());
         }
+
+        // Hold-Effekt immer updaten!
+        led_effect_hold_multibutton_chase_left_update(HAL_GetTick());
 
         handle_touch_events();
     }

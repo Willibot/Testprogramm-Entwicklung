@@ -73,7 +73,6 @@ void led_effect_multibutton_double_blink_update(uint32_t tick) {
             phase = 4;
             break;
         case 4: // Dunkelphase nach dem zweiten Blink
-            set_leds_solid_green();
             effect_active = false;
             phase = 5;
             break;
