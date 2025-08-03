@@ -82,7 +82,6 @@ void handle_touch_events(void)
                 uint8_t mask = (1 << i);
                 if ((BUTTON_MASK & mask) && (status & mask)) {
                     button_press_timestamp[i] = HAL_GetTick();
-                    // sound_engine_play(SOUND_BEEP); // <-- Entfernt, nur noch Sweep!
                     sound_single_sweep_1_start();
 
                     // Farbwahl je Taste.
@@ -95,11 +94,9 @@ void handle_touch_events(void)
                     }
 
                     effect_params.brightness = 255;
-                    // Hier ggf. Doppelblink-Effekt starten
-                    // led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
-
+                    led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness); // <-- aktivieren!
                     effect_active = true;
-                    hold_effect_active[i] = false; // Hold-Effekt noch nicht aktiv
+                    hold_effect_active[i] = false;
                 }
             }
         }
@@ -115,14 +112,14 @@ void handle_touch_events(void)
                     if ((HAL_GetTick() - button_press_timestamp[i]) > 400 && !effect_active) {
                         // Starte Hold-Effekt mit taster-spezifischer Farbe
                         switch(i) {
-                            case 0: effect_params.hue = 0; break;      // Rot
-                            case 1: effect_params.hue = 170; break;    // Blau
-                            case 5: effect_params.hue = 213; break;    // Magenta
-                            case 6: effect_params.hue = 14; break;     // Orange
-                            default: effect_params.hue = 85; break;    // Grün
+                            case 0: effect_params.hue = 0; break;
+                            case 1: effect_params.hue = 170; break;
+                            case 5: effect_params.hue = 213; break;
+                            case 6: effect_params.hue = 14; break;
+                            default: effect_params.hue = 85; break;
                         }
                         effect_params.brightness = 255;
-                        effect_params.speed = 5; // Beispielwert für Geschwindigkeit
+                        effect_params.speed = 5;
                         led_effect_hold_multibutton_chase_left_start();
                         hold_effect_active[i] = true;
                     }
