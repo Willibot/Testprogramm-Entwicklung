@@ -15,6 +15,7 @@
 #include "config.h"
 #include "effects/led_effect_engine.h"
 #include "effects/led_effect_multibutton_double_blink.h"
+#include "effects/led_effect_hold_multibutton_chase_left.h"
 #include "sounds/sound_engine.h"
 #include "sounds/sound_beep.h"
 #include "sounds/piezo_driver.h"
@@ -31,6 +32,8 @@ volatile bool effect_active = false;
 static bool any_button_pressed = false;
 // Zähler für die Anzahl der Touch-Events
 volatile uint8_t touch_event_count = 0;
+// Merkt, ob Hold-Effekt pro Taste läuft
+bool hold_effect_active[8] = {0};
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -92,9 +95,46 @@ void handle_touch_events(void)
                     }
 
                     effect_params.brightness = 255;
-                    led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
+                    // Hier ggf. Doppelblink-Effekt starten
+                    // led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
 
                     effect_active = true;
+                    hold_effect_active[i] = false; // Hold-Effekt noch nicht aktiv
+                }
+            }
+        }
+
+        // Nach dem Doppelblink, prüfe ob Taste gehalten wird und Hold-Effekt starten
+        for (int i = 0; i < 8; ++i) {
+            uint8_t mask = (1 << i);
+
+            // Taste ist gedrückt
+            if ((BUTTON_MASK & mask) && (status & mask)) {
+                if (button_press_timestamp[i] && !hold_effect_active[i]) {
+                    // Prüfe, ob Doppelblink vorbei ist (z.B. nach 400 ms)
+                    if ((HAL_GetTick() - button_press_timestamp[i]) > 400 && !effect_active) {
+                        // Starte Hold-Effekt mit taster-spezifischer Farbe
+                        switch(i) {
+                            case 0: effect_params.hue = 0; break;      // Rot
+                            case 1: effect_params.hue = 170; break;    // Blau
+                            case 5: effect_params.hue = 213; break;    // Magenta
+                            case 6: effect_params.hue = 14; break;     // Orange
+                            default: effect_params.hue = 85; break;    // Grün
+                        }
+                        effect_params.brightness = 255;
+                        effect_params.speed = 5; // Beispielwert für Geschwindigkeit
+                        led_effect_hold_multibutton_chase_left_start();
+                        hold_effect_active[i] = true;
+                    }
+                }
+            }
+
+            // Taste losgelassen: Hold-Effekt stoppen
+            if ((BUTTON_MASK & mask) && !(status & mask)) {
+                button_press_timestamp[i] = 0;
+                if (hold_effect_active[i]) {
+                    led_effect_hold_multibutton_chase_left_stop();
+                    hold_effect_active[i] = false;
                 }
             }
         }
