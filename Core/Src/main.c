@@ -64,15 +64,14 @@ void handle_touch_events(void)
     while (touch_event_count > 0) {
         touch_event_count--;
 
-        // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt).
+        // Warte, bis der CY8CMBR3108 auf I2C-Anfragen antwortet (ACK gibt)
         uint32_t start = HAL_GetTick();
         while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
-            if ((HAL_GetTick() - start) > 10) { // <-- hier auf 10 ms setzen
+            if ((HAL_GetTick() - start) > 10) {
                 return;
             }
         }
 
-        // Status-Register (0xAA) lesen: zeigt, welche Tasten aktuell gedrückt sind.
         uint8_t status = cy8cmbr3108_read_button_stat();
         bool now_pressed = (status & BUTTON_MASK) != 0;
 
@@ -85,7 +84,7 @@ void handle_touch_events(void)
                     sound_single_sweep_1_start();
 
                     // Farbwahl je Taste
-                    switch(i) {
+                    switch (i) {
                         case 0: effect_params.hue = 0; break;
                         case 1: effect_params.hue = 170; break;
                         case 5: effect_params.hue = 213; break;
@@ -101,14 +100,13 @@ void handle_touch_events(void)
             }
         }
 
-        // ----------- CHASE-START NACH DOPPELBLINK -----------
+        // ----------- CHASE-START NACH DOPPELBLINK (normale Variante) -----------
         if (!effect_active && !hold_chase_effect_active && now_pressed) {
             for (int i = 0; i < 8; ++i) {
                 uint8_t mask = (1 << i);
                 if ((status & mask) && !hold_effect_active[i]) {
-                    // Farbwahl je Taste
                     uint8_t hue;
-                    switch(i) {
+                    switch (i) {
                         case 0: hue = 0; break;
                         case 1: hue = 170; break;
                         case 5: hue = 213; break;
@@ -116,22 +114,17 @@ void handle_touch_events(void)
                         default: hue = 85; break;
                     }
                     uint8_t brightness = 255;
+                    effect_params.speed = 5; // Standardgeschwindigkeit
 
-                    // Standardgeschwindigkeit für Chase-Effekt setzen
-                    effect_params.speed = 5;  // 0 = sehr langsam, 25 = sehr schnell
-
-                    // Starte Chase nur mit gültigen Werten
-                    if (brightness > 0) {
-                        led_effect_hold_multibutton_chase_left_start(hue, brightness);
-                        for (int j = 0; j < 8; ++j) hold_effect_active[j] = false;
-                        hold_effect_active[i] = true;
-                    }
-                    break; // nur eine Taste gleichzeitig zulassen
+                    led_effect_hold_multibutton_chase_left_start(hue, brightness);
+                    for (int j = 0; j < 8; ++j) hold_effect_active[j] = false;
+                    hold_effect_active[i] = true;
+                    break;
                 }
             }
         }
 
-        // ----------- CHASE-STOPP-BEDINGUNGEN -----------
+        // ----------- CHASE-STOPP-BEDINGUNGEN (robust) -----------
         if (hold_chase_effect_active) {
             int active_index = -1;
             for (int i = 0; i < 8; ++i) {
@@ -151,12 +144,17 @@ void handle_touch_events(void)
                 }
             }
 
-            // Stoppen wenn keine Taste mehr oder mehrere Tasten gleichzeitig
-            if (!any_held || held_count > 1) {
+            // Sofortiger Stopp bei Mehrfachtouch
+            if (held_count > 1) {
                 led_effect_hold_multibutton_chase_left_stop();
                 for (int i = 0; i < 8; ++i) hold_effect_active[i] = false;
             }
-            // Stoppen wenn andere Taste als die ursprüngliche aktiv
+            // Stopp wenn keine Taste mehr gehalten wird
+            else if (!any_held) {
+                led_effect_hold_multibutton_chase_left_stop();
+                for (int i = 0; i < 8; ++i) hold_effect_active[i] = false;
+            }
+            // Stopp wenn andere Taste als die ursprüngliche aktiv
             else if (active_index >= 0) {
                 uint8_t mask = (1 << active_index);
                 if (!(status & mask)) {
@@ -173,6 +171,32 @@ void handle_touch_events(void)
             uint8_t mask = (1 << i);
             if ((BUTTON_MASK & mask) && !(status & mask)) {
                 button_press_timestamp[i] = 0;
+            }
+        }
+    }
+
+    // ----------- ZUSATZ: Chase-Start ohne neues Event -----------
+    // Nur wenn Doppelblink definitiv vorbei ist (!effect_active)
+    if (!effect_active && !hold_chase_effect_active && any_button_pressed) {
+        uint8_t status = cy8cmbr3108_read_button_stat();
+        for (int i = 0; i < 8; ++i) {
+            uint8_t mask = (1 << i);
+            if ((BUTTON_MASK & mask) && (status & mask)) {
+                uint8_t hue;
+                switch (i) {
+                    case 0: hue = 0; break;
+                    case 1: hue = 170; break;
+                    case 5: hue = 213; break;
+                    case 6: hue = 14; break;
+                    default: hue = 85; break;
+                }
+                uint8_t brightness = 255;
+                effect_params.speed = 5; // Standardgeschwindigkeit
+
+                led_effect_hold_multibutton_chase_left_start(hue, brightness);
+                for (int j = 0; j < 8; ++j) hold_effect_active[j] = false;
+                hold_effect_active[i] = true;
+                break;
             }
         }
     }
