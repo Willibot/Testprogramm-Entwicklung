@@ -26,15 +26,19 @@ extern RGB_t led_state[LED_COUNT];
 
 static uint8_t current_pos = 0;
 static uint32_t last_update = 0;
+static uint8_t chase_hue = 0;
+static uint8_t chase_brightness = 255;
 extern volatile bool hold_chase_effect_active; // Globale Variable aus main.c
 
 /**
  * @brief Startet den "Taste gehalten"-Effekt.
  * Setzt Startposition und aktiviert den Effekt.
  */
-void led_effect_hold_multibutton_chase_left_start(void) {
+void led_effect_hold_multibutton_chase_left_start(uint8_t hue, uint8_t brightness) {
     current_pos = 0;
     last_update = 0;
+    chase_hue = hue;
+    chase_brightness = brightness;
     hold_chase_effect_active = true;
 }
 
@@ -56,7 +60,7 @@ void led_effect_hold_multibutton_chase_left_update(uint32_t tick) {
         if (i == current_pos) {
             led_state[i] = (RGB_t){0, 0, 0}; // LED aus
         } else {
-            led_state[i] = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
+            led_state[i] = hsv_to_rgb(chase_hue, 255, chase_brightness);
         }
     }
 
