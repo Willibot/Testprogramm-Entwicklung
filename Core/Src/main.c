@@ -189,6 +189,13 @@ int main(void)
         if (!effect_active && !any_button_pressed && !hold_active) {
             set_leds_solid_green();
         }
+
+        if (hold_chase_effect_active) {
+            for (int i = 0; i < LED_COUNT; i++) {
+                led_state[i] = (RGB_t){255, 0, 0};
+            }
+            led_driver_update();
+        }
     }
 }
 
