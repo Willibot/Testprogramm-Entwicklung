@@ -76,7 +76,7 @@ void handle_touch_events(void)
         uint8_t status = cy8cmbr3108_read_button_stat();
         bool now_pressed = (status & BUTTON_MASK) != 0;
 
-        // Effekt nur auslösen, wenn vorher keine Taste gedrückt war und jetzt mindestens eine.
+        // ----------- NEUER TASTENSTART -----------
         if (!any_button_pressed && now_pressed) {
             for (int i = 0; i < 8; ++i) {
                 uint8_t mask = (1 << i);
@@ -84,46 +84,88 @@ void handle_touch_events(void)
                     button_press_timestamp[i] = HAL_GetTick();
                     sound_single_sweep_1_start();
 
-                    // Farbwahl je Taste.
+                    // Farbwahl je Taste
                     switch(i) {
-                        case 0: effect_params.hue = 0; break;      // Rot
-                        case 1: effect_params.hue = 170; break;    // Blau
-                        case 5: effect_params.hue = 213; break;    // Magenta
-                        case 6: effect_params.hue = 14; break;     // Orange
-                        default: effect_params.hue = 85; break;    // Grün
+                        case 0: effect_params.hue = 0; break;
+                        case 1: effect_params.hue = 170; break;
+                        case 5: effect_params.hue = 213; break;
+                        case 6: effect_params.hue = 14; break;
+                        default: effect_params.hue = 85; break;
                     }
+                    effect_params.brightness = 255;
 
-                    effect_params.brightness = 255; // Volle Helligkeit für den Effekt
                     led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
                     effect_active = true;
-                    hold_effect_active[i] = false;
+                    for (int j = 0; j < 8; ++j) hold_effect_active[j] = false;
                 }
             }
         }
 
-        // Nach dem Doppelblink, prüfe ob Taste gehalten wird und Hold-Effekt starten
-        for (int i = 0; i < 8; ++i) {
-            uint8_t mask = (1 << i);
-            if (!effect_active && !hold_effect_active[i] && (status & mask)) {
-                // Farbwahl je Taste.
-                uint8_t hue;
-                switch(i) {
-                    case 0: hue = 0; break;
-                    case 1: hue = 170; break;
-                    case 5: hue = 213; break;
-                    case 6: hue = 14; break;
-                    default: hue = 85; break;
+        // ----------- CHASE-START NACH DOPPELBLINK -----------
+        if (!effect_active && !hold_chase_effect_active && now_pressed) {
+            for (int i = 0; i < 8; ++i) {
+                uint8_t mask = (1 << i);
+                if ((status & mask) && !hold_effect_active[i]) {
+                    // Farbwahl je Taste
+                    uint8_t hue;
+                    switch(i) {
+                        case 0: hue = 0; break;
+                        case 1: hue = 170; break;
+                        case 5: hue = 213; break;
+                        case 6: hue = 14; break;
+                        default: hue = 85; break;
+                    }
+                    uint8_t brightness = 255;
+
+                    // Starte Chase nur mit gültigen Werten
+                    if (brightness > 0) {
+                        led_effect_hold_multibutton_chase_left_start(hue, brightness);
+                        for (int j = 0; j < 8; ++j) hold_effect_active[j] = false;
+                        hold_effect_active[i] = true;
+                    }
+                    break; // nur eine Taste gleichzeitig zulassen
                 }
-                uint8_t brightness = 255;
-                effect_params.speed = 5;
-                led_effect_hold_multibutton_chase_left_start(hue, brightness);
-                hold_effect_active[i] = true;
+            }
+        }
+
+        // ----------- CHASE-STOPP-BEDINGUNGEN -----------
+        if (hold_chase_effect_active) {
+            int active_index = -1;
+            for (int i = 0; i < 8; ++i) {
+                if (hold_effect_active[i]) {
+                    active_index = i;
+                    break;
+                }
+            }
+
+            bool any_held = false;
+            int held_count = 0;
+            for (int i = 0; i < 8; ++i) {
+                uint8_t mask = (1 << i);
+                if ((BUTTON_MASK & mask) && (status & mask)) {
+                    any_held = true;
+                    held_count++;
+                }
+            }
+
+            // Stoppen wenn keine Taste mehr oder mehrere Tasten gleichzeitig
+            if (!any_held || held_count > 1) {
+                led_effect_hold_multibutton_chase_left_stop();
+                for (int i = 0; i < 8; ++i) hold_effect_active[i] = false;
+            }
+            // Stoppen wenn andere Taste als die ursprüngliche aktiv
+            else if (active_index >= 0) {
+                uint8_t mask = (1 << active_index);
+                if (!(status & mask)) {
+                    led_effect_hold_multibutton_chase_left_stop();
+                    for (int i = 0; i < 8; ++i) hold_effect_active[i] = false;
+                }
             }
         }
 
         any_button_pressed = now_pressed;
 
-        // Zeitmessung für Loslassen zurücksetzen.
+        // Zeitmessung für Loslassen zurücksetzen
         for (int i = 0; i < 8; ++i) {
             uint8_t mask = (1 << i);
             if ((BUTTON_MASK & mask) && !(status & mask)) {
@@ -187,15 +229,8 @@ int main(void)
                 break;
             }
         }
-        if (!effect_active && !any_button_pressed && !hold_active) {
+        if (!effect_active && !any_button_pressed && !hold_active && !hold_chase_effect_active) {
             set_leds_solid_green();
-        }
-
-        if (hold_chase_effect_active) {
-            for (int i = 0; i < LED_COUNT; i++) {
-                led_state[i] = (RGB_t){255, 0, 0};
-            }
-            led_driver_update();
         }
     }
 }

@@ -35,6 +35,11 @@ extern volatile bool hold_chase_effect_active; // Globale Variable aus main.c
  * Setzt Startposition und aktiviert den Effekt.
  */
 void led_effect_hold_multibutton_chase_left_start(uint8_t hue, uint8_t brightness) {
+    // Sicherheitscheck: Effekt nur starten, wenn Werte gültig
+    if (brightness == 0 || LED_COUNT == 0) {
+        hold_chase_effect_active = false;
+        return;
+    }
     current_pos = 0;
     last_update = 0;
     chase_hue = hue;
@@ -50,17 +55,27 @@ void led_effect_hold_multibutton_chase_left_start(uint8_t hue, uint8_t brightnes
 void led_effect_hold_multibutton_chase_left_update(uint32_t tick) {
     if (!hold_chase_effect_active) return;
 
-    // Geschwindigkeit: Je höher effect_params.speed, desto schneller läuft der Effekt
-    uint32_t interval = 150 - effect_params.speed * 10;
-    if (tick - last_update < interval) return;
+    // Sicherheitscheck: Effekt stoppen, falls Werte ungültig
+    if (chase_brightness == 0 || LED_COUNT == 0) {
+        led_effect_hold_multibutton_chase_left_stop();
+        return;
+    }
+
+    // Geschwindigkeit aus effect_params.speed, sinnvoll begrenzt
+    int16_t interval = 150 - (effect_params.speed * 10);
+    if (interval < 20) interval = 20;
+    if (interval > 300) interval = 300;
+
+    if (tick - last_update < (uint32_t)interval) return;
     last_update = tick;
 
+    RGB_t color = hsv_to_rgb(chase_hue, 255, chase_brightness);
+
     for (int i = 0; i < LED_COUNT; i++) {
-        // Alle LEDs in Tasterfarbe, eine (current_pos) ist aus
         if (i == current_pos) {
-            led_state[i] = (RGB_t){0, 0, 0}; // LED aus
+            led_state[i] = (RGB_t){0, 0, 0}; // "aus"-LED
         } else {
-            led_state[i] = hsv_to_rgb(chase_hue, 255, chase_brightness);
+            led_state[i] = color;
         }
     }
 
