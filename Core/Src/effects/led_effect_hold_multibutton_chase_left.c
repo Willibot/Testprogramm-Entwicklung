@@ -44,28 +44,11 @@ void led_effect_hold_multibutton_chase_left_start(void) {
  * Wird zyklisch im Mainloop aufgerufen.
  */
 void led_effect_hold_multibutton_chase_left_update(uint32_t tick) {
-    if (!hold_chase_effect_active) return; // Effekt nur ausführen, wenn aktiv!
+    if (!hold_chase_effect_active) return;
 
-    // Geschwindigkeit: Je höher effect_params.speed, desto kürzer das Intervall
-    uint32_t interval = 150 - effect_params.speed * 10;
-    if (tick - last_update < interval) return; // Noch nicht genug Zeit vergangen
-    last_update = tick;
-
-    // Alle LEDs in Tasterfarbe, eine kreisend AUS
     for (int i = 0; i < LED_COUNT; i++) {
-        if (i == current_pos) {
-            // Die laufende LED wird ausgeschaltet (schwarz)
-            led_state[i] = (RGB_t){0, 0, 0};
-        } else {
-            // Alle anderen LEDs leuchten in der aktuellen Tasterfarbe und Helligkeit
-            led_state[i] = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
-        }
+        led_state[i] = (RGB_t){255, 0, 0}; // Rot
     }
-
-    // Laufposition für die nächste Runde erhöhen (Ring-Effekt)
-    current_pos = (current_pos + 1) % LED_COUNT;
-
-    // LED-Daten an den Treiber senden
     led_driver_update();
 }
 
