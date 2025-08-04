@@ -55,13 +55,11 @@ void led_effect_hold_multibutton_chase_left_start(uint8_t hue, uint8_t brightnes
 void led_effect_hold_multibutton_chase_left_update(uint32_t tick) {
     if (!hold_chase_effect_active) return;
 
-    // Sicherheitscheck: Effekt stoppen, falls Werte ungültig
     if (chase_brightness == 0 || LED_COUNT == 0) {
         led_effect_hold_multibutton_chase_left_stop();
         return;
     }
 
-    // Geschwindigkeit aus effect_params.speed, sinnvoll begrenzt
     int16_t interval = 150 - (effect_params.speed * 10);
     if (interval < 20) interval = 20;
     if (interval > 300) interval = 300;
@@ -69,17 +67,21 @@ void led_effect_hold_multibutton_chase_left_update(uint32_t tick) {
     if (tick - last_update < (uint32_t)interval) return;
     last_update = tick;
 
+    // Grundfarbe für alle LEDs
     RGB_t color = hsv_to_rgb(chase_hue, 255, chase_brightness);
-
     for (int i = 0; i < LED_COUNT; i++) {
-        if (i == current_pos) {
-            led_state[i] = (RGB_t){0, 0, 0}; // "aus"-LED
-        } else {
-            led_state[i] = color;
-        }
+        led_state[i] = color;
     }
 
+    // Vier "aus"-LEDs setzen (gegenüberliegend)
+    led_state[current_pos] = (RGB_t){0, 0, 0};
+    led_state[(current_pos + LED_COUNT/4) % LED_COUNT] = (RGB_t){0, 0, 0};
+    led_state[(current_pos + LED_COUNT/2) % LED_COUNT] = (RGB_t){0, 0, 0};
+    led_state[(current_pos + (3 * LED_COUNT) / 4) % LED_COUNT] = (RGB_t){0, 0, 0};
+
+    // Position weiterschieben
     current_pos = (current_pos + 1) % LED_COUNT;
+
     led_driver_update();
 }
 
