@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// led_effect_hold_mulitbutton_chase_left.c
+// led_effect_hold_multibutton_chase_left.c
 // Zweck: Signalisierung "Taste gehalten" – Alle LEDs leuchten in Tasterfarbe,
 // eine LED ist aus und läuft im Kreis, solange die Taste gehalten wird.
 //
@@ -46,9 +46,21 @@ void led_effect_hold_multibutton_chase_left_start(void) {
 void led_effect_hold_multibutton_chase_left_update(uint32_t tick) {
     if (!hold_chase_effect_active) return;
 
+    // Geschwindigkeit: Je höher effect_params.speed, desto schneller läuft der Effekt
+    uint32_t interval = 150 - effect_params.speed * 10;
+    if (tick - last_update < interval) return;
+    last_update = tick;
+
     for (int i = 0; i < LED_COUNT; i++) {
-        led_state[i] = (RGB_t){255, 0, 0}; // Rot
+        // Alle LEDs in Tasterfarbe, eine (current_pos) ist aus
+        if (i == current_pos) {
+            led_state[i] = (RGB_t){0, 0, 0}; // LED aus
+        } else {
+            led_state[i] = hsv_to_rgb(effect_params.hue, 255, effect_params.brightness);
+        }
     }
+
+    current_pos = (current_pos + 1) % LED_COUNT;
     led_driver_update();
 }
 
