@@ -106,16 +106,17 @@ void handle_touch_events(void)
             uint8_t mask = (1 << i);
             if (!effect_active && !hold_effect_active[i] && (status & mask)) {
                 // Farbwahl je Taste.
+                uint8_t hue;
                 switch(i) {
-                    case 0: effect_params.hue = 0; break;
-                    case 1: effect_params.hue = 170; break;
-                    case 5: effect_params.hue = 213; break;
-                    case 6: effect_params.hue = 14; break;
-                    default: effect_params.hue = 85; break;
+                    case 0: hue = 0; break;
+                    case 1: hue = 170; break;
+                    case 5: hue = 213; break;
+                    case 6: hue = 14; break;
+                    default: hue = 85; break;
                 }
-                effect_params.brightness = 255;
+                uint8_t brightness = 255;
                 effect_params.speed = 5;
-                led_effect_hold_multibutton_chase_left_start();
+                led_effect_hold_multibutton_chase_left_start(hue, brightness);
                 hold_effect_active[i] = true;
             }
         }
