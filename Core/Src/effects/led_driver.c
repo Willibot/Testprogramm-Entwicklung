@@ -86,7 +86,12 @@ void led_driver_init(void) {
 // -----------------------------------------------------------------------------
 void led_driver_update(void) {
     encode_leds_to_pwm();
-    led_driver_refresh(); // <-- Ergänzen!
+
+    // Prüfe, ob DMA gerade nicht aktiv/busy ist
+    if (!dma_busy) {
+        dma_busy = true;
+        HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_2, (uint32_t *)pwm_buffer, sizeof(pwm_buffer) / sizeof(uint16_t));
+    }
 }
 
 // -----------------------------------------------------------------------------
