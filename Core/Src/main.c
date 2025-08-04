@@ -34,7 +34,7 @@ static bool any_button_pressed = false;
 volatile uint8_t touch_event_count = 0;
 // Merkt, ob Hold-Effekt pro Taste läuft
 bool hold_effect_active[8] = {0};
-volatile bool hold_chase_effect_active = false;
+volatile bool hold_chase_effect_active = false; // Globale Variable für Hold-Chase-Effekt
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -187,7 +187,7 @@ int main(void)
             led_effect_multibutton_double_blink_update(HAL_GetTick());
         }
 
-        // Hold-Effekt immer updaten!
+        // Hold-Chase-Effekt immer updaten!
         led_effect_hold_multibutton_chase_left_update(HAL_GetTick());
 
         handle_touch_events();

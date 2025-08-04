@@ -26,7 +26,7 @@ extern RGB_t led_state[LED_COUNT];
 
 static uint8_t current_pos = 0;
 static uint32_t last_update = 0;
-extern volatile bool hold_chase_effect_active;
+extern volatile bool hold_chase_effect_active; // Globale Variable aus main.c
 
 /**
  * @brief Startet den "Taste gehalten"-Effekt.
@@ -44,7 +44,7 @@ void led_effect_hold_multibutton_chase_left_start(void) {
  * Wird zyklisch im Mainloop aufgerufen.
  */
 void led_effect_hold_multibutton_chase_left_update(uint32_t tick) {
-    if (!hold_chase_effect_active) return;
+    if (!hold_chase_effect_active) return; // Effekt nur ausführen, wenn aktiv!
 
     // Geschwindigkeit: Je höher effect_params.speed, desto kürzer das Intervall
     uint32_t interval = 150 - effect_params.speed * 10;
