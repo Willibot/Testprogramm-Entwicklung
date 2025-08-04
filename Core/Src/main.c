@@ -117,6 +117,9 @@ void handle_touch_events(void)
                     }
                     uint8_t brightness = 255;
 
+                    // Standardgeschwindigkeit für Chase-Effekt setzen
+                    effect_params.speed = 5;  // 0 = sehr langsam, 25 = sehr schnell
+
                     // Starte Chase nur mit gültigen Werten
                     if (brightness > 0) {
                         led_effect_hold_multibutton_chase_left_start(hue, brightness);
