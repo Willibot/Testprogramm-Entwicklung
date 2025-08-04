@@ -181,15 +181,17 @@ int main(void)
         sound_engine_tick();
         sound_beep_update();
         sound_single_sweep_1_update();
-        led_effect_engine_update(HAL_GetTick());
+
+        // Effekt-Engine nur updaten, wenn kein Hold-Chase-Effekt läuft!
+        if (!hold_chase_effect_active) {
+            led_effect_engine_update(HAL_GetTick());
+        }
 
         if (effect_active) {
             led_effect_multibutton_double_blink_update(HAL_GetTick());
         }
 
-        // Hold-Chase-Effekt immer updaten!
         led_effect_hold_multibutton_chase_left_update(HAL_GetTick());
-
         handle_touch_events();
 
         // Rückfall auf grün, wenn kein Effekt und keine Taste aktiv
