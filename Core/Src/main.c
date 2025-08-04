@@ -34,6 +34,7 @@ static bool any_button_pressed = false;
 volatile uint8_t touch_event_count = 0;
 // Merkt, ob Hold-Effekt pro Taste läuft
 bool hold_effect_active[8] = {0};
+volatile bool hold_chase_effect_active = false;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
