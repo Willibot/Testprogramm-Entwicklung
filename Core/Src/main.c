@@ -104,35 +104,19 @@ void handle_touch_events(void)
         // Nach dem Doppelblink, prüfe ob Taste gehalten wird und Hold-Effekt starten
         for (int i = 0; i < 8; ++i) {
             uint8_t mask = (1 << i);
-
-            // Taste ist gedrückt
-            if ((BUTTON_MASK & mask) && (status & mask)) {
-                if (button_press_timestamp[i] && !hold_effect_active[i]) {
-                    // Prüfe, ob Doppelblink vorbei ist (z.B. nach 400 ms)
-                    if ((HAL_GetTick() - button_press_timestamp[i]) > 400 && !effect_active) {
-                        // Starte Hold-Effekt mit taster-spezifischer Farbe
-                        switch(i) {
-                            case 0: effect_params.hue = 0; break;
-                            case 1: effect_params.hue = 170; break;
-                            case 5: effect_params.hue = 213; break;
-                            case 6: effect_params.hue = 14; break;
-                            default: effect_params.hue = 85; break;
-                        }
-                        effect_params.brightness = 255;
-                        effect_params.speed = 5;
-                        led_effect_hold_multibutton_chase_left_start();
-                        hold_effect_active[i] = true;
-                    }
+            if (!effect_active && !hold_effect_active[i] && (status & mask)) {
+                // Farbwahl je Taste.
+                switch(i) {
+                    case 0: effect_params.hue = 0; break;
+                    case 1: effect_params.hue = 170; break;
+                    case 5: effect_params.hue = 213; break;
+                    case 6: effect_params.hue = 14; break;
+                    default: effect_params.hue = 85; break;
                 }
-            }
-
-            // Taste losgelassen: Hold-Effekt stoppen
-            if ((BUTTON_MASK & mask) && !(status & mask)) {
-                button_press_timestamp[i] = 0;
-                if (hold_effect_active[i]) {
-                    led_effect_hold_multibutton_chase_left_stop();
-                    hold_effect_active[i] = false;
-                }
+                effect_params.brightness = 255;
+                effect_params.speed = 5;
+                led_effect_hold_multibutton_chase_left_start();
+                hold_effect_active[i] = true;
             }
         }
 
