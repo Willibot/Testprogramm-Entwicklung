@@ -1,7 +1,7 @@
 #ifndef DRV8904Q1_H
 #define DRV8904Q1_H
 
-#include "stm32f1xx_hal.h" // oder deine passende HAL-Datei
+#include "stm32g0xx_hal.h" // oder deine passende HAL-Datei
 
 // === SPI Read/Write-Bit ===
 #define DRV8904Q1_SPI_READ    (1U << 15)
