@@ -241,7 +241,7 @@ int main(void)
     {
         sound_engine_tick();
         sound_beep_update();
-        sound_single_sweep_1_update();
+        sound_double_beep_update();
 
         // Effekt-Engine nur updaten, wenn kein Hold-Chase-Effekt läuft!
         if (!hold_chase_effect_active) {
