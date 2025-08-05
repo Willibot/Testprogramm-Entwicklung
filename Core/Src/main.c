@@ -35,6 +35,8 @@ volatile uint8_t touch_event_count = 0;
 // Merkt, ob Hold-Effekt pro Taste läuft
 bool hold_effect_active[8] = {0};
 volatile bool hold_chase_effect_active = false; // Globale Variable für Hold-Chase-Effekt
+static uint32_t chase_start_timestamp = 0;
+static bool double_beep_played = false;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -81,7 +83,7 @@ void handle_touch_events(void)
                 uint8_t mask = (1 << i);
                 if ((BUTTON_MASK & mask) && (status & mask)) {
                     button_press_timestamp[i] = HAL_GetTick();
-                    sound_single_sweep_1_start();
+                    sound_beep_start();
 
                     // Farbwahl je Taste
                     switch (i) {
@@ -117,6 +119,8 @@ void handle_touch_events(void)
                     effect_params.speed = 5; // Standardgeschwindigkeit
 
                     led_effect_hold_multibutton_chase_left_start(hue, brightness);
+                    chase_start_timestamp = HAL_GetTick();
+                    double_beep_played = false;
                     for (int j = 0; j < 8; ++j) hold_effect_active[j] = false;
                     hold_effect_active[i] = true;
                     break;
@@ -194,6 +198,8 @@ void handle_touch_events(void)
                 effect_params.speed = 5; // Standardgeschwindigkeit
 
                 led_effect_hold_multibutton_chase_left_start(hue, brightness);
+                chase_start_timestamp = HAL_GetTick();
+                double_beep_played = false;
                 for (int j = 0; j < 8; ++j) hold_effect_active[j] = false;
                 hold_effect_active[i] = true;
                 break;
@@ -258,6 +264,13 @@ int main(void)
         }
         if (!effect_active && !any_button_pressed && !hold_active && !hold_chase_effect_active) {
             set_leds_solid_green();
+        }
+
+        if (hold_chase_effect_active && !double_beep_played) {
+            if (HAL_GetTick() - chase_start_timestamp >= 2000) {
+                sound_double_beep_start(4000, 80, 50); // 4 kHz, 80 ms, 50 ms Pause
+                double_beep_played = true;
+            }
         }
     }
 }
