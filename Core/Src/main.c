@@ -20,6 +20,7 @@
 #include "sounds/sound_beep.h"
 #include "sounds/piezo_driver.h"
 #include "sounds/sound_single_sweep_1.h"
+#include "sounds/sound_double_beep.h"
 #include "Driver/cy8cmbr3108.h"
 #include "Driver/cy8cmbr3108_config.h"
 
