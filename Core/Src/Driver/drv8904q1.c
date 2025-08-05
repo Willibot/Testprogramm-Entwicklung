@@ -1,5 +1,6 @@
 #include "Driver/drv8904q1.h"
 #include "main.h"
+#include "stm32g0xx_hal_spi.h"
 
 // Chip-Select Pin
 #define DRV8904Q1_CS_PIN   GPIO_PIN_0
