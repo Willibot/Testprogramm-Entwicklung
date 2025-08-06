@@ -12,6 +12,7 @@
 #include "Driver/cy8cmbr3108.h"
 #include "Driver/cy8cmbr3108_config.h"
 #include "Driver/drv8904q1.h"
+#include "spi.h"
 
 // ------------------- Konfiguration -------------------
 #define HOLD_THRESHOLD_MS 2000
