@@ -3,26 +3,30 @@
 #include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
+#include "spi.h"
 #include "config.h"
+
 #include "effects/led_effect_engine.h"
 #include "effects/led_effect_multibutton_double_blink.h"
+#include "effects/led_effect_hold_multibutton_chase_left.h"
+
 #include "sounds/sound_engine.h"
 #include "sounds/sound_beep.h"
 #include "sounds/sound_double_beep.h"
+
 #include "Driver/cy8cmbr3108.h"
 #include "Driver/cy8cmbr3108_config.h"
 #include "Driver/drv8904q1.h"
-#include "spi.h"
 
 // ------------------- Konfiguration -------------------
 #define HOLD_THRESHOLD_MS 2000
 
-// Mapping Taste → OUT1, OUT2
-static const uint8_t out_states[4][2] = {
-    {1, 0}, // T0
-    {0, 1}, // T1
-    {1, 1}, // T2
-    {0, 0}  // T3
+// Mapping Taste → OUT1..OUT4 (nur OUT1+OUT2 aktiv)
+static const uint8_t out_pattern[4] = {
+    0b0001, // T0 → OUT1 an, OUT2 aus
+    0b0010, // T1 → OUT1 aus, OUT2 an
+    0b0011, // T2 → OUT1+OUT2 an
+    0b0000  // T3 → beide aus
 };
 
 // Farben je Taste (Hue)
@@ -32,31 +36,41 @@ static const uint8_t hue_map[4] = {0, 170, 213, 85};
 uint32_t button_press_timestamp[8] = {0};
 volatile bool any_button_pressed = false;
 volatile uint8_t touch_event_count = 0;
+volatile bool hold_chase_effect_active = false;
 volatile bool effect_active = false;
-
-// ------------------- Funktionsprototypen -------------------
-void SystemClock_Config(void);
-void set_leds_solid_green(void);
-void handle_touch_events(void);
+static uint32_t chase_start_timestamp = 0;
+static bool double_beep_played = false;
 
 // ------------------- Hilfsfunktionen -------------------
-void set_leds_solid_green(void) {
-    effect_params.hue = 85; // Grün
+static void set_leds_solid_green(void) {
+    effect_params.hue = 85;
     effect_params.brightness = 50;
     led_effect_engine_set(LED_EFFECT_SOLID);
 }
 
+static void drv8904q1_set_outputs(uint8_t pattern) {
+    uint8_t reg = drv8904q1_read_output_state();
+    reg &= ~0x0F;                 // OUT1..OUT4 löschen
+    reg |= (pattern & 0x0F);      // neues Muster
+    uint8_t tx[2] = {DRV8904Q1_REG_OUT_CTRL, reg};
+    drv8904q1_select();
+    HAL_SPI_Transmit(&hspi1, tx, 2, 10);
+    drv8904q1_deselect();
+}
+
+// ------------------- Interrupt-Callback -------------------
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
     if (GPIO_Pin == GPIO_PIN_1) {
         touch_event_count++;
     }
 }
 
-void handle_touch_events(void) {
+// ------------------- Event-Handling -------------------
+static void handle_touch_events(void) {
     while (touch_event_count > 0) {
         touch_event_count--;
 
-        // Warten auf CY8CMBR3108
+        // Warten auf CY8
         uint32_t start = HAL_GetTick();
         while (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 1, 2) != HAL_OK) {
             if ((HAL_GetTick() - start) > 10) return;
@@ -65,58 +79,64 @@ void handle_touch_events(void) {
         uint8_t status = cy8cmbr3108_read_button_stat();
         bool now_pressed = (status & BUTTON_MASK) != 0;
 
-        // Neuer Tastendruck
+        // -------- Neuer Tastendruck --------
         if (!any_button_pressed && now_pressed) {
-            for (int i = 0; i < 4; ++i) { // nur T0..T3
+            for (int i = 0; i < 4; ++i) {
                 uint8_t mask = (1 << i);
                 if ((BUTTON_MASK & mask) && (status & mask)) {
                     button_press_timestamp[i] = HAL_GetTick();
+                    drv8904q1_set_outputs(out_pattern[i]);
 
-                    // Ausgänge setzen
-                    drv8904q1_set_output(1, out_states[i][0]);
-                    drv8904q1_set_output(2, out_states[i][1]);
-
-                    // LED in Tastenfarbe
                     effect_params.hue = hue_map[i];
                     effect_params.brightness = 255;
-                    led_effect_engine_set(LED_EFFECT_SOLID);
-
-                    // Kurzer Beep
+                    led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
+                    effect_active = true;
                     sound_beep_start();
+
+                    chase_start_timestamp = 0;
+                    double_beep_played = false;
                 }
             }
         }
 
-        // Prüfen auf langes Halten
-        for (int i = 0; i < 4; ++i) {
-            uint8_t mask = (1 << i);
-            if (button_press_timestamp[i] &&
-                (status & mask) &&
-                (HAL_GetTick() - button_press_timestamp[i] >= HOLD_THRESHOLD_MS)) {
+        // -------- Chase-Start nach Doppelblink --------
+        if (!effect_active && now_pressed && !hold_chase_effect_active) {
+            for (int i = 0; i < 4; ++i) {
+                uint8_t mask = (1 << i);
+                if ((BUTTON_MASK & mask) && (status & mask)) {
+                    effect_params.hue = hue_map[i];
+                    effect_params.brightness = 255;
+                    effect_params.speed = 5;
 
-                // Doppelbeep + Doppelblink
-                sound_double_beep_start(4000, 80, 50);
-                led_effect_multibutton_double_blink_start(hue_map[i], 255);
-
-                // Ausgänge deaktivieren
-                drv8904q1_write_register(DRV8904Q1_REG_OUT_CTRL, 0x0000);
-
-                // LEDs zurück auf grün
-                HAL_Delay(200);
-                set_leds_solid_green();
-
-                button_press_timestamp[i] = 0;
+                    led_effect_hold_multibutton_chase_left_start(effect_params.hue, effect_params.brightness);
+                    hold_chase_effect_active = true;
+                    chase_start_timestamp = HAL_GetTick();
+                    double_beep_played = false;
+                    break;
+                }
             }
         }
 
         any_button_pressed = now_pressed;
 
-        // Loslassen → Timestamp zurücksetzen
-        for (int i = 0; i < 4; ++i) {
-            uint8_t mask = (1 << i);
-            if ((BUTTON_MASK & mask) && !(status & mask)) {
-                button_press_timestamp[i] = 0;
-            }
+        // -------- Loslassen → Stoppe Effekte --------
+        if (!now_pressed) {
+            hold_chase_effect_active = false;
+            effect_active = false;
+            set_leds_solid_green();
+        }
+    }
+
+    // -------- Chase läuft → lange Haltezeit prüfen --------
+    if (hold_chase_effect_active && !double_beep_played) {
+        if (HAL_GetTick() - chase_start_timestamp >= HOLD_THRESHOLD_MS) {
+            sound_double_beep_start(4000, 80, 50);
+            led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
+
+            drv8904q1_set_outputs(0b0000); // alle Ausgänge aus
+
+            hold_chase_effect_active = false;
+            double_beep_played = true;
         }
     }
 }
@@ -130,7 +150,7 @@ int main(void) {
     MX_TIM3_Init();
     MX_TIM14_Init();
     MX_I2C1_Init();
-    MX_SPI1_Init(); // für DRV8904Q1
+    MX_SPI1_Init();
 
     HAL_Delay(200);
 
@@ -155,7 +175,15 @@ int main(void) {
         sound_beep_update();
         sound_double_beep_update();
 
-        led_effect_engine_update(HAL_GetTick());
+        if (!hold_chase_effect_active) {
+            led_effect_engine_update(HAL_GetTick());
+        }
+        if (hold_chase_effect_active) {
+            led_effect_hold_multibutton_chase_left_update(HAL_GetTick());
+        }
+        if (effect_active) {
+            led_effect_multibutton_double_blink_update(HAL_GetTick());
+        }
 
         handle_touch_events();
     }
@@ -167,7 +195,6 @@ void SystemClock_Config(void) {
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
     HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
-
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSIDiv = RCC_HSI_DIV1;
@@ -182,13 +209,10 @@ void SystemClock_Config(void) {
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
         Error_Handler();
     }
-
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                                |RCC_CLOCKTYPE_PCLK1;
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-
     if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
         Error_Handler();
     }
