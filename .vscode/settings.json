@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "main.h": "c",
-        "cy8cmbr3108_config.h": "c"
+        "cy8cmbr3108_config.h": "c",
+        "drv8904q1.h": "c"
     }
 }
