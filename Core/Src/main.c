@@ -35,6 +35,7 @@ uint32_t button_press_timestamp[8] = {0};
 volatile bool any_button_pressed = false;
 volatile uint8_t touch_event_count = 0;
 volatile bool effect_active = false;
+volatile bool hold_chase_effect_active = false;
 
 static bool chase_running = false;
 static uint32_t chase_start_time = 0;
