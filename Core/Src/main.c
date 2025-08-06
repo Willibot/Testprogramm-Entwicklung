@@ -32,6 +32,7 @@ static const uint8_t hue_map[4] = {0, 170, 213, 85};
 uint32_t button_press_timestamp[8] = {0};
 volatile bool any_button_pressed = false;
 volatile uint8_t touch_event_count = 0;
+volatile bool effect_active = false;
 
 // ------------------- Funktionsprototypen -------------------
 void SystemClock_Config(void);
