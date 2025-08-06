@@ -11,7 +11,7 @@
 #include "sounds/sound_double_beep.h"
 #include "Driver/cy8cmbr3108.h"
 #include "Driver/cy8cmbr3108_config.h"
-#include "drv8904q1.h"
+#include "Driver/drv8904q1.h"
 
 // ------------------- Konfiguration -------------------
 #define HOLD_THRESHOLD_MS 2000
