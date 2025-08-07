@@ -49,10 +49,6 @@ void Error_Handler(void) {
     while (1);
 }
 
-void sound_single_sweep_1_stop(void) {
-    piezo_stop();
-}
-
 void set_leds_solid_green(void) {
     effect_params.hue = 85;
     effect_params.brightness = 50;
@@ -63,7 +59,6 @@ void set_leds_solid_green(void) {
 void resetToInputWait(void) {
     set_leds_solid_green();
     drv8904q1_set_outputs(0, 0);
-    sound_single_sweep_1_stop();
     for (int i = 0; i < NUM_USED_BUTTONS; ++i) hold_effect_active[i] = false;
     hold_chase_effect_active = false;
     double_beep_played = false;
