@@ -107,6 +107,27 @@ void handle_touch_events(void) {
             }
         }
 
+        for (int i = 0; i < 8; ++i) {
+            if ((button_press_timestamp[i] > 0) &&
+                ((HAL_GetTick() - button_press_timestamp[i]) > 2000) &&
+                !hold_effect_active[i]) {
+
+                hold_effect_active[i] = true;
+                chase_start_timestamp = HAL_GetTick();
+                double_beep_played = false;
+
+                uint8_t hue;
+                switch(i) {
+                    case 0: hue = 0; break;
+                    case 1: hue = 170; break;
+                    case 5: hue = 213; break;
+                    case 6: hue = 14; break;
+                    default: hue = 85; break;
+                }
+                led_effect_hold_multibutton_chase_left_start(hue, 255);
+            }
+        }
+
         any_button_pressed = now_pressed;
 
         for (int i = 0; i < 8; ++i) {
