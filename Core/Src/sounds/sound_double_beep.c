@@ -17,7 +17,7 @@
 // TODO: Optional: Verschiedene Frequenzen für beide Beeps, Pause parametrierbar machen
 // -----------------------------------------------------------------------------
 
-#include "sound_double_beep.h"
+#include "sounds/sound_double_beep.h"
 #include "piezo_driver.h"
 #include "stm32g0xx_hal.h" // Für HAL_GetTick()
 
@@ -48,6 +48,12 @@ void sound_double_beep_start(uint16_t freq, uint16_t len_ms, uint16_t pause_ms) 
     state = DBEEP_FIRST_BEEP;
     timestamp = HAL_GetTick() + len1;
     double_beep_active = true;
+}
+
+void sound_double_beep_stop(void) {
+    piezo_stop();
+    state = DBEEP_IDLE;
+    double_beep_active = false;
 }
 
 void sound_double_beep_update(void) {

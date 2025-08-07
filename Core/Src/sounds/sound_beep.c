@@ -17,7 +17,7 @@
 // TODO: Für weitere Soundeffekte (z.B. Melodien, Sweeps) eigenes Modul anlegen und hier nur einfachen Beep belassen.
 // -----------------------------------------------------------------------------
 
-#include "sound_beep.h"
+#include "sounds/sound_beep.h"
 #include "piezo_driver.h"
 #include "stm32g0xx_hal.h"
 #include "main.h" // falls HAL_GetTick() benötigt wird
@@ -25,9 +25,14 @@
 static volatile bool beep_active = false;
 static uint32_t beep_end_time = 0; // <--- Diese Zeile einfügen!
 
-void sound_beep_start(void) {
+void sound_beep_start(uint16_t freq, uint16_t duration, uint8_t volume) {
     beep_active = true;
-    beep_end_time = HAL_GetTick() + 100; // Beispiel: 100 ms Beep
+    beep_end_time = HAL_GetTick() + duration; // Beispiel: 100 ms Beep
+}
+
+void sound_beep_stop(void) {
+    beep_active = false;
+    // ggf. Piezo abschalten
 }
 
 void sound_beep_update(void) {

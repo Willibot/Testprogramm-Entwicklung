@@ -14,8 +14,8 @@
 //   - Für andere Sweeps: Parameter und Logik anpassen
 // -----------------------------------------------------------------------------
 
-#include "sound_single_sweep_1.h"
-#include "piezo_driver.h"
+#include "sounds/sound_single_sweep_1.h"
+#include "sounds/piezo_driver.h"
 #include "stm32g0xx_hal.h"
 
 static bool sweep_active = false;
@@ -44,4 +44,8 @@ void sound_single_sweep_1_update(void) {
 
 bool sound_single_sweep_1_is_active(void) {
     return sweep_active;
+}
+
+void sound_single_sweep_1_stop(void) {
+    piezo_stop(); // Piezo-Buzzer abschalten
 }
