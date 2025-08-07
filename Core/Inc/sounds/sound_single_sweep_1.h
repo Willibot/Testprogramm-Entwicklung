@@ -12,14 +12,15 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
-
 #ifndef SOUND_SINGLE_SWEEP_1_H
 #define SOUND_SINGLE_SWEEP_1_H
+
+#include <stdint.h>
+#include <stdbool.h>
 
 void sound_single_sweep_1_start(void);
 void sound_single_sweep_1_stop(void);
 void sound_single_sweep_1_update(void);
+bool sound_single_sweep_1_is_active(void);
 
 #endif

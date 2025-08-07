@@ -18,34 +18,27 @@
 #include "sounds/piezo_driver.h"
 #include "stm32g0xx_hal.h"
 
-static bool sweep_active = false;
-static uint32_t sweep_start_time = 0;
-static const uint32_t sweep_duration = 100; // ms
+static volatile bool sweep_active = false;
+static uint32_t sweep_end_time = 0;
 
 void sound_single_sweep_1_start(void) {
     sweep_active = true;
-    sweep_start_time = HAL_GetTick();
-    piezo_beep(4000, sweep_duration); // Start mit 4 kHz, Dauer 100 ms
+    sweep_end_time = HAL_GetTick() + 120; // z.B. 120ms Sweep
+    piezo_beep(4000, 50); // Beispiel: 4kHz, mittlere Lautstärke
+}
+
+void sound_single_sweep_1_stop(void) {
+    sweep_active = false;
+    piezo_stop();
 }
 
 void sound_single_sweep_1_update(void) {
-    if (!sweep_active) return;
-    uint32_t now = HAL_GetTick();
-    uint32_t elapsed = now - sweep_start_time;
-    if (elapsed >= sweep_duration) {
-        piezo_stop();
+    if (sweep_active && HAL_GetTick() >= sweep_end_time) {
         sweep_active = false;
-        return;
+        piezo_stop();
     }
-    // Frequenz linear von 4 kHz auf 2 kHz
-    uint16_t freq = 4000 - ((2000 * elapsed) / sweep_duration);
-    piezo_beep(freq, sweep_duration - elapsed);
 }
 
 bool sound_single_sweep_1_is_active(void) {
     return sweep_active;
-}
-
-void sound_single_sweep_1_stop(void) {
-    piezo_stop(); // Piezo-Buzzer abschalten
 }
