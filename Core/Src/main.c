@@ -54,6 +54,7 @@ void handle_touch_events(void) {
         uint8_t status = cy8cmbr3108_read_button_stat();
         bool now_pressed = (status & BUTTON_MASK) != 0;
 
+        // Effekt nur auslösen, wenn vorher keine Taste gedrückt war und jetzt mindestens eine.
         if (!any_button_pressed && now_pressed) {
             for (int i = 0; i < 8; ++i) {
                 uint8_t mask = (1 << i);
@@ -77,6 +78,14 @@ void handle_touch_events(void) {
             }
         }
 
+        // --- PATCH: Effekt-Flag nach Doppelblink zurücksetzen ---
+        // Prüfe, ob der Doppelblink vorbei ist und setze effect_active zurück
+        if (effect_active && !led_effect_multibutton_double_blink_is_active()) {
+            effect_active = false;
+        }
+        // --------------------------------------------------------
+
+        // Nach dem Doppelblink, prüfe ob Taste gehalten wird und Hold-Effekt starten
         for (int i = 0; i < 8; ++i) {
             uint8_t mask = (1 << i);
             if (!effect_active && !hold_effect_active[i] && (status & mask)) {
@@ -94,6 +103,7 @@ void handle_touch_events(void) {
                 chase_start_timestamp = HAL_GetTick();
                 double_beep_played = false;
                 hold_effect_active[i] = true;
+                hold_chase_effect_active = true; // --- PATCH: Flag explizit setzen
             }
         }
 
@@ -162,6 +172,7 @@ int main(void) {
 
         if (!effect_active && !any_button_pressed && !hold_active && !hold_chase_effect_active) {
             set_leds_solid_green();
+            double_beep_played = false; // --- PATCH: Flag zurücksetzen, damit nachfolgende Effekte wieder starten können
         }
 
         if (hold_chase_effect_active && !double_beep_played) {
@@ -173,7 +184,6 @@ int main(void) {
                 hold_chase_effect_active = false;
                 double_beep_played = true;
 
-                // Outputs zurücksetzen
                 drv8904q1_set_outputs(0, 0);
             }
         }
