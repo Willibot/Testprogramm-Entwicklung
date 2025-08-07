@@ -49,3 +49,10 @@ void cy8cmbr3108_reset_latch_status(void)
     // 0x6E ist die 7-bit I2C-Adresse des CY8CMBR3108 (bit0=0 für Write)
     HAL_I2C_Mem_Write(&hi2c1, 0x6E, cmd_reg, I2C_MEMADD_SIZE_8BIT, &reset_cmd, 1, 100);
 }
+
+void cy8cmbr3108_init(void) {
+    // Beispiel: Hier könntest du eine Initialisierung oder einen Selbsttest machen.
+    // Falls du ein Konfigurationsarray hast, könntest du es hier schreiben:
+    // cy8cmbr3108_write_config();
+    // Oder einfach leer lassen, wenn keine Initialisierung nötig ist.
+}

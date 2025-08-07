@@ -20,3 +20,6 @@ void cy8cmbr3108_reset_latch_status(void);
 
 // Das Konfigurationsarray (Definition in .c-Datei)
 extern const uint8_t cy8cmbr3108_config_data[128];
+
+// cy8cmbr3108.h
+void cy8cmbr3108_init(void);
