@@ -31,7 +31,7 @@ volatile uint8_t touch_event_count = 0;
 #define NUM_USED_BUTTONS 4
 const uint8_t used_buttons[NUM_USED_BUTTONS] = {0, 1, 5, 6};
 
-uint32_t button_press_timestamp[NUM_USED_BUTTONS] = {0};
+uint32_t button_press_timestamp[4] = {0};
 bool hold_effect_active[NUM_USED_BUTTONS] = {0};
 
 volatile bool effect_active = false;

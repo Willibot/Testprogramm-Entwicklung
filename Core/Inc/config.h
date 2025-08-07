@@ -107,6 +107,6 @@ extern volatile bool touch_event_pending;
 // Nur die Tasten aus BUTTON_MASK werden tatsächlich genutzt.
 // Beispiel: button_press_timestamp[0] ist für CS0, [1] für CS1, [5] für CS5, [6] für CS6.
 // Die anderen Einträge bleiben ungenutzt, stören aber nicht.
-extern uint32_t button_press_timestamp[8];
+extern uint32_t button_press_timestamp[4];
 
 #endif // CONFIG_H
