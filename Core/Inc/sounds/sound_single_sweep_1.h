@@ -7,6 +7,7 @@
 //   - sound_single_sweep_1_start(): Startet den Sweep
 //   - sound_single_sweep_1_update(): Muss zyklisch aufgerufen werden, steuert den Sweep
 //   - sound_single_sweep_1_is_active(): Gibt zurück, ob der Sweep noch läuft
+//   - sound_single_sweep_1_stop(): Stoppt den Sweep
 // -----------------------------------------------------------------------------
 
 #pragma once
@@ -17,3 +18,4 @@
 void sound_single_sweep_1_start(void);
 void sound_single_sweep_1_update(void);
 bool sound_single_sweep_1_is_active(void);
+void sound_single_sweep_1_stop(void);
