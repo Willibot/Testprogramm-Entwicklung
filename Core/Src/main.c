@@ -126,19 +126,8 @@ int main(void) {
     MX_TIM3_Init();
     MX_TIM14_Init();
     MX_I2C1_Init();
-    MX_SPI1_Init();
 
-    HAL_Delay(200);
-
-    if (HAL_I2C_IsDeviceReady(&hi2c1, 0x6E, 2, 100) != HAL_OK) {
-        Error_Handler();
-    }
-
-    #if USE_I2C_CY8CMBR3108_WRITE
-    if (cy8cmbr3108_write_config() != HAL_OK) {
-        Error_Handler();
-    }
-    #endif
+    cy8cmbr3108_init(); // <-- Initialisierung des Touchcontrollers
 
     sound_engine_init();
     led_effect_engine_init();

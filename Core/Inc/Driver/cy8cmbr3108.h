@@ -1,7 +1,9 @@
-// cy8cmbr3108.h
 #pragma once
 
 #include "stm32g0xx_hal.h"
+
+// WICHTIG: Muss hier stehen – damit es immer zur Kompilierzeit aktiv ist:
+#define USE_I2C_CY8CMBR3108_READ 1
 
 #define CY8CMBR3108_I2C_ADDR      (0x37 << 1) // Standard-Adresse
 
