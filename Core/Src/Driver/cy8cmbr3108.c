@@ -51,8 +51,7 @@ void cy8cmbr3108_reset_latch_status(void)
 }
 
 void cy8cmbr3108_init(void) {
-    // Beispiel: Hier könntest du eine Initialisierung oder einen Selbsttest machen.
-    // Falls du ein Konfigurationsarray hast, könntest du es hier schreiben:
-    // cy8cmbr3108_write_config();
-    // Oder einfach leer lassen, wenn keine Initialisierung nötig ist.
+#if USE_I2C_CY8CMBR3108_WRITE
+    cy8cmbr3108_write_config();
+#endif
 }
