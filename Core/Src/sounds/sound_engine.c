@@ -57,7 +57,7 @@ void sound_engine_tick(void) {
         case SOUND_BEEP:
             // Nur starten, wenn kein Beep aktiv ist!
             if (!sound_beep_is_active()) {
-                sound_beep_start(); // Keine Parameter mehr, fest 4 kHz/80 ms
+                sound_beep_start(4000, 80, 50); // Frequenz, Dauer, Lautstärke
                 sound_repeat_counter--;
                 if (sound_repeat_counter == 0) {
                     current_sound = SOUND_NONE;
