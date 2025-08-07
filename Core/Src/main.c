@@ -136,6 +136,8 @@ int main(void) {
     set_leds_solid_green();
 
     while (1) {
+        handle_touch_events();  // <- unbedingt nötig!
+
         sound_engine_tick();
         sound_beep_update();
         sound_single_sweep_1_update();
