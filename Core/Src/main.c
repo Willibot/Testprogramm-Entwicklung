@@ -26,16 +26,29 @@
 #include "Driver/cy8cmbr3108_config.h"
 #include "Driver/drv8904q1.h"
 
-uint32_t button_press_timestamp[8] = {0};
+volatile uint8_t touch_event_count = 0;
+
+#define NUM_USED_BUTTONS 4
+const uint8_t used_buttons[NUM_USED_BUTTONS] = {0, 1, 5, 6};
+
+uint32_t button_press_timestamp[NUM_USED_BUTTONS] = {0};
+bool hold_effect_active[NUM_USED_BUTTONS] = {0};
+
 volatile bool effect_active = false;
-bool hold_effect_active[8] = {0};
 volatile bool hold_chase_effect_active = false;
 static uint32_t chase_start_timestamp = 0;
 static bool double_beep_played = false;
 static bool any_button_pressed = false;
 static uint8_t last_button_status = 0;
 
-void SystemClock_Config(void);
+void SystemClock_Config(void) {
+    // Bei Bedarf sinnvoll initialisieren, sonst leer lassen
+}
+
+void Error_Handler(void) {
+    while (1); // Fehlerzustand
+}
+
 void set_leds_solid_green(void);
 void handle_touch_events(void);
 
@@ -48,13 +61,18 @@ void set_leds_solid_green(void) {
 
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
     if (GPIO_Pin == GPIO_PIN_1) {
-        extern volatile uint8_t touch_event_count;
         touch_event_count++;
     }
 }
 
+int get_used_button_index(uint8_t button_id) {
+    for (int i = 0; i < NUM_USED_BUTTONS; i++) {
+        if (used_buttons[i] == button_id) return i;
+    }
+    return -1;
+}
+
 void handle_touch_events(void) {
-    extern volatile uint8_t touch_event_count;
     while (touch_event_count > 0) {
         touch_event_count--;
 
@@ -64,15 +82,15 @@ void handle_touch_events(void) {
         uint8_t status = cy8cmbr3108_read_button_stat();
         bool now_pressed = (status & BUTTON_MASK);
 
-        // Neue Taste gedrückt erkannt (Flanke)
         if (!any_button_pressed && now_pressed) {
-            for (int i = 0; i < 8; ++i) {
-                uint8_t mask = (1 << i);
+            for (int i = 0; i < NUM_USED_BUTTONS; ++i) {
+                uint8_t btn = used_buttons[i];
+                uint8_t mask = (1 << btn);
                 if ((BUTTON_MASK & mask) && (status & mask)) {
                     button_press_timestamp[i] = HAL_GetTick();
                     sound_single_sweep_1_start();
 
-                    switch (i) {
+                    switch (btn) {
                         case 0: effect_params.hue = 0; break;
                         case 1: effect_params.hue = 170; break;
                         case 5: effect_params.hue = 213; break;
@@ -83,16 +101,16 @@ void handle_touch_events(void) {
                     effect_params.brightness = 255;
                     led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
                     effect_active = true;
-                    for (int j = 0; j < 8; ++j) hold_effect_active[j] = false;
+                    for (int j = 0; j < NUM_USED_BUTTONS; ++j) hold_effect_active[j] = false;
                 }
             }
         }
 
-        // Taste losgelassen
         if (any_button_pressed && !now_pressed) {
             hold_chase_effect_active = false;
             drv8904q1_set_outputs(0, 0);
             set_leds_solid_green();
+            sound_single_sweep_1_stop();
             effect_active = false;
         }
 
@@ -140,22 +158,28 @@ int main(void) {
         led_effect_multibutton_double_blink_update(HAL_GetTick());
         led_effect_hold_multibutton_chase_left_update(HAL_GetTick());
 
-        // Starte Chase nur wenn Taste lang genug gehalten wurde
         if (effect_active && !led_effect_multibutton_double_blink_is_active()) {
             effect_active = false;
             uint8_t status = cy8cmbr3108_read_button_stat();
-            for (int i = 0; i < 8; ++i) {
-                uint8_t mask = (1 << i);
+            for (int i = 0; i < NUM_USED_BUTTONS; ++i) {
+                uint8_t btn = used_buttons[i];
+                uint8_t mask = (1 << btn);
                 if ((BUTTON_MASK & mask) && (status & mask)) {
-                    if (HAL_GetTick() - button_press_timestamp[i] > 500) {
-                        led_effect_hold_multibutton_chase_left_start(effect_params.hue, 255);
+                    uint32_t press_duration = HAL_GetTick() - button_press_timestamp[i];
+                    if (press_duration > 2500) {
                         hold_chase_effect_active = true;
                         chase_start_timestamp = HAL_GetTick();
                         double_beep_played = false;
                         hold_effect_active[i] = true;
-                    } else {
-                        // Tipp erkannt → DRV setzen
-                        drv8904q1_set_outputs(0x01, 0x01);
+                        led_effect_hold_multibutton_chase_left_start(effect_params.hue, 255);
+                    } else if (press_duration < 500) {
+                        switch (btn) {
+                            case 0: drv8904q1_set_outputs(0, 0); break;
+                            case 1: drv8904q1_set_outputs(0, 1); break;
+                            case 5: drv8904q1_set_outputs(1, 0); break;
+                            case 6: drv8904q1_set_outputs(1, 1); break;
+                            default: drv8904q1_set_outputs(0, 0); break;
+                        }
                     }
                     break;
                 }
@@ -165,13 +189,14 @@ int main(void) {
         handle_touch_events();
 
         bool hold_active = false;
-        for (int i = 0; i < 8; ++i) {
+        for (int i = 0; i < NUM_USED_BUTTONS; ++i) {
             if (hold_effect_active[i]) hold_active = true;
         }
 
         if (!effect_active && !any_button_pressed && !hold_active && !hold_chase_effect_active) {
             set_leds_solid_green();
             drv8904q1_set_outputs(0, 0);
+            sound_single_sweep_1_stop();
         }
 
         if (hold_chase_effect_active && !double_beep_played) {
