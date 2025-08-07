@@ -28,6 +28,7 @@ static uint8_t current_pos = 0;
 static uint32_t last_update = 0;
 static uint8_t chase_hue = 0;
 static uint8_t chase_brightness = 255;
+static volatile bool chase_active = false;
 extern volatile bool hold_chase_effect_active; // Globale Variable aus main.c
 
 /**
@@ -45,6 +46,7 @@ void led_effect_hold_multibutton_chase_left_start(uint8_t hue, uint8_t brightnes
     chase_hue = hue;
     chase_brightness = brightness;
     hold_chase_effect_active = true;
+    chase_active = true;
 }
 
 /**
@@ -90,10 +92,19 @@ void led_effect_hold_multibutton_chase_left_update(uint32_t tick) {
  */
 void led_effect_hold_multibutton_chase_left_stop(void) {
     hold_chase_effect_active = false;
+    chase_active = false;
     for (int i = 0; i < LED_COUNT; i++) {
         led_state[i] = (RGB_t){0, 0, 0};
     }
     led_driver_update();
+}
+
+/**
+ * @brief Überprüft, ob der "Taste gehalten"-Effekt aktiv ist.
+ * @return true, wenn der Effekt aktiv ist, sonst false.
+ */
+bool led_effect_hold_multibutton_chase_left_is_active(void) {
+    return chase_active;
 }
 
 // Copilot:

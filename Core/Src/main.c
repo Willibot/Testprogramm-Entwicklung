@@ -103,7 +103,7 @@ void handle_touch_events(void) {
                 chase_start_timestamp = HAL_GetTick();
                 double_beep_played = false;
                 hold_effect_active[i] = true;
-                hold_chase_effect_active = true; // --- PATCH: Flag explizit setzen
+                // hold_chase_effect_active = true; // --- PATCH: Flag explizit setzen
             }
         }
 
@@ -151,16 +151,20 @@ int main(void) {
         sound_beep_update();
         sound_single_sweep_1_update();
 
-        if (!hold_chase_effect_active) {
+        if (!led_effect_hold_multibutton_chase_left_is_active()) {
             led_effect_engine_update(HAL_GetTick());
         }
 
-        if (effect_active) {
-            led_effect_multibutton_double_blink_update(HAL_GetTick());
+        if (led_effect_hold_multibutton_chase_left_is_active() && !double_beep_played) {
+            if (HAL_GetTick() - chase_start_timestamp >= 2000) {
+                sound_double_beep_start(4000, 80, 50);
+                led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
+                led_effect_hold_multibutton_chase_left_stop();
+                for (int i = 0; i < 8; ++i) hold_effect_active[i] = false;
+                double_beep_played = true;
+                drv8904q1_set_outputs(0, 0);
+            }
         }
-
-        led_effect_hold_multibutton_chase_left_update(HAL_GetTick());
-        handle_touch_events();
 
         bool hold_active = false;
         for (int i = 0; i < 8; ++i) {
@@ -170,22 +174,18 @@ int main(void) {
             }
         }
 
-        if (!effect_active && !any_button_pressed && !hold_active && !hold_chase_effect_active) {
+        // Rückfall auf grün:
+        if (!effect_active && !any_button_pressed && !hold_active && !led_effect_hold_multibutton_chase_left_is_active()) {
             set_leds_solid_green();
-            double_beep_played = false; // --- PATCH: Flag zurücksetzen, damit nachfolgende Effekte wieder starten können
+            double_beep_played = false;
         }
 
-        if (hold_chase_effect_active && !double_beep_played) {
-            if (HAL_GetTick() - chase_start_timestamp >= 2000) {
-                sound_double_beep_start(4000, 80, 50);
-                led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
-                led_effect_hold_multibutton_chase_left_stop();
-                for (int i = 0; i < 8; ++i) hold_effect_active[i] = false;
-                hold_chase_effect_active = false;
-                double_beep_played = true;
+        if (sound_double_beep_is_active()) {
+            // Doppelbeep läuft noch
+        }
 
-                drv8904q1_set_outputs(0, 0);
-            }
+        if (sound_beep_is_active()) {
+            // Einfacher Beep läuft noch
         }
     }
 }

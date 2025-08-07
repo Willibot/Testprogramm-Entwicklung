@@ -2,6 +2,7 @@
 #define LED_EFFECT_MULTIBUTTON_DOUBLE_BLINK_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 /**
  * @brief Startet den Multibutton-Doppelblink-Effekt.
@@ -25,5 +26,14 @@ void led_effect_multibutton_double_blink_start(uint8_t hue, uint8_t brightness);
  * @param tick Aktueller Zeitwert (z.B. von HAL_GetTick()), wird für das Timing verwendet.
  */
 void led_effect_multibutton_double_blink_update(uint32_t tick);
+
+/**
+ * @brief Überprüft, ob der Multibutton-Doppelblink-Effekt aktiv ist.
+ *
+ * Diese Funktion gibt zurück, ob der Effekt derzeit ausgeführt wird und die LEDs blinken.
+ *
+ * @return true, wenn der Effekt aktiv ist und die LEDs blinken, sonst false.
+ */
+bool led_effect_multibutton_double_blink_is_active(void);
 
 #endif // LED_EFFECT_MULTIBUTTON_DOUBLE_BLINK_H

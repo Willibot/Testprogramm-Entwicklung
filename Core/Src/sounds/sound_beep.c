@@ -21,13 +21,11 @@
 #include "piezo_driver.h"
 #include "stm32g0xx_hal.h"
 
-static bool beep_active = false;
-static uint32_t beep_end_time = 0;
+static volatile bool beep_active = false;
 
 void sound_beep_start(void) {
     // Startet einen festen Beep mit 4 kHz und 80 ms Dauer
     piezo_beep(4000, 80); // 4 kHz, 80 ms
-    beep_end_time = HAL_GetTick() + 80;
     beep_active = true;
 }
 
@@ -36,13 +34,13 @@ void sound_beep_update(void) {
     if (beep_active) {
         if (HAL_GetTick() >= beep_end_time) {
             piezo_stop();
+            // Wenn der Effekt vorbei ist:
             beep_active = false;
         }
     }
 }
 
 bool sound_beep_is_active(void) {
-    // Gibt zurück, ob der Beep noch läuft
     return beep_active;
 }
 

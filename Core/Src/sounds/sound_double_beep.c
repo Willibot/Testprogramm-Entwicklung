@@ -35,6 +35,8 @@ static uint16_t pause = 50;
 static uint16_t freq2 = 4000;
 static uint16_t len2 = 80;
 
+static volatile bool double_beep_active = false;
+
 void sound_double_beep_start(uint16_t freq, uint16_t len_ms, uint16_t pause_ms) {
     freq1 = freq;
     len1 = len_ms;
@@ -45,6 +47,7 @@ void sound_double_beep_start(uint16_t freq, uint16_t len_ms, uint16_t pause_ms) 
     piezo_beep(freq1, len1);
     state = DBEEP_FIRST_BEEP;
     timestamp = HAL_GetTick() + len1;
+    double_beep_active = true;
 }
 
 void sound_double_beep_update(void) {
@@ -69,6 +72,8 @@ void sound_double_beep_update(void) {
             if (HAL_GetTick() >= timestamp) {
                 piezo_stop();
                 state = DBEEP_IDLE;
+                // Wenn der Effekt vorbei ist:
+                double_beep_active = false;
             }
             break;
 
@@ -78,7 +83,7 @@ void sound_double_beep_update(void) {
 }
 
 bool sound_double_beep_is_active(void) {
-    return state != DBEEP_IDLE;
+    return double_beep_active;
 }
 
 // Copilot:

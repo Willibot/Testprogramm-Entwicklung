@@ -20,4 +20,4 @@
 
 void sound_beep_start(void);
 void sound_beep_update(void);
-bool sound_beep_is_active(void); // <--- Diese Zeile ergänzen!
+bool sound_beep_is_active(void);
