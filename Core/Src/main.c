@@ -111,6 +111,9 @@ void handle_touch_events(void) {
     }
 }
 
+void SystemClock_Config(void);
+void MX_SPI1_Init(void);
+
 int main(void) {
     HAL_Init();
     SystemClock_Config();
