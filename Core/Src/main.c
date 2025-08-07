@@ -31,7 +31,7 @@ volatile uint8_t touch_event_count = 0;
 #define NUM_USED_BUTTONS 4
 const uint8_t used_buttons[NUM_USED_BUTTONS] = {0, 1, 5, 6};
 
-uint32_t button_press_timestamp[4] = {0};
+uint32_t button_press_timestamp[NUM_USED_BUTTONS] = {0};
 bool hold_effect_active[NUM_USED_BUTTONS] = {0};
 
 volatile bool effect_active = false;
@@ -46,17 +46,28 @@ void SystemClock_Config(void) {
 }
 
 void Error_Handler(void) {
-    while (1); // Fehlerzustand
+    while (1);
 }
 
-void set_leds_solid_green(void);
-void handle_touch_events(void);
+void sound_single_sweep_1_stop(void) {
+    piezo_stop();
+}
 
 void set_leds_solid_green(void) {
     effect_params.hue = 85;
     effect_params.brightness = 50;
     led_effect_engine_set(LED_EFFECT_SOLID);
     effect_active = false;
+}
+
+void resetToInputWait(void) {
+    set_leds_solid_green();
+    drv8904q1_set_outputs(0, 0);
+    sound_single_sweep_1_stop();
+    for (int i = 0; i < NUM_USED_BUTTONS; ++i) hold_effect_active[i] = false;
+    hold_chase_effect_active = false;
+    double_beep_played = false;
+    any_button_pressed = false;
 }
 
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin) {
@@ -107,11 +118,7 @@ void handle_touch_events(void) {
         }
 
         if (any_button_pressed && !now_pressed) {
-            hold_chase_effect_active = false;
-            drv8904q1_set_outputs(0, 0);
-            set_leds_solid_green();
-            sound_single_sweep_1_stop();
-            effect_active = false;
+            resetToInputWait();
         }
 
         any_button_pressed = now_pressed;
@@ -145,7 +152,7 @@ int main(void) {
     led_effect_engine_init();
     drv8904q1_init();
 
-    set_leds_solid_green();
+    resetToInputWait();
 
     while (1) {
         sound_engine_tick();
@@ -194,9 +201,7 @@ int main(void) {
         }
 
         if (!effect_active && !any_button_pressed && !hold_active && !hold_chase_effect_active) {
-            set_leds_solid_green();
-            drv8904q1_set_outputs(0, 0);
-            sound_single_sweep_1_stop();
+            resetToInputWait();
         }
 
         if (hold_chase_effect_active && !double_beep_played) {
