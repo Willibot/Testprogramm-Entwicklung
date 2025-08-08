@@ -1,0 +1,44 @@
+| Modul                                      | Funktion / Variable                                             | Typ               | Beschreibung                                             |
+| ------------------------------------------ | --------------------------------------------------------------- | ----------------- | -------------------------------------------------------- |
+| `main.c`                                   | `main()`                                                        | Funktion          | Initialisierung, Schleife mit Tasten- und Effektlogik    |
+| `main.c`                                   | `handle_touch_events()`                                         | Funktion          | Verarbeitung von Touch-Interrupts und Start von Effekten |
+| `main.c`                                   | `resetToInputWait()`                                            | Funktion          | Setzt LED, Sound, Ausgänge und Zustände zurück           |
+| `main.c`                                   | `set_leds_solid_green()`                                        | Funktion          | Zeigt Bereitschaft mit grünem Licht                      |
+| `main.c`                                   | `get_used_button_index(button_id)`                              | Funktion          | Gibt Index eines genutzten Buttons zurück                |
+| `main.c`                                   | `HAL_GPIO_EXTI_Falling_Callback(GPIO_Pin)`                      | ISR-Callback      | Inkrementiert `touch_event_count` bei Touch-Interrupt    |
+| `main.c`                                   | `touch_event_count`                                             | volatile uint8    | Zählt Touchereignisse                                    |
+| `main.c`                                   | `used_buttons[]`                                                | const uint8\_t\[] | Liste der verwendeten Button-IDs (0,1,5,6)               |
+| `main.c`                                   | `BUTTON_MASK`                                                   | Define            | Bitmaske für verwendete Tasten                           |
+| `main.c`                                   | `button_press_timestamp[]`                                      | uint32\_t\[]      | Timestamp pro Button bei Druckbeginn                     |
+| `main.c`                                   | `hold_effect_active[]`                                          | bool\[]           | Zeigt, ob Hold-Chase-Effekt pro Button aktiv ist         |
+| `main.c`                                   | `effect_active`                                                 | volatile bool     | Gibt an, ob ein Blinkeffekt läuft                        |
+| `main.c`                                   | `hold_chase_effect_active`                                      | volatile bool     | Gibt an, ob Hold-Chase läuft                             |
+| `main.c`                                   | `chase_start_timestamp`                                         | uint32\_t         | Startzeitpunkt Hold-Chase                                |
+| `main.c`                                   | `double_beep_played`                                            | bool              | Gibt an, ob Doppelbeep bereits abgespielt wurde          |
+| `main.c`                                   | `any_button_pressed`                                            | bool              | Letzter Zustand der Button-Auswertung                    |
+| `main.c`                                   | `last_button_status`                                            | uint8\_t          | Status von `cy8cmbr3108_read_button_stat()`              |
+| `main.c`                                   | `effect_params`                                                 | effect\_params\_t | Parameter für Effekte: `hue`, `brightness`               |
+| `sound_engine.c`                           | `sound_engine_init()`                                           | Funktion          | Initialisiert Piezo-Engine                               |
+| `sound_beep.c`                             | `sound_beep_update()`                                           | Funktion          | Update loop für einfachen Piep                           |
+| `sound_double_beep.c`                      | `sound_double_beep_update()`                                    | Funktion          | Update loop für Doppelpfeifton                           |
+| `sound_double_beep.c`                      | `sound_double_beep_start(freq, len, pause)`                     | Funktion          | Startet Doppelbeep                                       |
+| `sound_single_sweep_1.c`                   | `sound_single_sweep_1_start()`                                  | Funktion          | Startet Sweep-Effekt                                     |
+| `sound_single_sweep_1.c`                   | `sound_single_sweep_1_stop()`                                   | Funktion          | Stoppt Sweep                                             |
+| `led_effect_engine.c`                      | `led_effect_engine_init()`                                      | Funktion          | Initialisiert LED-Effektengine                           |
+| `led_effect_engine.c`                      | `led_effect_engine_set(mode)`                                   | Funktion          | Setzt einfachen LED-Modus (solid etc.)                   |
+| `led_effect_engine.c`                      | `led_effect_engine_update(tick)`                                | Funktion          | Aktualisiert Basiseffekt                                 |
+| `led_effect_multibutton_double_blink.c`    | `led_effect_multibutton_double_blink_start(hue, brightness)`    | Funktion          | Startet Doppelblinken                                    |
+| `led_effect_multibutton_double_blink.c`    | `led_effect_multibutton_double_blink_update(tick)`              | Funktion          | Update der Blinkanimation                                |
+| `led_effect_multibutton_double_blink.c`    | `led_effect_multibutton_double_blink_is_active()`               | Funktion          | Gibt zurück, ob Animation noch aktiv ist                 |
+| `led_effect_hold_multibutton_chase_left.c` | `led_effect_hold_multibutton_chase_left_start(hue, brightness)` | Funktion          | Startet Chase-Effekt beim Halten                         |
+| `led_effect_hold_multibutton_chase_left.c` | `led_effect_hold_multibutton_chase_left_update(tick)`           | Funktion          | Update der Chase-Animation                               |
+| `drv8904q1.c`                              | `drv8904q1_init()`                                              | Funktion          | Initialisiert SPI-Ausgangstreiber                        |
+| `drv8904q1.c`                              | `drv8904q1_set_outputs(ab, cd)`                                 | Funktion          | Setzt SPI-Ausgänge                                       |
+| `drv8904q1.c`                              | `PB0` - `NSCS`                                                  | GPIO-Output       | Chip-Select für SPI-Kommunikation (manuell gesteuert)    |
+| `drv8904q1.c`                              | `PB1` - `nFAULT`                                                | GPIO-Input        | (Optional) Fehlerausgang – kann überwacht werden         |
+| `drv8904q1.c`                              | `PB3` - `SCLK`                                                  | SPI1\_SCK         | SPI Clock                                                |
+| `drv8904q1.c`                              | `PB4` - `MISO`                                                  | SPI1\_MISO        | SPI MISO                                                 |
+| `drv8904q1.c`                              | `PB5` - `MOSI`                                                  | SPI1\_MOSI        | SPI MOSI                                                 |
+| `drv8904q1.c`                              | `PB6` - `nSLEEP`                                                | GPIO-Output       | Aktivierung des DRV8904Q1 durch High                     |
+| `cy8cmbr3108.c`                            | `cy8cmbr3108_read_button_stat()`                                | Funktion          | Liest Tastenstatus vom kapazitiven Sensorchip            |
+| `cy8cmbr3108_config.c`                     | `cy8cmbr3108_write_config()`                                    | Funktion          | Schreibt Konfiguration für Tastenbelegung etc.           |
