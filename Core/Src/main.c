@@ -165,16 +165,18 @@ int main(void)
 
     HAL_Delay(200);
 
+    // BREAKPOINT 1: Nach Hardware-Init, vor I2C-Test
     if (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 2, 100) != HAL_OK)
     {
-        Error_Handler();
+        Error_Handler(); // BREAKPOINT 2: Falls I2C nicht bereit
     }
 
     HAL_Delay(10);
 
+    // BREAKPOINT 3: Nach CY8-Konfigurationsschreiben
     if (cy8cmbr3108_write_config() != HAL_OK)
     {
-        Error_Handler();
+        Error_Handler(); // BREAKPOINT 4: Falls CY8-Konfigurationsfehler
     }
 
     HAL_Delay(10);
@@ -183,6 +185,7 @@ int main(void)
     led_effect_engine_init();
     drv8904q1_init();
 
+    // BREAKPOINT 5: Nach allen Initialisierungen, vor erstem ResetToInputWait
     resetToInputWait();
 
     while (1)
@@ -197,6 +200,7 @@ int main(void)
         led_effect_multibutton_double_blink_update(HAL_GetTick());
         led_effect_hold_multibutton_chase_left_update(HAL_GetTick());
 
+        // BREAKPOINT 6: Nach Abschluss eines Effekts
         if (effect_active && !led_effect_multibutton_double_blink_is_active())
         {
             effect_active = false;
@@ -215,6 +219,7 @@ int main(void)
                         double_beep_played = false;
                         hold_effect_active[i] = true;
                         led_effect_hold_multibutton_chase_left_start(effect_params.hue, 255);
+                        // BREAKPOINT 7: Hold-Chase-Effekt gestartet
                     }
                     else if (press_duration < 500)
                     {
@@ -236,13 +241,14 @@ int main(void)
                             drv8904q1_set_outputs(0, 0);
                             break;
                         }
+                        // BREAKPOINT 8: Kurzer Tastendruck, Ausgang gesetzt
                     }
                     break;
                 }
             }
         }
 
-        handle_touch_events();
+        handle_touch_events(); // BREAKPOINT 9: Vor Verarbeitung von Touch-Events
 
         bool hold_active = false;
         for (int i = 0; i < NUM_USED_BUTTONS; ++i)
@@ -253,7 +259,7 @@ int main(void)
 
         if (!effect_active && !any_button_pressed && !hold_active && !hold_chase_effect_active)
         {
-            resetToInputWait();
+            resetToInputWait(); // BREAKPOINT 10: Rückfall in Grundzustand
         }
 
         if (hold_chase_effect_active && !double_beep_played)
@@ -264,6 +270,7 @@ int main(void)
                 double_beep_played = true;
                 led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
                 drv8904q1_set_outputs(0, 0);
+                // BREAKPOINT 11: Doppelbeep und Blink nach langem Halten
             }
         }
     }
