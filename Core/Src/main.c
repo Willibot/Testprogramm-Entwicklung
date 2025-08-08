@@ -163,7 +163,7 @@ int main(void)
     MX_TIM14_Init();
     MX_SPI1_Init();
 
-    HAL_Delay(200);
+    HAL_Delay(500); // Erhöhtes Delay für CY8CMBR3108 Power-Up
 
     // BREAKPOINT 1: Nach Hardware-Init, vor I2C-Test
     if (HAL_I2C_IsDeviceReady(&hi2c1, CY8CMBR3108_I2C_ADDR, 2, 100) != HAL_OK)
