@@ -24,10 +24,10 @@
 static volatile bool beep_active = false;
 static uint32_t beep_end_time = 0;
 
-void sound_beep_start(uint16_t freq, uint16_t duration, uint8_t volume) {
+void sound_beep_start(uint16_t freq, uint16_t duration) {
     beep_active = true;
     beep_end_time = HAL_GetTick() + duration;
-    piezo_beep(freq, volume);
+    piezo_beep(freq);
 }
 
 void sound_beep_stop(void) {

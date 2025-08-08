@@ -69,3 +69,7 @@ void piezo_tick(void) {
         __HAL_TIM_SET_COMPARE(&htim14, TIM_CHANNEL_1, period / 2);
     }
 }
+
+void piezo_beep(uint16_t freq) {
+    piezo_play_beep(freq, 80); // 80 ms als Standarddauer
+}

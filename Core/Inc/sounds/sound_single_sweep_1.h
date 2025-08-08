@@ -8,6 +8,7 @@
 //   - sound_single_sweep_1_update(): Muss zyklisch aufgerufen werden, steuert den Sweep
 //   - sound_single_sweep_1_is_active(): Gibt zurück, ob der Sweep noch läuft
 //   - sound_single_sweep_1_stop(): Stoppt den Sweep
+//   - sound_beep_start(): Startet einen Piepton mit gegebener Frequenz und Dauer
 // -----------------------------------------------------------------------------
 
 #pragma once
@@ -22,5 +23,6 @@ void sound_single_sweep_1_start(void);
 void sound_single_sweep_1_stop(void);
 void sound_single_sweep_1_update(void);
 bool sound_single_sweep_1_is_active(void);
+void sound_beep_start(uint16_t freq, uint16_t duration);
 
 #endif

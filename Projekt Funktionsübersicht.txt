@@ -19,7 +19,7 @@
 | `main.c`                                   | `last_button_status`                                            | uint8\_t          | Status von `cy8cmbr3108_read_button_stat()`              |
 | `main.c`                                   | `effect_params`                                                 | effect\_params\_t | Parameter für Effekte: `hue`, `brightness`               |
 | `sound_engine.c`                           | `sound_engine_init()`                                           | Funktion          | Initialisiert Piezo-Engine                               |
-| `sound_beep.c`                             | `sound_beep_update()`                                           | Funktion          | Update loop für einfachen Piep                           |
+| `sound_beep.c`                             | `sound_beep_start(freq, duration)` | Funktion          | Startet einfachen Beep                                   |
 | `sound_double_beep.c`                      | `sound_double_beep_update()`                                    | Funktion          | Update loop für Doppelpfeifton                           |
 | `sound_double_beep.c`                      | `sound_double_beep_start(freq, len, pause)`                     | Funktion          | Startet Doppelbeep                                       |
 | `sound_single_sweep_1.c`                   | `sound_single_sweep_1_start()`                                  | Funktion          | Startet Sweep-Effekt                                     |

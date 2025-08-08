@@ -9,11 +9,10 @@
 void piezo_init(void);
 
 /**
- * @brief Spielt einen Ton mit bestimmter Frequenz und Dauer.
- * @param freq_hz Frequenz in Hz
- * @param duration_ms Dauer in Millisekunden
+ * @brief Spielt einen Ton mit bestimmter Frequenz.
+ * @param freq Frequenz in Hz
  */
-void piezo_beep(uint16_t freq_hz, uint16_t duration_ms);
+void piezo_beep(uint16_t freq);
 
 /**
  * @brief Sofortiges Abschalten des Tons.
