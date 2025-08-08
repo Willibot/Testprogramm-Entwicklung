@@ -50,7 +50,7 @@ void sound_config_mode_update(void)
 
         case CONFIG_PAUSE:
             if (timer_tick >= timestamp) {
-                piezo_beep(6000, 150); // 150 ms, 6 kHz
+                piezo_beep(4000); // 4 kHz
                 config_state = CONFIG_BEEP2;
                 timestamp = timer_tick + 150;
             }
