@@ -25,12 +25,12 @@
 #include "Driver/cy8cmbr3108.h"
 #include "Driver/cy8cmbr3108_config.h"
 #include "Driver/drv8904q1.h"
+#include "sounds/piezo_driver.h"
 
 volatile uint8_t touch_event_count = 0;
 
 #define NUM_USED_BUTTONS 4
 const uint8_t used_buttons[NUM_USED_BUTTONS] = {0, 1, 5, 6};
-#define BUTTON_MASK ((1 << 0) | (1 << 1) | (1 << 5) | (1 << 6))
 
 uint32_t button_press_timestamp[NUM_USED_BUTTONS] = {0};
 bool hold_effect_active[NUM_USED_BUTTONS] = {0};
@@ -274,4 +274,3 @@ int main(void)
         }
     }
 }
-*/
