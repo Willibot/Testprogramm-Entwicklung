@@ -55,7 +55,7 @@ void sound_double_beep_update(void) {
         } else if (beep_phase == 1) {
             // Zweiter Beep
             beep_phase = 2;
-            piezo_beep(last_freq, last_volume);
+            piezo_beep(last_freq);
             beep_end_time = HAL_GetTick() + last_duration;
         } else {
             // Fertig

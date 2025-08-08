@@ -24,7 +24,7 @@ static uint32_t sweep_end_time = 0;
 void sound_single_sweep_1_start(void) {
     sweep_active = true;
     sweep_end_time = HAL_GetTick() + 120; // z.B. 120ms Sweep
-    piezo_beep(4000, 50); // Beispiel: 4kHz, mittlere Lautstärke
+    piezo_beep(4000); // 4kHz
 }
 
 void sound_single_sweep_1_stop(void) {
