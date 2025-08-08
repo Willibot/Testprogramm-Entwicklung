@@ -19,9 +19,9 @@
 | `main.c`                                   | `last_button_status`                                            | uint8\_t          | Status von `cy8cmbr3108_read_button_stat()`              |
 | `main.c`                                   | `effect_params`                                                 | effect\_params\_t | Parameter für Effekte: `hue`, `brightness`               |
 | `sound_engine.c`                           | `sound_engine_init()`                                           | Funktion          | Initialisiert Piezo-Engine                               |
-| `sound_beep.c`                             | `sound_beep_start(freq, duration)` | Funktion          | Startet einfachen Beep                                   |
+| `sound_beep.c`                             | `sound_beep_start(freq, duration)` | Funktion                   | Startet einfachen Beep                                   |
 | `sound_double_beep.c`                      | `sound_double_beep_update()`                                    | Funktion          | Update loop für Doppelpfeifton                           |
-| `sound_double_beep.c`                      | `sound_double_beep_start(freq, len, pause)`                     | Funktion          | Startet Doppelbeep                                       |
+| `sound_double_beep.c`                      | `sound_double_beep_start(freq, duration)` | Funktion            | Startet Doppelbeep                                       |
 | `sound_single_sweep_1.c`                   | `sound_single_sweep_1_start()`                                  | Funktion          | Startet Sweep-Effekt                                     |
 | `sound_single_sweep_1.c`                   | `sound_single_sweep_1_stop()`                                   | Funktion          | Stoppt Sweep                                             |
 | `led_effect_engine.c`                      | `led_effect_engine_init()`                                      | Funktion          | Initialisiert LED-Effektengine                           |
@@ -42,3 +42,4 @@
 | `drv8904q1.c`                              | `PB6` - `nSLEEP`                                                | GPIO-Output       | Aktivierung des DRV8904Q1 durch High                     |
 | `cy8cmbr3108.c`                            | `cy8cmbr3108_read_button_stat()`                                | Funktion          | Liest Tastenstatus vom kapazitiven Sensorchip            |
 | `cy8cmbr3108_config.c`                     | `cy8cmbr3108_write_config()`                                    | Funktion          | Schreibt Konfiguration für Tastenbelegung etc.           |
+| `piezo_driver.c`                           | `piezo_beep(freq)`                                              | Funktion          | Startet Piezo-Ton mit gegebener Frequenz                |

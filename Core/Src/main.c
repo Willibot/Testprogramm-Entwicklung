@@ -266,7 +266,7 @@ int main(void)
         {
             if (HAL_GetTick() - chase_start_timestamp >= 2000)
             {
-                sound_double_beep_start(4000, 80, 50);
+                sound_double_beep_start(4000, 80);
                 double_beep_played = true;
                 led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
                 drv8904q1_set_outputs(0, 0);

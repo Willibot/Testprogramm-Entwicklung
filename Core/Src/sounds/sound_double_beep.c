@@ -28,7 +28,8 @@ static uint16_t last_freq = 0;
 static uint8_t last_volume = 0;
 static uint16_t last_duration = 0;
 
-void sound_double_beep_start(uint16_t freq, uint16_t duration) {
+void sound_double_beep_start(uint16_t freq, uint16_t duration)
+{
     double_beep_active = true;
     beep_phase = 0;
     last_freq = freq;

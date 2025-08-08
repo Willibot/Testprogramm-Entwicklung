@@ -29,13 +29,15 @@ static enum {
 
 static uint32_t timestamp = 0;
 
-void sound_config_mode_start(void) {
+void sound_config_mode_start(void)
+{
     config_state = CONFIG_BEEP1;
-    piezo_beep(4000, 100); // 100 ms, 4 kHz
+    sound_double_beep_start(4000, 80);
     timestamp = timer_tick + 100;
 }
 
-void sound_config_mode_update(void) {
+void sound_config_mode_update(void)
+{
     switch (config_state) {
         case CONFIG_BEEP1:
             if (timer_tick >= timestamp) {

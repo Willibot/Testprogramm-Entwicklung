@@ -66,6 +66,7 @@ void sound_engine_tick(void) {
             break;
         case SOUND_DOUBLE_BEEP:
             // Analog: Hier ggf. sound_double_beep_is_active() prüfen und sound_double_beep_start() aufrufen!
+            sound_double_beep_start(4000, 80);
             break;
         case SOUND_CONFIG_MODE:
             // Analog: Hier ggf. sound_config_mode_is_active() prüfen und sound_config_mode_start() aufrufen!
