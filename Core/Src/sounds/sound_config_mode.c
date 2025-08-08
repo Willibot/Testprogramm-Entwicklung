@@ -18,6 +18,7 @@
 
 #include "sound_config_mode.h"
 #include "piezo_driver.h"
+#include "sounds/sound_double_beep.h"
 extern uint32_t timer_tick;
 
 static enum {
