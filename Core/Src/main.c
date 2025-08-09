@@ -24,6 +24,9 @@
 #include "Driver/cy8cmbr3108.h"
 #include "Driver/cy8cmbr3108_config.h"
 
+// Nur Deklaration, keine Definition mehr hier!
+extern effect_params_t effect_params;
+
 /* Private variables ---------------------------------------------------------*/
 // Zeitstempel für jede Taste (CS0-CS7), um die Haltedauer zu messen
 uint32_t button_press_timestamp[8] = {0};
@@ -44,11 +47,10 @@ static bool double_beep_played = false;
 // - touch_start_time: Zeitstempel bei Touch-Down
 // - chase_started: true, wenn Chase-Effekt läuft
 // - long_press_handled: true, wenn langer Tastendruck bereits behandelt wurde
-volatile bool touch_active = false;
-volatile uint32_t touch_start_time = 0;
+bool touch_active = false;
+uint32_t touch_start_time = 0;
 bool chase_started = false;
 bool long_press_handled = false;
-effect_params_t effect_params = { .hue = 80, .brightness = 255 }; // Beispielwerte
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
