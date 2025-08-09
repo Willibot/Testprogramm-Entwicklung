@@ -320,7 +320,7 @@ int main(void)
                 chase_started = false;
                 long_press_handled = false;
 
-                // set_leds_solid_green(); // <--- Diese Zeile NICHT hier aufrufen!
+                // set_leds_solid_green(); // ENTFERNT! Rücksetzen auf Grün erst nach Doppelblink!
             }
             // Effektabbruch, falls Finger vorher entfernt wird (wie gehabt)
             else {
