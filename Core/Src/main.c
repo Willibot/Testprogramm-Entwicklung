@@ -269,17 +269,20 @@ int main(void)
 
         if (hold_chase_effect_active && !double_beep_played) {
             if (HAL_GetTick() - chase_start_timestamp >= 2000) {
+                // 1. Rückmeldung an den Nutzer
                 sound_double_beep_start(4000, 80, 50); // 4 kHz, 80 ms, 50 ms Pause
-
-                // Starte Doppelblink-Effekt (z.B. in Tasterfarbe)
                 led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
 
-                // Stoppe den Chase-Effekt
+                // 2. (Schaltvorgang folgt später, wenn SPI/DRV implementiert ist)
+
+                // 3. Chase-Effekt stoppen und Flags zurücksetzen
                 led_effect_hold_multibutton_chase_left_stop();
                 for (int i = 0; i < 8; ++i) hold_effect_active[i] = false;
                 hold_chase_effect_active = false;
-
                 double_beep_played = true;
+
+                // 4. LEDs auf Grundzustand setzen
+                set_leds_solid_green();
             }
         }
     }

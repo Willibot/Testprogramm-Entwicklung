@@ -1,0 +1,120 @@
+Du steuerst einen Sensortaster mit vier Eingabefeldern. Jede Taste hat eine taster-spezifische LED-Farbe und ist am DRV8904Q1 mit zwei Ausgängen angeschlossen.
+
+Verhalte dich nach diesen Regeln:
+
+1. Berührungsstart (Touch Down):
+   - Sobald eine Taste berührt wird, spiele sofort einen einzelnen Beep.
+   - Starte die Zeitmessung der Berührungsdauer.
+
+2. Kurzes Tippen (< 500 ms):
+   - Wenn die Berührung vor Ablauf von 500 ms losgelassen wird,
+     - erkenne das als kurzes Tippen.
+     - Es erfolgt **kein weiterer Beep** außer dem initialen einzelnen Beep.
+     - Spiele einen **Doppelblink** der LEDs in der taster-spezifischen Farbe als Bestätigung, dass ein Schaltvorgang erkannt wurde.
+     - Setze auf den beiden DRV8904-Ausgängen einen von vier möglichen Ausgangszuständen (HIGH/LOW Kombinationen) entsprechend der gedrückten Taste.
+     - Wechsle danach in die Eingabeerwartungsroutine mit statisch grün leuchtenden LEDs.
+
+3. Langes Tippen (≥ 2500 ms):
+   - Wenn die Berührung ununterbrochen mindestens 500 ms andauert, starte einen LED-Chase-Effekt in taster-spezifischer Farbe.
+   - Wenn die Berührung danach mindestens weitere 2000 ms (also gesamt 2500 ms) gehalten wird,
+     - erkenne das als langes Tippen.
+     - Spiele einen **Doppelbeep** und einen **Doppelblink** der LEDs in der taster-spezifischen Farbe als Bestätigung.
+     - Setze alle Ausgänge des DRV8904Q1 in den High-Zustand (hochohmiger Zustand).
+     - Wechsel danach in die Eingabeerwartungsroutine mit statisch grün leuchtenden LEDs.
+   - Falls die Taste vor 2500 ms losgelassen wird,
+     - führe keinen Schaltvorgang aus.
+     - Keine weiteren Beeps oder Doppelblinks.
+     - Rückkehr in die Eingabeerwartungsroutine mit grün leuchtenden LEDs.
+
+4. Zwischenzeitliches Loslassen:
+   - Jede Berührung, die zwischen 500 ms und 2500 ms losgelassen wird, führt zu keinem Schaltvorgang und keinem zusätzlichen Signal.
+   - Das System fällt ohne visuelle oder akustische Rückmeldung in die Eingabeerwartungsroutine mit grünen LEDs zurück.
+
+5. Hinweise:
+   - Der Doppelblink bestätigt immer einen erfolgreichen Schaltvorgang (kurz oder lang).
+   - LED-Chase startet genau bei 500 ms ununterbrochener Berührung.
+   - Alle Zeiten beziehen sich auf ununterbrochene Berührung.
+
+So verhält sich der Sensortaster im Gesamtsystem.
+
+// Initialisierung
+LEDs = grün (statisch)
+status = "Eingabeerwartung"
+
+// Event: Taste wurde gedrückt (Berührungsstart)
+OnTouchDown(taster):
+    status = "Berührung aktiv"
+    playSingleBeep()
+    startTimer()  // Zeitmessung beginnt ab 0 ms
+
+// Event: Taste wird losgelassen
+OnTouchUp(taster):
+    duration = getElapsedTime()
+    
+    if duration < 500 ms:
+        // Kurzes Tippen erkannt
+        // Einzelbeep wurde beim TouchDown gespielt, kein weiterer Beep
+        playDoubleBlink(taster.Farbe)
+        setDRVOutputsKurzesTippen(taster)  // Setze 2 Ausgänge auf 4 mögliche Zustände entsprechend taster
+        resetToInputWait()
+        
+    else if duration >= 500 ms and duration < 2500 ms:
+        // Zwischenzeitliches Loslassen - kein Schaltvorgang
+        resetToInputWait()
+        
+    else if duration >= 2500 ms:
+        // Langes Tippen abgeschlossen
+        // (Falls losgelassen wird nach 2500ms, das Signal wurde unten schon bestätigt)
+        // (Diese Bedingung tritt nur ein, wenn Berührung gehalten und OnTouchUp spät auftritt)
+        // Doppelte Bestätigung erfolgte schon im Tick
+        // Hier nur Rückfall in Eingabeerwartung
+        resetToInputWait()
+
+// Laufende Überwachung während Berührung (z.B. alle 50 ms)
+OnTouchHold(taster):
+    duration = getElapsedTime()
+    
+    if duration == 500 ms:
+        // Beginn LED-Chase-Effekt
+        startLEDChase(taster.Farbe)
+        
+    if duration == 2500 ms:
+        // Langes Tippen erfolgreich erkannt
+        playDoubleBeep()
+        playDoubleBlink(taster.Farbe)
+        setDRVOutputsToHighZ()  // Alle Ausgänge hochohmig
+        resetToInputWait()
+
+// Hilfsfunktionen
+resetToInputWait():
+    status = "Eingabeerwartung"
+    stopLEDChase()
+    setLEDsGrün(statisch)
+    resetTimer()
+
+playSingleBeep():
+    // Spiele einfachen Ton
+
+playDoubleBeep():
+    // Spiele zwei kurze Töne nacheinander
+
+playDoubleBlink(Farbe):
+    // Blink LED zwei Mal in Farbe auf
+
+startLEDChase(Farbe):
+    // Starte LED-Laufeffekt in Farbe
+
+stopLEDChase():
+    // Stoppe LED-Laufeffekt
+
+setDRVOutputsKurzesTippen(taster):
+    // Setze 2 Ausgänge auf je HIGH oder LOW abhängig von taster
+    // 4 mögliche Kombinationen:
+    // Taster 1 => (0,0)
+    // Taster 2 => (0,1)
+    // Taster 3 => (1,0)
+    // Taster 4 => (1,1)
+
+setDRVOutputsToHighZ():
+    // Setze alle DRV-Ausgänge in hochohmigen Zustand (High-Z)
+

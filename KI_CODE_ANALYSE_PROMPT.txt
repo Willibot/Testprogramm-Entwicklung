@@ -1,0 +1,28 @@
+🧠 KI-Aufforderung zur projektweiten Analyse:
+
+Dieses Projekt besteht aus mehreren Modulen, die über Funktionen und Variablen miteinander verbunden sind. Die Datei „Projekt Funktionsuebersicht“ enthält eine vollständige tabellarische Referenz aller Funktionen und globalen Variablen. Diese Übersicht ist die **einzige autorisierte Quelle zur Struktur und Semantik des Codes**.
+
+🧭 Ziel: Prüfe alle Dateien projektübergreifend auf funktionalen Zusammenhang, Konsistenz und Integrität. Achte besonders auf folgende Punkte:
+
+1. 🔗 **Referentielle Integrität**
+   - Jede Funktion und globale Variable muss in der Übersicht erfasst sein.
+   - Jeder Zugriff auf Funktionen/Variablen muss in der definierten Form erfolgen.
+   - Keine Dopplungen, Redundanzen oder vergessene Rückbezüge.
+
+2. 🧩 **Zusammenhängende Änderungsvorschläge**
+   - Mach keine isolierten Einzelsnippets!
+   - Liste jede Änderung **vollständig pro Datei auf**, inklusive:
+     - [Dateiname]
+     - [zu ersetzende bzw. hinzuzufügende Funktion/Block]
+     - [Grund für die Änderung / referenzierter Kontext aus der Funktionsübersicht]
+
+3. 🔄 **Keine unvollständigen Umbauten**
+   - Prüfe bei Änderungen stets, ob andere Module/Funktionen davon betroffen sind.
+   - Gib zu jeder Änderung an, welche abhängigen Stellen ebenfalls angepasst werden müssen.
+
+4. 📛 **Benennungskonventionen**
+   - Verwende keine neuen Funktions- oder Variablennamen, die nicht mit der Übersicht abgeglichen sind.
+   - Vorschläge für neue Funktionen/Variablen nur mit Begründung und Eintrag in die Übersicht.
+
+📌 Hinweis für GitHub Copilot & Co:
+Bitte keine unvollständigen „quick fixes“! Änderungen müssen **konsistent über alle betroffenen Dateien hinweg** vorgeschlagen werden. Diese Datei dient als kontextgebender Prompt für umfassende Änderungslogik und sollte von dir **explizit in der Analyse berücksichtigt werden**.
