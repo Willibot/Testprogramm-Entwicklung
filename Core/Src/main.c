@@ -44,10 +44,11 @@ static bool double_beep_played = false;
 // - touch_start_time: Zeitstempel bei Touch-Down
 // - chase_started: true, wenn Chase-Effekt läuft
 // - long_press_handled: true, wenn langer Tastendruck bereits behandelt wurde
-bool touch_active = false;
-uint32_t touch_start_time = 0;
+volatile bool touch_active = false;
+volatile uint32_t touch_start_time = 0;
 bool chase_started = false;
 bool long_press_handled = false;
+effect_params_t effect_params = { .hue = 80, .brightness = 255 }; // Beispielwerte
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -223,7 +224,7 @@ void handle_touch_events(void)
 
         // Nach 500ms: Chase-Effekt starten
         if (!chase_started && duration >= 500) {
-            led_effect_hold_multibutton_chase_left_start();
+            led_effect_hold_multibutton_chase_left_start(effect_params.hue, effect_params.brightness);
             chase_started = true;
         }
 
