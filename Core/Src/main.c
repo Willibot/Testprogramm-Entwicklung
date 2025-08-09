@@ -314,16 +314,13 @@ int main(void)
                 led_effect_hold_multibutton_chase_left_stop();
                 for (int i = 0; i < 8; ++i) hold_effect_active[i] = false;
                 hold_chase_effect_active = false;
-                double_beep_played = false; // ggf. zurücksetzen, falls du das Flag noch brauchst
-
-                set_leds_solid_green();
-
-                // Rückfall in Eingabeerwartung erzwingen:
+                double_beep_played = false;
                 any_button_pressed = false;
                 touch_active = false;
                 chase_started = false;
                 long_press_handled = false;
-                // ggf. weitere Flags zurücksetzen
+
+                // set_leds_solid_green(); // <--- Diese Zeile NICHT hier aufrufen!
             }
             // Effektabbruch, falls Finger vorher entfernt wird (wie gehabt)
             else {
