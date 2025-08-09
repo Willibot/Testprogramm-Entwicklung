@@ -39,6 +39,16 @@ volatile bool hold_chase_effect_active = false; // Globale Variable für Hold-Ch
 static uint32_t chase_start_timestamp = 0;
 static bool double_beep_played = false;
 
+// Annahmen: 
+// - touch_active: true, solange Finger auf Sensor
+// - touch_start_time: Zeitstempel bei Touch-Down
+// - chase_started: true, wenn Chase-Effekt läuft
+// - long_press_handled: true, wenn langer Tastendruck bereits behandelt wurde
+bool touch_active = false;
+uint32_t touch_start_time = 0;
+bool chase_started = false;
+bool long_press_handled = false;
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void set_leds_solid_green(void);
@@ -205,6 +215,29 @@ void handle_touch_events(void)
                 hold_effect_active[i] = true;
                 break;
             }
+        }
+    }
+
+    if (touch_active) {
+        uint32_t duration = HAL_GetTick() - touch_start_time;
+
+        // Nach 500ms: Chase-Effekt starten
+        if (!chase_started && duration >= 500) {
+            led_effect_hold_multibutton_chase_left_start();
+            chase_started = true;
+        }
+
+        // Nach 2500ms: Schaltvorgang, Rückmeldung, Rückfall
+        if (!long_press_handled && duration >= 2500) {
+            sound_double_beep_start(4000, 80, 50);
+            led_effect_multibutton_double_blink_start(effect_params.hue, effect_params.brightness);
+            // setDRVOutputsToHighZ(); // (später einfügen)
+            led_effect_hold_multibutton_chase_left_stop();
+            set_leds_solid_green();
+            chase_started = false;
+            long_press_handled = true;
+            touch_active = false; // Rückfall in Eingabeerwartung
+            // ggf. weitere Flags zurücksetzen
         }
     }
 }
